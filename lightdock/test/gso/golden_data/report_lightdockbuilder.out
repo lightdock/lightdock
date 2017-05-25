@@ -1,0 +1,13 @@
+GSO Execution Report:
+
+Seed: 324324
+Number of Glowworms: 5
+
+Algorithm parameters:
+Rho: 0.4
+Gamma: 0.6
+Beta: 0.08
+Initial Luciferin: 5.0
+Initial Vision Range: 0.2
+Maximum Vision Range: 5.0
+Maximum Number of Neighbors: 5

@@ -1,0 +1,12 @@
+#!/bin/bash 
+
+PYTHON=`which python`
+PYVER=`$PYTHON -c 'import platform; print platform.python_version()[:3]'`
+EXPY=`which lightdock`
+LIGHTDOCK_BIN=`dirname $EXPY`
+LIGHTDOCK_LIB=$LIGHTDOCK_BIN/../
+
+# general python variables for use of lightdock
+export PYTHONPATH=$PYTHONPATH:$LIGHTDOCK_BIN:$LIGHTDOCK_LIB
+
+exec $PYTHON $PROFILE_FLAGS $LIGHTDOCK_BIN/support/lightdock_setup.py $@

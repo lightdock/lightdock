@@ -1,0 +1,171 @@
+#!/usr/bin/env python
+
+"""Generates the PDB structures given a LightDock swarm results file"""
+
+import argparse
+import os
+import numpy as np
+from lightdock.error.lightdock_errors import LightDockError
+from lightdock.util.logger import LoggingManager
+from lightdock.constants import DEFAULT_LIST_EXTENSION, DEFAULT_LIGHTDOCK_PREFIX, \
+    DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE
+from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
+from lightdock.structure.complex import Complex
+from lightdock.mathutil.cython.quaternion import Quaternion
+from lightdock.structure.nm import read_nmodes
+
+
+log = LoggingManager.get_logger('generate_conformations')
+
+
+def valid_file(file_name):
+    """Checks if it is a valid file"""
+    if not os.path.exists(file_name):
+        raise argparse.ArgumentTypeError("The file does not exist")
+    return file_name
+
+
+def valid_integer_number(ivalue):
+    """Checks for a valid integer"""
+    try:
+        ivalue = int(ivalue)
+    except:
+        raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+    if ivalue <= 0:
+        raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+    return ivalue
+
+
+def get_lightdock_structures(input_file):
+    """Get a list of the PDB files in the input_file"""
+    input_file_name, input_file_extension = os.path.splitext(input_file)
+    file_names = []
+    if input_file_extension == DEFAULT_LIST_EXTENSION:
+        with open(input_file) as input_lines:
+            for line in input_lines:
+                file_name = line.rstrip(os.linesep)
+                lightdock_structure = os.path.join(os.path.dirname(file_name),
+                                                   DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
+                if os.path.exists(lightdock_structure):
+                    file_names.append(lightdock_structure)
+    else:
+        file_name = input_file
+        lightdock_structure = os.path.join(os.path.dirname(file_name),
+                                           DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
+        if os.path.exists(lightdock_structure):
+            file_names.append(lightdock_structure)
+        else:
+            raise LightDockError('Structure file %s not found' % lightdock_structure)
+    return file_names
+
+
+def parse_output_file(lightdock_output):
+    translations = []
+    rotations = []
+    receptor_ids = []
+    ligand_ids = []
+    rec_extents = []
+    lig_extents = []
+
+    data_file = open(lightdock_output)
+    lines = data_file.readlines()
+    data_file.close()
+
+    counter = 0
+    for line in lines:
+        if line[0] == '(':
+            counter += 1
+            last = line.index(')')
+            coord = line[1:last].split(',')
+            translations.append([float(coord[0]), float(coord[1]), float(coord[2])])
+            rotations.append(Quaternion(float(coord[3]), float(coord[4]), float(coord[5]), float(coord[6])))
+            if len(coord) == (7 + DEFAULT_NMODES_REC + DEFAULT_NMODES_LIG):
+                rec_extents.append(np.array([float(x) for x in coord[7:7+DEFAULT_NMODES_REC]]))
+                lig_extents.append(np.array([float(x) for x in coord[-DEFAULT_NMODES_LIG:]]))
+            raw_data = line[last+1:].split()
+            receptor_id = int(raw_data[0])
+            ligand_id = int(raw_data[1])
+            receptor_ids.append(receptor_id)
+            ligand_ids.append(ligand_id)
+    log.info("Read %s coordinate lines" % counter)
+    return translations, rotations, receptor_ids, ligand_ids, rec_extents, lig_extents
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(prog="conformer_conformations")
+    # Receptor
+    parser.add_argument("receptor_structures", help="receptor structures: PDB file or list of PDB files",
+                        type=valid_file, metavar="receptor_structure")
+    # Ligand
+    parser.add_argument("ligand_structures", help="ligand structures: PDB file or list of PDB files",
+                        type=valid_file, metavar="ligand_structure")
+    # Lightdock output file
+    parser.add_argument("lightdock_output", help="lightdock output file",
+                        type=valid_file, metavar="lightdock_output")
+    # Number of glowworms
+    parser.add_argument("glowworms", help="number of glowworms", type=valid_integer_number)
+
+    args = parser.parse_args()
+
+    # Receptor
+    structures = []
+    for structure in get_lightdock_structures(args.receptor_structures):
+        log.info("Reading %s receptor PDB file..." % structure)
+        atoms, residues, chains = parse_complex_from_file(structure)
+        structures.append({'atoms': atoms, 'residues': residues, 'chains': chains, 'file_name': structure})
+        log.info("%s atoms, %s residues read." % (len(atoms), len(residues)))
+    receptor = Complex.from_structures(structures)
+
+    # Ligand
+    structures = []
+    for structure in get_lightdock_structures(args.ligand_structures):
+        log.info("Reading %s ligand PDB file..." % structure)
+        atoms, residues, chains = parse_complex_from_file(structure)
+        structures.append({'atoms': atoms, 'residues': residues, 'chains': chains, 'file_name': structure})
+        log.info("%s atoms, %s residues read." % (len(atoms), len(residues)))
+    ligand = Complex.from_structures(structures)
+
+    # Output file
+    translations, rotations, receptor_ids, ligand_ids, \
+        rec_extents, lig_extents = parse_output_file(args.lightdock_output)
+
+    found_conformations = len(translations)
+    num_conformations = args.glowworms
+    if num_conformations > found_conformations:
+        log.warning("Number of conformations is bigger than found solutions (%s > %s)" % (num_conformations,
+                                                                                          found_conformations))
+        log.warning("Clipping number of conformations to %s" % found_conformations)
+        num_conformations = found_conformations
+
+    # Destination path is the same as the lightdock output
+    destination_path = os.path.dirname(args.lightdock_output)
+
+    # If normal modes used, need to read them
+    nmodes_rec = nmodes_lig = None
+    if len(rec_extents):
+        nm_path = os.path.abspath(os.path.dirname(args.receptor_structures))
+        nmodes_rec = read_nmodes(os.path.join(nm_path, DEFAULT_REC_NM_FILE + '.npy'))
+    if len(lig_extents):
+        nm_path = os.path.abspath(os.path.dirname(args.ligand_structures))
+        nmodes_lig = read_nmodes(os.path.join(nm_path, DEFAULT_LIG_NM_FILE + '.npy'))
+
+    for i in range(num_conformations):
+        receptor_pose = receptor.atom_coordinates[receptor_ids[i]].clone()
+        ligand_pose = ligand.atom_coordinates[ligand_ids[i]].clone()
+
+        # Use normal modes if provided:
+        if len(rec_extents):
+            for nm in range(DEFAULT_NMODES_REC):
+                receptor_pose.coordinates += nmodes_rec[nm] * rec_extents[i][nm]
+        if len(lig_extents):
+            for nm in range(DEFAULT_NMODES_LIG):
+                ligand_pose.coordinates += nmodes_lig[nm] * lig_extents[i][nm]
+
+        # We rotate first, ligand it's at initial position
+        ligand_pose.rotate(rotations[i])
+        ligand_pose.translate(translations[i])
+
+        write_pdb_to_file(receptor, os.path.join(destination_path, 'lightdock_%s.pdb' % i), receptor_pose)
+        write_pdb_to_file(ligand,  os.path.join(destination_path, 'lightdock_%s.pdb' % i), ligand_pose)
+    log.info("Generated %d conformations" % num_conformations)

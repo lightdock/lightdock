@@ -1,0 +1,36 @@
+[lightdock] INFO: Parameters are:
+[lightdock] INFO: Receptor: /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch_pydock/1PPE_rec.pdb.H
+[lightdock] INFO: Ligand: /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch_pydock/1PPE_lig.pdb.H
+[lightdock] INFO: Number of clusters: 1
+[lightdock] INFO: Number of glowworms per cluster: 5
+[lightdock] INFO: Simulation steps: 1
+[lightdock] INFO: GSO seed: 324324
+[lightdock] INFO: Starting points seed: 324324
+[lightdock] INFO: Translation step: 0.5
+[lightdock] INFO: Rotation step: 0.5
+[lightdock] INFO: lightdock parameters saved to ./lightdock.info
+[lightdock] INFO: Reading /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch_pydock/1PPE_rec.pdb.H receptor PDB file...
+[lightdock] INFO: 3219 atoms, 223 residues read.
+[lightdock] INFO: Reading /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch_pydock/1PPE_lig.pdb.H ligand PDB file...
+[lightdock] INFO: 437 atoms, 29 residues read.
+[lightdock] INFO: Saving processed structures to PDB files...
+[lightdock] INFO: Done.
+[lightdock] INFO: Calculating starting positions...
+[lightdock] INFO: Generated 1 positions files
+[lightdock] INFO: Done.
+[lightdock] INFO: Loading scoring function...
+[lightdock] INFO: Using PyDock scoring function
+[pydock] WARNING: Error in vdw.in file, using default VDW cutoff
+[pydock] INFO: PyDock VDW cutoff is: 0.10
+[lightdock] INFO: Done.
+[lightdock] INFO: Preparing environment
+[lightdock] INFO: Done.
+[kraken] INFO: Kraken has 1 tentacles (cpu cores)
+[kraken] INFO: Tentacle ready with 1 tasks
+[kraken] INFO: 1 ships ready to be smashed
+[lightdock] INFO: Monster spotted
+[kraken] INFO: Release the Kraken!
+[0] step 1
+[kraken] INFO: folding tentacle Tentacle-1
+[kraken] INFO: 1 ships destroyed
+[lightdock] INFO: Finished.

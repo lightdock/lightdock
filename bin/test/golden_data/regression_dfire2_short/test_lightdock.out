@@ -1,0 +1,44 @@
+[lightdock] INFO: Parameters are:
+[lightdock] INFO: Receptor: 2UUY_rec.pdb
+[lightdock] INFO: Ligand: 2UUY_lig.pdb
+[lightdock] INFO: Number of clusters: 1
+[lightdock] INFO: Number of glowworms per cluster: 25
+[lightdock] INFO: Simulation steps: 10
+[lightdock] INFO: GSO seed: 324324
+[lightdock] INFO: Starting points seed: 324324
+[lightdock] INFO: Translation step: 0.5
+[lightdock] INFO: Rotation step: 0.5
+[lightdock] INFO: Configuration file: glowworm.conf
+[lightdock] INFO: lightdock parameters saved to ./lightdock.info
+[lightdock] INFO: Reading 2UUY_rec.pdb receptor PDB file...
+[lightdock] INFO: 1628 atoms, 223 residues read.
+[lightdock] INFO: Reading 2UUY_lig.pdb ligand PDB file...
+[lightdock] INFO: 415 atoms, 55 residues read.
+[lightdock] INFO: Saving processed structures to PDB files...
+[lightdock] INFO: Done.
+[lightdock] INFO: Calculating starting positions...
+[lightdock] INFO: Generated 1 positions files
+[lightdock] INFO: Done.
+[lightdock] INFO: Loading scoring function...
+[lightdock] INFO: Using DFIRE2 scoring function
+[lightdock] INFO: Done.
+[lightdock] INFO: Preparing environment
+[lightdock] INFO: Done.
+[kraken] INFO: Kraken has 1 tentacles (cpu cores)
+[kraken] INFO: Tentacle ready with 1 tasks
+[kraken] INFO: 1 ships ready to be smashed
+[lightdock] INFO: Monster spotted
+[kraken] INFO: Release the Kraken!
+[0] step 1
+[0] step 2
+[0] step 3
+[0] step 4
+[0] step 5
+[0] step 6
+[0] step 7
+[0] step 8
+[0] step 9
+[0] step 10
+[kraken] INFO: folding tentacle Tentacle-1
+[kraken] INFO: 1 ships destroyed
+[lightdock] INFO: Finished.
