@@ -69,3 +69,6 @@ target/
 
 # Lightdock specific
 sandbox/
+
+# Mac OS
+.DS_Store
