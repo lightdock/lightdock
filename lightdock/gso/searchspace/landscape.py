@@ -219,10 +219,11 @@ class DockingLandscapePosition(LandscapePosition):
         if self != other:
             random_receptor_id = rnd_generator.randint(upper_limit=(len(self.receptor)-1))
             random_ligand_id = rnd_generator.randint(upper_limit=(len(self.ligand)-1))
-            scoring = self.evaluate_objective_function(random_receptor_id, random_ligand_id)
-            if scoring > current_scoring:
-                self.receptor_id = random_receptor_id
-                self.ligand_id = random_ligand_id
+            # Experimental, disabled
+            # scoring = self.evaluate_objective_function(random_receptor_id, random_ligand_id)
+            # if scoring > current_scoring:
+            #    self.receptor_id = random_receptor_id
+            #    self.ligand_id = random_ligand_id
 
     @staticmethod
     def _calculate_scoring(optimization_vector, self):

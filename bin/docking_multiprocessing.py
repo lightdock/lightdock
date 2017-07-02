@@ -147,7 +147,7 @@ def set_scoring_function(parser, receptor, ligand):
     """Set scoring function and docking models"""
     scoring_functions = []
     adapters = []
-    if os.path.exists(parser.args.scoring_function):
+    if parser.args.scoring_function and os.path.exists(parser.args.scoring_function):
         # Multiple scoring functions found
         functions = ScoringConfiguration.parse_file(parser.args.scoring_function)
     else:

@@ -147,7 +147,7 @@ def set_scoring_function(parser, receptor, ligand, minion_id):
     """Set scoring function and docking models"""
     scoring_functions = []
     adapters = []
-    if os.path.exists(parser.args.scoring_function):
+    if parser.args.scoring_function and os.path.exists(parser.args.scoring_function):
         # Multiple scoring functions found
         functions = ScoringConfiguration.parse_file(parser.args.scoring_function)
     else:
@@ -228,11 +228,11 @@ def run_simulation(parser):
         comm.Barrier()
 
         num_workers = comm.size
-        for worker_id in range(num_workers):
+        for worker_id in xrange(num_workers):
             if worker_id == minion_id:
                 starting_points_files = glob.glob('init/initial_positions*.dat')
                 scoring_functions, adapters = set_scoring_function(parser, receptor, ligand, minion_id)
-                for id_cluster in range(parser.args.clusters):
+                for id_cluster in xrange(parser.args.clusters):
                     if worker_id == (id_cluster % num_workers):
                         print 'GSO cluster %d - Minion %d' % (id_cluster, minion_id)
                         gso = set_gso(parser.args.glowworms, adapters, scoring_functions,

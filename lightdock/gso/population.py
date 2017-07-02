@@ -25,14 +25,19 @@ class Population(object):
         following GSO algorithm.
         """
         selected = []
-        positions = []
-        for glowworm in self.glowworms:
+        positions = {}
+        num_glowworms = self.get_size()
+        for i in xrange(num_glowworms):
+            glowworm = self.glowworms[i]
             glowworm.search_neighbors(self.glowworms)
             glowworm.compute_probability_moving_toward_neighbor()
             selected.append(glowworm.select_random_neighbor(rnd_generator()))
-            positions.append([landscape_position.clone() for landscape_position in selected[-1].landscape_positions])
+            positions[i] = [landscape_position.clone() for landscape_position in selected[-1].landscape_positions]
 
-        for glowworm, neighbor, position in zip(self.glowworms, selected, positions):
+        for i in xrange(num_glowworms):
+            glowworm = self.glowworms[i]
+            neighbor = selected[i]
+            position = positions[i]
             glowworm.move(neighbor, position)
             glowworm.update_conformers(neighbor, rnd_generator)
             glowworm.update_vision_range()

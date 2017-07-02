@@ -13,6 +13,7 @@ from lightdock.util.logger import LoggingManager
 from lightdock.scoring.sd.data.amber import amber_types, masses, charges
 import lightdock.scoring.sd.data.vdw as vdw
 
+
 log = LoggingManager.get_logger('sd')
 
 
@@ -52,10 +53,13 @@ class SDAdapter(ModelAdapter):
         vdw_energies = np.array([atom.vdw_energy for atom in atoms])
         vdw_radii = np.array([atom.vdw_radius for atom in atoms])
         coordinates = molecule.copy_coordinates()
+        reference_points = ModelAdapter.load_reference_points(molecule)
         try:
-            return SDModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii, n_modes=molecule.n_modes.copy())
+            return SDModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii,
+                           reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return SDModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii)
+            return SDModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii,
+                           reference_points=reference_points)
 
 
 class SD(ScoringFunction):
@@ -72,7 +76,6 @@ class SD(ScoringFunction):
                                      receptor.charges, ligand.charges,
                                      receptor.vdw_energy, ligand.vdw_energy,
                                      receptor.vdw_radii, ligand.vdw_radii)
-
         return energy
 
 

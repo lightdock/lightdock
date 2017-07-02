@@ -20,7 +20,7 @@
  **/
 static PyObject * sd_calculate_energy(PyObject *self, PyObject *args) {
     PyObject *receptor_coordinates, *ligand_coordinates = NULL;
-    PyObject *result, *tmp0, *tmp1 = NULL;
+    PyObject *tmp0, *tmp1 = NULL;
     PyArrayObject *rec_charges, *lig_charges, *rec_vdw, *lig_vdw, *rec_vdw_radii, *lig_vdw_radii = NULL;
     double energy, atom_elec, total_elec, atom_vdw, total_vdw, vdw_energy,vdw_radius, p6, k;
     unsigned int rec_len, lig_len, i, j;
@@ -99,12 +99,18 @@ static PyObject * sd_calculate_energy(PyObject *self, PyObject *args) {
         }
 
         // Free structures
+        Py_DECREF(rec_c_charges);
+        Py_DECREF(lig_c_charges);
+        Py_DECREF(rec_c_vdw);
+        Py_DECREF(lig_c_vdw);
+        Py_DECREF(rec_c_vdw_radii);
+        Py_DECREF(lig_c_vdw_radii);
+        Py_DECREF(descr);
         PyArray_Free(tmp0, rec_array);
         PyArray_Free(tmp1, lig_array);
     }
 
-    result = PyFloat_FromDouble(energy * -1.);
-    return result;
+    return PyFloat_FromDouble(energy * -1.);
 }
 
 

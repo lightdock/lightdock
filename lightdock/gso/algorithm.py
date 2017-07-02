@@ -27,15 +27,19 @@ class GSO(object):
         """Runs the simulation for the given simulation_steps"""
         if save_intermediary:
                 self.population.save(0, saving_path)
-        for step in range(1, simulation_steps + 1):
+
+        for step in xrange(1, simulation_steps + 1):
             if verbose:
                 if cluster_id is not None:
                     print "[%d] step %d" % (cluster_id, step)
                 else:
                     print "step %d" % step
+            # Evaluate energy and update luciferin accordingly:
             self.population.update_luciferin()
+            # Perform local minimization of the best
             if self.local_minimization:
                 self.population.minimize_best()
+            # Each glowworm move if required to the best neighbour
             self.population.movement_phase(self.random_number_generator)
             if save_intermediary:
                 if save_all_intermediary or (step % 10 == 0) or step >= simulation_steps:
