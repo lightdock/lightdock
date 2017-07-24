@@ -4,7 +4,7 @@ from operator import attrgetter
 from lightdock.gso.glowworm import Glowworm
 
 
-class Population(object):
+class Swarm(object):
     """A swarm of glowworms"""
     def __init__(self, landscape_positions, parameters):
         """Creates a glowworm population using a landscape_positons list and parameters"""

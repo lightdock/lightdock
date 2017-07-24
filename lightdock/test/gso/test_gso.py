@@ -62,7 +62,7 @@ class TestGSOBuilderInJ1:
         peak_coordinates = [[1.28, 0.0], [0.0, 1.58], [-0.46, -0.63]]
         
         # Check with auxiliar function the position of the glowworms
-        assert self.found_peaks(peak_coordinates, 2, gso.population.glowworms)
+        assert self.found_peaks(peak_coordinates, 2, gso.swarm.glowworms)
     
     def test_GSO_with_J1_initializing_from_file(self):
         objective_function = J1()
@@ -83,7 +83,7 @@ class TestGSOBuilderInJ1:
         peak_coordinates = [[1.28, 0.0], [0.0, 1.58], [-0.46, -0.63]]
         
         # Check with auxiliar function the position of the glowworms
-        assert self.found_peaks(peak_coordinates, 2, gso.population.glowworms, 2)
+        assert self.found_peaks(peak_coordinates, 2, gso.swarm.glowworms, 2)
 
     def test_GSO_with_J2(self):
         objective_function = J2()
@@ -105,7 +105,7 @@ class TestGSOBuilderInJ1:
         peak_coordinates = [[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]]
         
         # Check with auxiliar function the position of the glowworms
-        assert self.found_peaks(peak_coordinates, 2, gso.population.glowworms, 3)
+        assert self.found_peaks(peak_coordinates, 2, gso.swarm.glowworms, 3)
 
     def test_GSO_with_J3(self):
         objective_function = J3()
@@ -124,7 +124,7 @@ class TestGSOBuilderInJ1:
         gso.run(50)
         
         # Save last step
-        gso.population.save(50, self.test_path, 'gso_j3_50.out')
+        gso.swarm.save(50, self.test_path, 'gso_j3_50.out')
 
         assert filecmp.cmp(self.test_path + 'gso_j3_50.out', self.golden_data_path + 'gso_j3_50.out')
 
@@ -145,7 +145,7 @@ class TestGSOBuilderInJ1:
         gso.run(50)
         
         # Save last step
-        gso.population.save(50, self.test_path, 'gso_j4_50.out')
+        gso.swarm.save(50, self.test_path, 'gso_j4_50.out')
         
         assert filecmp.cmp(self.test_path + 'gso_j4_50.out', self.golden_data_path + 'gso_j4_50.out')
 
@@ -166,7 +166,7 @@ class TestGSOBuilderInJ1:
         gso.run(70)
         
         # Save last step
-        gso.population.save(70, self.test_path, 'gso_j5_70.out')
+        gso.swarm.save(70, self.test_path, 'gso_j5_70.out')
         
         assert filecmp.cmp(self.test_path + 'gso_j5_70.out', self.golden_data_path + 'gso_j5_70.out')
         

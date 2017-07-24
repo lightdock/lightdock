@@ -14,9 +14,9 @@ from lightdock.gso.initializer import RandomInitializer, FromFileInitializer,\
 
 class GSO(object):
     """GSO is the main simulation object"""
-    def __init__(self, population, gso_parameters, random_number_generator,
+    def __init__(self, swarm, gso_parameters, random_number_generator,
                  initial_coordinates_file="", local_minimization=False):
-        self.population = population
+        self.swarm = swarm
         self.parameters = gso_parameters
         self.random_number_generator = random_number_generator
         self.initial_coordinates_file = initial_coordinates_file
@@ -26,7 +26,7 @@ class GSO(object):
             saving_path=".", save_intermediary=False, save_all_intermediary=False):
         """Runs the simulation for the given simulation_steps"""
         if save_intermediary:
-                self.population.save(0, saving_path)
+                self.swarm.save(0, saving_path)
 
         for step in xrange(1, simulation_steps + 1):
             if verbose:
@@ -35,21 +35,21 @@ class GSO(object):
                 else:
                     print "step %d" % step
             # Evaluate energy and update luciferin accordingly:
-            self.population.update_luciferin()
+            self.swarm.update_luciferin()
             # Perform local minimization of the best
             if self.local_minimization:
-                self.population.minimize_best()
+                self.swarm.minimize_best()
             # Each glowworm move if required to the best neighbour
-            self.population.movement_phase(self.random_number_generator)
+            self.swarm.movement_phase(self.random_number_generator)
             if save_intermediary:
                 if save_all_intermediary or (step % 10 == 0) or step >= simulation_steps:
-                    self.population.save(step, saving_path)
+                    self.swarm.save(step, saving_path)
 
     def report(self, output_file_name=""):
         """Writes to output_file_name if defined or to standard output the result of a GSO execution."""
         output = "GSO Execution Report:%s%s" % (os.linesep, os.linesep)
         output += "Seed: %s%s" % (self.random_number_generator.seed, os.linesep)
-        output += "Number of Glowworms: %s%s" % (self.population.get_size(), os.linesep)
+        output += "Number of Glowworms: %s%s" % (self.swarm.get_size(), os.linesep)
         if self.initial_coordinates_file:
             output += "Coordinates file: %s%s" % (self.initial_coordinates_file, os.linesep)
         output += os.linesep

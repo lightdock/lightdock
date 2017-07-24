@@ -55,7 +55,7 @@ class TestLightDockGSOBuilder:
                                        self.golden_data_path+'initial_positions_1PPE.txt',
                                        0.5, 0.5, 0.5, local_minimization=False)
         
-        assert 5 == gso.population.get_size()
+        assert 5 == gso.swarm.get_size()
         
         gso.report(self.test_path + 'report.out')
         assert filecmp.cmp(self.golden_data_path + 'report_lightdockbuilder.out',

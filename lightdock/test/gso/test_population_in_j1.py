@@ -4,10 +4,10 @@ from lightdock.gso.parameters import GSOParameters
 from lightdock.gso.searchspace.benchmark_ofunctions import J1
 from lightdock.gso.searchspace.landscape import LandscapePosition
 from lightdock.gso.coordinates import Coordinates
-from lightdock.gso.population import Population
+from lightdock.gso.swarm import Swarm
 
 
-class TestPopulationInJ1:
+class TestSwarmInJ1:
 
     def setUp(self):
         self.gso_parameters = GSOParameters()
@@ -18,10 +18,10 @@ class TestPopulationInJ1:
                                                      Coordinates([1.0, 1.0]))
         self.positions = [[self.landscape_position1, self.landscape_position2]]
         
-    def test_create_population(self):
-        population = Population(self.positions, self.gso_parameters)
+    def test_create_swarm(self):
+        swarm = Swarm(self.positions, self.gso_parameters)
         
         expected = "#Coordinates  Luciferin  Neighbor's number  Vision Range  Scoring\n(0.0, 0.0)   5.00000000  0 0.200   0.00000000\n(1.0, 1.0)   5.00000000  0 0.200   0.00000000\n"
 
-        assert 2 == population.get_size()
-        assert expected == str(population)
+        assert 2 == swarm.get_size()
+        assert expected == str(swarm)

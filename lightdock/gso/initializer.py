@@ -1,6 +1,6 @@
 """Module to generate initial populations of glowworms agents used by the GSO algorithm"""
 
-from lightdock.gso.population import Population
+from lightdock.gso.swarm import Swarm
 from lightdock.gso.coordinates import CoordinatesFileReader, Coordinates
 from lightdock.error.lightdock_errors import GSOCoordinatesError
 from lightdock.gso.searchspace.landscape import LandscapePosition, DockingLandscapePosition
@@ -22,7 +22,7 @@ class Initializer(object):
     def generate_glowworms(self):
         """Creates an initial population of glowworms"""
         self.positions = self.generate_landscape_positions()
-        return Population(self.positions, self.parameters)
+        return Swarm(self.positions, self.parameters)
     
     def generate_landscape_positions(self):
         """Generates the initial positions of each glowworm"""

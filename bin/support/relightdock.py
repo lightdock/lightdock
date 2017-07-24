@@ -16,7 +16,7 @@ from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.scoring.dfire.driver import DFIRE, DFIREAdapter
 from lightdock.gso.algorithm import GSO
 from lightdock.gso.searchspace.landscape import DockingLandscapePosition
-from lightdock.gso.population import Population
+from lightdock.gso.swarm import Swarm
 
 
 log = LoggingManager.get_logger('relightdock')
@@ -111,16 +111,16 @@ if __name__ == "__main__":
         positions.append(DockingLandscapePosition(scoring_function, coordinates, adapter.receptor_model, adapter.ligand_model))
     log.info("%d positions loaded" % len(positions))
 
-    population = Population(positions, gso_parameters)
-    for i, glowworm in enumerate(population.glowworms):
+    swarm = Swarm(positions, gso_parameters)
+    for i, glowworm in enumerate(swarm.glowworms):
         glowworm.luciferin = luciferin[i]
         glowworm.vision_range = vision_range[i]
         glowworm.scoring = scoring[i]
-    for i, glowworm in enumerate(population.glowworms):
-        glowworm.search_neighbors(population.glowworms)
-    log.info("Population created")
+    for i, glowworm in enumerate(swarm.glowworms):
+        glowworm.search_neighbors(swarm.glowworms)
+    log.info("Swarm created")
 
-    gso = GSO(population, gso_parameters, random_number_generator)
+    gso = GSO(swarm, gso_parameters, random_number_generator)
 
     log.info("Starting simulation")
     gso.run(steps, verbose=True, save_intermediary=True)

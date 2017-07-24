@@ -29,7 +29,7 @@ class TestGSOBuilderInJ1:
                                           self.objective_function, 
                                           self.bounding_box, 
                                           self.golden_data_path+'initial_positions.txt')
-        population_lines =  str(gso.population).split(os.linesep)
+        population_lines =  str(gso.swarm).split(os.linesep)
         expected_lines = open(self.golden_data_path+'initial_population_from_file.txt').readlines()
         
         assert len(expected_lines) == len(population_lines)
@@ -43,7 +43,7 @@ class TestGSOBuilderInJ1:
                              self.gso_parameters, 
                              self.objective_function, 
                              self.bounding_box)
-        population_lines =  str(gso.population).split(os.linesep)
+        population_lines =  str(gso.swarm).split(os.linesep)
         expected_lines = open(self.golden_data_path+'initial_population_random.txt').readlines()
         
         assert len(expected_lines) == len(population_lines)
