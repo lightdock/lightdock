@@ -6,9 +6,12 @@ It uses the awesome Prody library
 import numpy as np
 from prody import parsePDB, ANM, extendModel, confProDy
 from lightdock.error.lightdock_errors import NormalModesCalculationError
+from lightdock.util.logger import LoggingManager
 
 # Disable ProDy output
 confProDy(verbosity='info')
+
+log = LoggingManager.get_logger('ANM')
 
 
 def calculate_nmodes(pdb_file_name, n_modes, molecule):
@@ -35,18 +38,25 @@ def calculate_nmodes(pdb_file_name, n_modes, molecule):
         if lightdock_atom.name != prody_atom.getName():
             raise NormalModesCalculationError("Atoms differ: %s - %s" % (str(lightdock_atom),
                                                                          str(prody_atom)))
-    
+
     molecule_anm_ext, molecule_all = extendModel(molecule_anm, backbone_atoms, prody_molecule, norm=True)
     modes = []
+    calculated_n_modes = (molecule_anm_ext.getEigvecs()).shape[1]
     try:
-        for i in range(n_modes):
+        for i in range(calculated_n_modes):
             nm = molecule_anm_ext.getEigvecs()[:, i].reshape((num_atoms_prody, 3))
             modes.append(nm)
     except (ValueError, IndexError), e:
-        print "Number of atoms of the ANM model:", molecule_anm_ext.numAtoms()
-        print "Number or nodes in the model: ", (molecule_anm_ext.getEigvecs()).shape
+        log.info("Number of atoms of the ANM model:", molecule_anm_ext.numAtoms())
+        log.info("Number of nodes in the model: ", (molecule_anm_ext.getEigvecs()).shape)
         raise NormalModesCalculationError("Number of atoms and ANM model differ. Please, check there are no missing "
                                           "nucleotides nor residues.")
+    if calculated_n_modes < n_modes:
+        log.warning("Number of non-trivial calculated modes is %d (asked for %d)" % (calculated_n_modes, n_modes))
+        # Padding
+        for i in range(n_modes - calculated_n_modes):
+            modes.append(np.zeros((num_atoms_prody, 3)))
+
     return np.array(modes)
 
 
