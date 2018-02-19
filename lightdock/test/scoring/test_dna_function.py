@@ -25,3 +25,12 @@ class TestPyDockDNA:
         adapter = CPyDockDNAAdapter(receptor, ligand)
         assert_almost_equal(-2716.68018700585, self.dna(adapter.receptor_model, adapter.receptor_model.coordinates[0],
                                                         adapter.ligand_model, adapter.ligand_model.coordinates[0]))
+
+    def test_calculate_PyDockDNA_3MFK_with_hydrogens(self):
+        atoms, residues, chains = parse_complex_from_file(self.golden_data_path + '3mfk_homodimer.pdb.H')
+        receptor = Complex(chains, atoms, structure_file_name=(self.golden_data_path + '3mfk_homodimer.pdb.H'))
+        atoms, residues, chains = parse_complex_from_file(self.golden_data_path + '3mfk_dna.pdb')
+        ligand = Complex(chains, atoms, structure_file_name=(self.golden_data_path + '3mfk_dna.pdb'))
+        adapter = CPyDockDNAAdapter(receptor, ligand)
+        assert_almost_equal(688.1703668834168, self.dna(adapter.receptor_model, adapter.receptor_model.coordinates[0],
+                                                        adapter.ligand_model, adapter.ligand_model.coordinates[0]))
