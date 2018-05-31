@@ -76,7 +76,7 @@ class SetupCommandLineParser(object):
         parser.add_argument("glowworms", help="Number of glowworms per cluster", 
                             type=SetupCommandLineParser.valid_integer_number)
         # Starting points seed
-        parser.add_argument("-sp", "--seed_points", help="Random seed used in starting positions calculation",
+        parser.add_argument("--seed_points", help="Random seed used in starting positions calculation",
                             dest="starting_points_seed", type=int, default=STARTING_POINTS_SEED)
         # FTDock poses as cluster centers
         parser.add_argument("-ft", "--ftdock", help="Use previous FTDock poses as starting positions", 
@@ -86,29 +86,13 @@ class SetupCommandLineParser(object):
         parser.add_argument("--noxt", help="Remove OXT atoms",
                             dest="noxt", action='store_true', default=False)
         # Normal modes
-        parser.add_argument("-nm", "--nm", help="Activates the use of ANM backbone flexibility",
-                            dest="nm", action='store_true', default=False)
+        parser.add_argument("-anm", "--anm", help="Activates the use of ANM backbone flexibility",
+                            dest="use_anm", action='store_true', default=False)
         # Normal modes extent seed
-        parser.add_argument("-snm", "--seed_nm", help="Random seed used in ANM intial extent",
-                            dest="nm_seed", type=int, default=STARTING_NM_SEED)
-        # Ignore path
-        parser.add_argument("-ip", "--ignore_path", help="Ignores path in information output", 
-                            action='store_true', default=False)
-        
+        parser.add_argument("--seed_anm", help="Random seed used in ANM intial extent",
+                            dest="anm_seed", type=int, default=STARTING_NM_SEED)
+
         self.args = parser.parse_args()
-        
-        if self.args.ignore_path:
-            self.args.info_receptor_pdb = os.path.basename(self.args.receptor_pdb)
-            self.args.info_ligand_pdb = os.path.basename(self.args.ligand_pdb)
-            if self.args.configuration_file:
-                self.args.info_configuration_file = os.path.basename(self.args.configuration_file)
-            if self.args.ftdock_file:
-                self.args.info_ftdock_file = os.path.basename(self.args.ftdock_file)
-        else:
-            self.args.info_receptor_pdb = self.args.receptor_pdb
-            self.args.info_ligand_pdb = self.args.ligand_pdb
-            self.args.info_configuration_file = self.args.configuration_file
-            self.args.info_ftdock_file = self.args.ftdock_file
 
 
 

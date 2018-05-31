@@ -34,7 +34,7 @@ DEFAULT_REPRESENTATIVES_EXTENSION = '.repr'
 # Default file names and folders
 DEFAULT_POSITIONS_FOLDER = "init"       # Folder which contains the initial_positions files for each cluster
 GSO_OUTPUT_FILE = "gso_%s.out"
-DEFAULT_CLUSTER_FOLDER = "cluster_"     # Folder where GSO execution for a given cluster will be stored
+DEFAULT_SWARM_FOLDER = "swarm_"     # Folder where GSO execution for a given cluster will be stored
 DEFAULT_PDB_STARTING_PREFIX = "starting_positions"
 DEFAULT_BILD_STARTING_PREFIX = "starting_poses"
 DEFAULT_STARTING_PREFIX = "initial_positions"
