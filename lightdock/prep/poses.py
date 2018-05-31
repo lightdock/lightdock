@@ -46,9 +46,7 @@ def create_file_from_poses(pos_file_name, poses):
     """Writes to file the initial poses"""
     positions_file = open(pos_file_name, 'w')
     for pose in poses:
-        position = ''
-        for coord in pose:
-            position += str(coord) + ' '
+        position = ' '.join(["{:.9f}".format(coord) for coord in pose])
         positions_file.write(position + os.linesep)
     positions_file.close()
 
