@@ -5,16 +5,16 @@ import importlib
 import glob
 
 from lightdock.util.logger import LoggingManager
-from lightdock.prep.simulation import calculate_starting_positions, read_input_structures, \
-                                      save_lightdock_structures, prepare_results_environment
+from lightdock.util.parser import CommandLineParser
+from lightdock.prep.simulation import get_setup_from_file, create_simulation_info_file, read_input_structure, \
+                                      load_starting_positions
 from lightdock.gso.boundaries import Boundary, BoundingBox
 from lightdock.gso.algorithm import LightdockGSOBuilder
 from lightdock.mathutil.lrandom import MTGenerator
 from lightdock.gso.parameters import GSOParameters
-from lightdock.constants import MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SCORING_FUNCTION, DEFAULT_CLUSTER_FOLDER
+from lightdock.constants import MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SCORING_FUNCTION, DEFAULT_SWARM_FOLDER
 from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
-from lightdock.util.simulation_info import show_parameters, create_simulation_info_file
 from lightdock.scoring.multiple import ScoringConfiguration
 
 
@@ -85,14 +85,14 @@ def set_scoring_function(parser, receptor, ligand):
 def prepare_gso_tasks(parser, adapters, scoring_functions, starting_points_files):
     """Creates the parallel GSOTasks objects to be executed by the scheduler"""
     tasks = []
-    for id_cluster in range(parser.args.clusters):
-        gso = set_gso(parser.args.glowworms, adapters, scoring_functions, starting_points_files[id_cluster],
+    for id_swarm in range(parser.args.swarms):
+        gso = set_gso(parser.args.glowworms, adapters, scoring_functions, starting_points_files[id_swarm],
                       parser.args.gso_seed, parser.args.translation_step,
                       parser.args.rotation_step, parser.args.configuration_file,
-                      parser.args.nm, parser.args.nmodes_step,
+                      parser.args.use_anm, parser.args.nmodes_step,
                       parser.args.local_minimization)
-        saving_path = "%s%d" % (DEFAULT_CLUSTER_FOLDER, id_cluster)
-        task = GSOClusterTask(id_cluster, gso, parser.args.steps, saving_path)
+        saving_path = "%s%d" % (DEFAULT_SWARM_FOLDER, id_swarm)
+        task = GSOClusterTask(id_swarm, gso, parser.args.steps, saving_path)
         tasks.append(task)
     return tasks
 
@@ -116,25 +116,27 @@ def set_normal_modes(receptor, ligand):
 def run_simulation(parser):
     """Main program"""
     try:
-        show_parameters(log, parser)
-        info_file = create_simulation_info_file(parser)
-        log.info("lightdock parameters saved to %s" % info_file)
+        parser = CommandLineParser()
+        args = parser.args
 
-        receptor, ligand = read_input_structures(parser)
-        # Move structures to origin
-        receptor.move_to_origin()
-        ligand.move_to_origin()
+        # Read setup and add it to the actual args object
+        setup = get_setup_from_file(args.setup_file)
+        for k, v in setup.iteritems():
+            setattr(args, k, v)
 
-        if parser.args.nm:
+        info_file = create_simulation_info_file(args)
+        log.info("simulation parameters saved to %s" % info_file)
+
+        # Read input structures
+        receptor = read_input_structure(args.receptor_pdb, args.noxt)
+        ligand = read_input_structure(args.ligand_pdb, args.noxt)
+
+        if args.use_anm:
             set_normal_modes(receptor, ligand)
 
-        save_lightdock_structures(receptor, ligand)
-
-        starting_points_files = calculate_starting_positions(parser, receptor, ligand)
+        starting_points_files = load_starting_positions(args.swarms, args.glowworms, args.use_anm)
 
         scoring_functions, adapters = set_scoring_function(parser, receptor, ligand)
-
-        prepare_results_environment(parser)
 
         tasks = prepare_gso_tasks(parser, adapters, scoring_functions, starting_points_files)
 

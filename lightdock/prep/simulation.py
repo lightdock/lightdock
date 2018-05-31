@@ -1,10 +1,11 @@
 import os
 import glob
 import json
+import time
 from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
     DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, \
-    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE
+    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
@@ -107,6 +108,17 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
     return starting_points_files
 
 
+def load_starting_positions(swarms, glowworms, use_anm):
+    """Gets the list of starting positions of this simulation"""
+    starting_points_files = glob.glob('init/initial_positions*.dat')
+    if len(starting_points_files) != swarms:
+        raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
+    for starting_point_file in starting_points_files:
+        if not check_starting_file(starting_point_file, glowworms, use_anm):
+            raise LightDockError("Error reading starting coordinates from file %s" % starting_point_file)
+    return starting_points_files
+
+
 def prepare_results_environment(swarms=10):
     """Prepares the folder structure required by the simulation"""
     log.info("Preparing environment")
@@ -123,3 +135,35 @@ def create_setup_file(args):
     """Dumps the args object into a setup file in JSON format"""
     with open(DEFAULT_SETUP_FILE, 'w') as fp:
         json.dump(vars(args), fp, indent=4)
+
+
+def get_setup_from_file(file_name):
+    """Reads the simulation setup from the file_name"""
+    with open(file_name) as input_file:
+        return json.load(input_file)
+
+
+def create_simulation_info_file(args, path='.', file_name=DEFAULT_LIGHTDOCK_INFO):
+    """Creates a simulation file from which recover from in a new simulation"""
+    # Create the simulation info file. If it exists, includes a number
+    # in the extension to avoid collision
+    output_file_name = os.path.join(path, file_name)
+    if os.path.isfile(output_file_name):
+        original_file_name = output_file_name
+        i = 1
+        while os.path.isfile(output_file_name) and i < 255:
+            output_file_name = "%s.%d" % (original_file_name, i)
+            i += 1
+        if i == 255:
+            raise LightDockError('Too many simulation files')
+
+    # Data to store
+    now = time.strftime("%Y-%m-%d %H:%M:%S")
+    data = {'start_time': now}
+    data.update(vars(args))
+
+    # Store the data in the file sorted alphabetically
+    with open(output_file_name, 'w') as fp:
+        json.dump(vars(args), fp, indent=4, sort_keys=True)
+
+    return output_file_name
