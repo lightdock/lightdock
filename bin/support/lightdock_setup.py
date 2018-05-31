@@ -18,19 +18,10 @@ from lightdock.structure.complex import Complex
 log = LoggingManager.get_logger('lightdock_setup')
 
 
-def parse_arguments():
-    arg_parser = argparse.ArgumentParser(prog='lightdock_setup')
-    arg_parser.add_argument("receptor_pdb_file", help="receptor structure in PDB format",
-                            type=str, metavar="receptor_pdb_file")
-    arg_parser.add_argument("ligand_pdb_file", help="ligand structure in PDB format",
-                            type=str, metavar="ligand_pdb_file")
-    arguments = arg_parser.parse_args()
-    return arguments
-
-
 if __name__ == "__main__":
 
-    args = parse_arguments()
+    parser = SetupCommandLineParser()
+    args = parser.args
 
     log.info("Reading %s receptor PDB file..." % args.receptor_pdb_file)
     atoms, residues, chains = parse_complex_from_file(args.receptor_pdb_file)

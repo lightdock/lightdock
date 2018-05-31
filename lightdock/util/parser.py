@@ -32,6 +32,86 @@ def get_lightdock_structures(input_file):
     return file_names
 
 
+class SetupCommandLineParser(object):
+    """Parses the command line of lightdock_setup"""
+    @staticmethod
+    def valid_file(file_name):
+        if not os.path.exists(file_name):
+            raise argparse.ArgumentTypeError("The file does not exist")
+        return file_name
+    
+    @staticmethod
+    def valid_integer_number(int_value):
+        try:
+            int_value = int(int_value)
+        except:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        if int_value <= 0:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        return int_value
+    
+    @staticmethod
+    def valid_float_number(float_value):
+        try:
+            float_value = float(float_value)
+        except:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % float_value)
+        if float_value <= 0.:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % float_value)
+        return float_value
+
+    def __init__(self):
+        parser = argparse.ArgumentParser(prog="lightdock_setup")
+        
+        # Receptor
+        parser.add_argument("receptor_pdb", help="Receptor structure PDB file", 
+                            type=SetupCommandLineParser.valid_file, metavar="receptor_pdb_file")
+        # Ligand
+        parser.add_argument("ligand_pdb", help="Ligand structure PDB file",
+                            type=SetupCommandLineParser.valid_file, metavar="ligand_pdb_file")
+        # Clusters
+        parser.add_argument("swarms", help="Number of swarms of the simulation",
+                            type=SetupCommandLineParser.valid_integer_number)
+        # Glowworms
+        parser.add_argument("glowworms", help="Number of glowworms per cluster", 
+                            type=SetupCommandLineParser.valid_integer_number)
+        # Starting points seed
+        parser.add_argument("-sp", "--seed_points", help="Random seed used in starting positions calculation",
+                            dest="starting_points_seed", type=int, default=STARTING_POINTS_SEED)
+        # FTDock poses as cluster centers
+        parser.add_argument("-ft", "--ftdock", help="Use previous FTDock poses as starting positions", 
+                            dest="ftdock_file", type=CommandLineParser.valid_file,
+                            metavar="ftdock_file")
+        # Dealing with OXT atoms
+        parser.add_argument("--noxt", help="Remove OXT atoms",
+                            dest="noxt", action='store_true', default=False)
+        # Normal modes
+        parser.add_argument("-nm", "--nm", help="Activates the use of ANM backbone flexibility",
+                            dest="nm", action='store_true', default=False)
+        # Normal modes extent seed
+        parser.add_argument("-snm", "--seed_nm", help="Random seed used in ANM intial extent",
+                            dest="nm_seed", type=int, default=STARTING_NM_SEED)
+        # Ignore path
+        parser.add_argument("-ip", "--ignore_path", help="Ignores path in information output", 
+                            action='store_true', default=False)
+        
+        self.args = parser.parse_args()
+        
+        if self.args.ignore_path:
+            self.args.info_receptor_pdb = os.path.basename(self.args.receptor_pdb)
+            self.args.info_ligand_pdb = os.path.basename(self.args.ligand_pdb)
+            if self.args.configuration_file:
+                self.args.info_configuration_file = os.path.basename(self.args.configuration_file)
+            if self.args.ftdock_file:
+                self.args.info_ftdock_file = os.path.basename(self.args.ftdock_file)
+        else:
+            self.args.info_receptor_pdb = self.args.receptor_pdb
+            self.args.info_ligand_pdb = self.args.ligand_pdb
+            self.args.info_configuration_file = self.args.configuration_file
+            self.args.info_ftdock_file = self.args.ftdock_file
+
+
+
 class CommandLineParser(object):
     """Parses the command line"""
     @staticmethod
