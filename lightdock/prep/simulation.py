@@ -63,6 +63,20 @@ def save_lightdock_structure(structure):
     log.info("Done.")
 
 
+def check_starting_file(file_name, glowworms, use_anm):
+    """Check if the file_name file contains the required starting coordinates"""
+    with open(file_name) as input_file:
+        lines = [line.rstrip(os.linesep) for line in input_file.readlines()]
+        num_glowworms = 0
+        expected_size = 7 + DEFAULT_NMODES_REC + DEFAULT_NMODES_LIG if use_anm else 7
+        for line in lines:
+            fields = line.split()
+            if len(fields) != expected_size:
+                return False
+            num_glowworms += 1
+        return num_glowworms == glowworms
+
+
 def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_points_seed, 
     ftdock_file=None, use_anm=False, anm_seed=0):
     """Defines the starting positions of each glowworm in the simulation.
@@ -84,6 +98,9 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
         starting_points_files = glob.glob('init/initial_positions*.dat')
         if len(starting_points_files) != swarms:
             raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
+        for starting_point_file in starting_points_files:
+            if not check_starting_file(starting_point_file, glowworms, use_anm):
+                raise LightDockError("Error reading starting coordinates from file %s" % starting_point_file)
     log.info("Done.")
     return starting_points_files
 

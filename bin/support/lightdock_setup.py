@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
-"""Calculates the minimum ellipsoid containing a given structure in order to free memory for
-the main simulation.
+"""Before launching the LightDock simulation, a setup step is required.
 
-This step is recommended before starting the simulation.
+This step parses the input PDB structures, calculates the minimum ellipsoid 
+containing each of them, calculates the swarms on the surface of the 
+receptor and populates each swarm with random coordinates for each glowworm's
+optimization vector.
 """
 
 import argparse
@@ -14,8 +16,6 @@ from lightdock.prep.simulation import read_input_structure, save_lightdock_struc
 from lightdock.constants import DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_ELLIPSOID_DATA_EXTENSION
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
 from lightdock.util.logger import LoggingManager
-from lightdock.pdbutil.PDBIO import parse_complex_from_file
-from lightdock.structure.complex import Complex
 from lightdock.error.lightdock_errors import LightDockError
 
 
