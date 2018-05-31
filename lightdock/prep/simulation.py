@@ -1,8 +1,10 @@
 import os
 import glob
+import json
 from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
-    DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, MIN_EXTENT, MAX_EXTENT
+    DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, \
+    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
@@ -115,3 +117,9 @@ def prepare_results_environment(swarms=10):
         else:
             os.mkdir(saving_path)
     log.info("Done.")
+
+
+def create_setup_file(args):
+    """Dumps the args object into a setup file in JSON format"""
+    with open(DEFAULT_SETUP_FILE, 'w') as fp:
+        json.dump(vars(args), fp, indent=4)

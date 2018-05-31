@@ -12,7 +12,8 @@ import argparse
 import numpy as np
 from lightdock.util.parser import SetupCommandLineParser
 from lightdock.prep.simulation import read_input_structure, save_lightdock_structure, \
-                                      calculate_starting_positions, prepare_results_environment
+                                      calculate_starting_positions, prepare_results_environment, \
+                                      create_setup_file
 from lightdock.constants import DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_ELLIPSOID_DATA_EXTENSION
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
 from lightdock.util.logger import LoggingManager
@@ -64,6 +65,9 @@ if __name__ == "__main__":
 
         # Create simulation folders
         prepare_results_environment(args.swarms)
+
+        # Dump to a setup file the actual configuration
+        create_setup_file(args)
 
         log.info("LightDock setup OK")
 
