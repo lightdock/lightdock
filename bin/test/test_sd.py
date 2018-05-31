@@ -70,10 +70,9 @@ class TestRegressionSDLong(RegressionTest):
 
             assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_0.out',
                                self.test_path + 'cluster_0/gso_0.out')
-            # Uncomment to check, problems with number instability:
-            # assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_10.out',
-            #                   self.test_path + 'cluster_0/gso_10.out')
-            # assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_20.out',
-            #                   self.test_path + 'cluster_0/gso_20.out')
-            # assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_30.out',
-            #                   self.test_path + 'cluster_0/gso_30.out')
+            assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_10.out',
+                               self.test_path + 'cluster_0/gso_10.out')
+            assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_20.out',
+                               self.test_path + 'cluster_0/gso_20.out')
+            assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_30.out',
+                               self.test_path + 'cluster_0/gso_30.out')
