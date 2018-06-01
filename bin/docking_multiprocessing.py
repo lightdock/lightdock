@@ -119,6 +119,10 @@ def run_simulation(parser):
         receptor = read_input_structure(args.receptor_pdb, args.noxt)
         ligand = read_input_structure(args.ligand_pdb, args.noxt)
 
+        # CRITICAL to not break compatibility with previous results
+        receptor.move_to_origin()
+        ligand.move_to_origin()
+
         if args.use_anm:
             receptor.n_modes = read_nmodes("%s%s" % (DEFAULT_REC_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
             ligand.n_modes = read_nmodes("%s%s" % (DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
