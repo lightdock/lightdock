@@ -5,11 +5,13 @@ import time
 from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
     DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, \
-    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, DEFAULT_POSITIONS_FOLDER, DEFAULT_STARTING_PREFIX
+    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, DEFAULT_POSITIONS_FOLDER, \
+    DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
 from lightdock.structure.nm import calculate_nmodes, write_nmodes
+from lightdock.gso.boundaries import Boundary, BoundingBox
 from lightdock.error.lightdock_errors import LightDockError
 
 
@@ -179,3 +181,19 @@ def create_simulation_info_file(args, path='.', file_name=DEFAULT_LIGHTDOCK_INFO
         json.dump(vars(args), fp, indent=4, sort_keys=True)
 
     return output_file_name
+
+
+def get_default_box(use_anm, anm_rec, anm_lig):
+    """Get the default bounding box"""
+    boundaries = [Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
+                  Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
+                  Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
+                  Boundary(-MAX_ROTATION, MAX_ROTATION),
+                  Boundary(-MAX_ROTATION, MAX_ROTATION),
+                  Boundary(-MAX_ROTATION, MAX_ROTATION),
+                  Boundary(-MAX_ROTATION, MAX_ROTATION)]
+    if use_anm:
+        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(anm_rec)])
+        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(anm_lig)])
+
+    return BoundingBox(boundaries)
