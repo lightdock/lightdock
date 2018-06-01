@@ -6,42 +6,31 @@ import glob
 from mpi4py import MPI
 
 from lightdock.util.logger import LoggingManager
-from lightdock.prep.poses import calculate_initial_poses
-from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
-from lightdock.structure.complex import Complex
-from lightdock.gso.boundaries import Boundary, BoundingBox
+from lightdock.util.parser import CommandLineParser
+from lightdock.prep.simulation import get_setup_from_file, create_simulation_info_file, read_input_structure, \
+                                      load_starting_positions, get_default_box
 from lightdock.gso.algorithm import LightdockGSOBuilder
 from lightdock.mathutil.lrandom import MTGenerator
 from lightdock.gso.parameters import GSOParameters
-from lightdock.constants import MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SCORING_FUNCTION,\
-    DEFAULT_POSITIONS_FOLDER, DEFAULT_CLUSTER_FOLDER, DEFAULT_LIST_EXTENSION, DEFAULT_LIGHTDOCK_PREFIX, \
-    DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, MIN_EXTENT, MAX_EXTENT
+from lightdock.constants import DEFAULT_SCORING_FUNCTION, DEFAULT_SWARM_FOLDER, \
+                                DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION, \
+                                DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG
+from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
-from lightdock.error.lightdock_errors import LightDockError
-from lightdock.util.simulation_info import show_parameters, create_simulation_info_file
 from lightdock.scoring.multiple import ScoringConfiguration
+from lightdock.structure.nm import read_nmodes
 
 
 log = LoggingManager.get_logger('lightdock')
 
 
 def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions, seed,
-            step_translation, step_rotation, configuration_file=None, nm=False, nmodes_step=0.1,
+            step_translation, step_rotation, configuration_file=None, 
+            use_anm=False, nmodes_step=0.1, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG,
             local_minimization=False):
     """Creates a lightdock GSO simulation object"""
-    # Only dimension is relevant, initial positions are not randomized, but generated
-    boundaries = [Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
-                  Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
-                  Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
-                  Boundary(-MAX_ROTATION, MAX_ROTATION),
-                  Boundary(-MAX_ROTATION, MAX_ROTATION),
-                  Boundary(-MAX_ROTATION, MAX_ROTATION),
-                  Boundary(-MAX_ROTATION, MAX_ROTATION)]
-    if nm:
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(DEFAULT_NMODES_REC)])
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(DEFAULT_NMODES_LIG)])
 
-    bounding_box = BoundingBox(boundaries)
+    bounding_box = get_default_box(use_anm, anm_rec, anm_lig)
 
     random_number_generator = MTGenerator(seed)
     if configuration_file:
@@ -53,94 +42,6 @@ def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions,
                                    adapters, scoring_functions, bounding_box, initial_positions,
                                    step_translation, step_rotation, nmodes_step, local_minimization)
     return gso
-
-
-def get_pdb_files(input_file):
-    """Get a list of the PDB files in the input_file"""
-    file_names = []
-    with open(input_file) as input:
-        for line in input:
-            file_name = line.rstrip(os.linesep)
-            if os.path.exists(file_name):
-                file_names.append(file_name)
-    return file_names
-
-
-def read_input_structures(parser, minion_id):
-    """Reads the input structures.
-
-    It is able to read PDB structures or list of PDB structures in case conformers support is needed.
-    """
-    atoms_to_ignore = []
-    if parser.args.noxt:
-        atoms_to_ignore.append('OXT')
-
-    receptor_structures = []
-    file_names = []
-    file_name, file_extension = os.path.splitext(parser.args.info_receptor_pdb)
-    if file_extension == DEFAULT_LIST_EXTENSION:
-        file_names.extend(get_pdb_files(parser.args.info_receptor_pdb))
-    else:
-        file_names.append(parser.args.info_receptor_pdb)
-    for file_name in file_names:
-        log.info("[Minion %d] Reading %s receptor PDB file..." % (minion_id, file_name))
-        atoms, residues, chains = parse_complex_from_file(file_name, atoms_to_ignore)
-        receptor_structures.append({'atoms': atoms, 'residues': residues, 'chains': chains, 'file_name': file_name})
-        log.info("[Minion %d] %s atoms, %s residues read." % (minion_id, len(atoms), len(residues)))
-
-    ligand_structures = []
-    file_names = []
-    file_name, file_extension = os.path.splitext(parser.args.info_ligand_pdb)
-    if file_extension == DEFAULT_LIST_EXTENSION:
-        file_names.extend(get_pdb_files(parser.args.info_ligand_pdb))
-    else:
-        file_names.append(parser.args.info_ligand_pdb)
-    for file_name in file_names:
-        log.info("[Minion %d] Reading %s ligand PDB file..." % (minion_id, file_name))
-        atoms, residues, chains = parse_complex_from_file(file_name, atoms_to_ignore)
-        ligand_structures.append({'atoms': atoms, 'residues': residues, 'chains': chains, 'file_name': file_name})
-        log.info("[Minion %d] %s atoms, %s residues read." % (minion_id, len(atoms), len(residues)))
-
-    # Representatives are now the first structure, but this could change in the future
-    receptor = Complex.from_structures(receptor_structures)
-    ligand = Complex.from_structures(ligand_structures)
-    return receptor, ligand
-
-
-def save_lightdock_structures(receptor, ligand):
-    """Saves the parsed PDB structures"""
-    log.info("Saving processed structures to PDB files...")
-    for structure_index, file_name in enumerate(receptor.structure_file_names):
-        moved_file_name = os.path.join(os.path.dirname(file_name),
-                                       DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
-        write_pdb_to_file(receptor, moved_file_name, receptor[structure_index])
-
-    for structure_index, file_name in enumerate(ligand.structure_file_names):
-        moved_file_name = os.path.join(os.path.dirname(file_name),
-                                       DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
-        write_pdb_to_file(ligand, moved_file_name, ligand[structure_index])
-    log.info("Done.")
-
-
-def calculate_starting_positions(parser, receptor, ligand):
-    """Calculates the starting positions for any of the glowworm agents"""
-    log.info("Calculating starting positions...")
-    init_folder = DEFAULT_POSITIONS_FOLDER
-    if not os.path.isdir(init_folder):
-        os.mkdir(init_folder)
-        starting_points_files = calculate_initial_poses(receptor, ligand,
-                                                        parser.args.clusters, parser.args.glowworms,
-                                                        parser.args.starting_points_seed, init_folder,
-                                                        parser.args.ftdock_file, parser.args.nm,
-                                                        parser.args.nm_seed, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG)
-        log.info("Generated %d positions files" % len(starting_points_files))
-    else:
-        log.warning("Folder %s already exists, skipping calculation" % init_folder)
-        starting_points_files = glob.glob('init/initial_positions*.dat')
-        if len(starting_points_files) != parser.args.clusters:
-            raise LightDockError("The number of initial positions files does not correspond with the number of cluster")
-    log.info("Done.")
-    return starting_points_files
 
 
 def set_scoring_function(parser, receptor, ligand, minion_id):
@@ -173,58 +74,40 @@ def set_scoring_function(parser, receptor, ligand, minion_id):
     return scoring_functions, adapters
 
 
-def prepare_results_environment(parser):
-    """Prepares the folder structure required by the simulation"""
-    log.info("Preparing environment")
-    for id_cluster in range(parser.args.clusters):
-        saving_path = "%s%d" % (DEFAULT_CLUSTER_FOLDER, id_cluster)
-        if os.path.isdir(saving_path):
-            raise LightDockError("Results folder %s already exists" % saving_path)
-        else:
-            os.mkdir(saving_path)
-    log.info("Done.")
-
-
-def set_normal_modes(receptor, ligand):
-    """Only calculates normal modes for representative structure"""
-    from lightdock.structure.nm import calculate_nmodes, write_nmodes
-    modes = calculate_nmodes(receptor.structure_file_names[receptor.representative_id],
-                             DEFAULT_NMODES_REC, receptor)
-    receptor.n_modes = modes
-    write_nmodes(modes, DEFAULT_REC_NM_FILE)
-    log.info("%d normal modes calculated for receptor" % DEFAULT_NMODES_REC)
-
-    modes = calculate_nmodes(ligand.structure_file_names[ligand.representative_id],
-                             DEFAULT_NMODES_LIG, ligand)
-    ligand.n_modes = modes
-    write_nmodes(modes, DEFAULT_LIG_NM_FILE)
-    log.info("%d normal modes calculated for ligand" % DEFAULT_NMODES_LIG)
-
-
 def run_simulation(parser):
     """Main program, includes MPI directives"""
     try:
         comm = MPI.COMM_WORLD
 
+        parser = CommandLineParser()
+        args = parser.args
+
+        # Read setup and add it to the actual args object
+        setup = get_setup_from_file(args.setup_file)
+        for k, v in setup.iteritems():
+            setattr(args, k, v)
+
         minion_id = comm.rank
         if minion_id == 0:
-            show_parameters(log, parser)
-            info_file = create_simulation_info_file(parser)
-            log.info("lightdock parameters saved to %s" % info_file)
+            info_file = create_simulation_info_file(args)
+            log.info("simulation parameters saved to %s" % info_file)
         comm.Barrier()
 
-        receptor, ligand = read_input_structures(parser, minion_id)
-        # Move structures to origin
+        # Read input structures
+        receptor = read_input_structure(args.receptor_pdb, args.noxt)
+        ligand = read_input_structure(args.ligand_pdb, args.noxt)
+
+        # CRITICAL to not break compatibility with previous results
         receptor.move_to_origin()
         ligand.move_to_origin()
 
-        if parser.args.nm:
-            set_normal_modes(receptor, ligand)
+        if args.use_anm:
+            receptor.n_modes = read_nmodes("%s%s" % (DEFAULT_REC_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
+            ligand.n_modes = read_nmodes("%s%s" % (DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
 
-        if minion_id == 0:
-            save_lightdock_structures(receptor, ligand)
-            calculate_starting_positions(parser, receptor, ligand)
-            prepare_results_environment(parser)
+        starting_points_files = load_starting_positions(args.swarms, args.glowworms, args.use_anm,
+                                                        args.anm_rec, args.anm_lig)
+
         comm.Barrier()
 
         num_workers = comm.size
@@ -232,17 +115,18 @@ def run_simulation(parser):
             if worker_id == minion_id:
                 starting_points_files = glob.glob('init/initial_positions*.dat')
                 scoring_functions, adapters = set_scoring_function(parser, receptor, ligand, minion_id)
-                for id_cluster in xrange(parser.args.clusters):
-                    if worker_id == (id_cluster % num_workers):
-                        print 'GSO cluster %d - Minion %d' % (id_cluster, minion_id)
+                for id_swarm in xrange(parser.args.swarms):
+                    if worker_id == (id_swarm % num_workers):
+                        print 'GSO cluster %d - Minion %d' % (id_swarm, minion_id)
                         gso = set_gso(parser.args.glowworms, adapters, scoring_functions,
-                                      starting_points_files[id_cluster],
+                                      starting_points_files[id_swarm],
                                       parser.args.gso_seed, parser.args.translation_step,
                                       parser.args.rotation_step, parser.args.configuration_file,
-                                      parser.args.nm, parser.args.nmodes_step,
+                                      parser.args.use_anm, parser.args.nmodes_step,
+                                      parser.args.anm_rec, parser.args.anm_lig,
                                       parser.args.local_minimization)
-                        saving_path = "%s%d" % (DEFAULT_CLUSTER_FOLDER, id_cluster)
-                        task = GSOClusterTask(id_cluster, gso, parser.args.steps, saving_path)
+                        saving_path = "%s%d" % (DEFAULT_SWARM_FOLDER, id_swarm)
+                        task = GSOClusterTask(id_swarm, gso, parser.args.steps, saving_path)
                         task.run()
         comm.Barrier()
 
