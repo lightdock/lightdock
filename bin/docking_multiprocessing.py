@@ -12,17 +12,21 @@ from lightdock.gso.boundaries import Boundary, BoundingBox
 from lightdock.gso.algorithm import LightdockGSOBuilder
 from lightdock.mathutil.lrandom import MTGenerator
 from lightdock.gso.parameters import GSOParameters
-from lightdock.constants import MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SCORING_FUNCTION, DEFAULT_SWARM_FOLDER
+from lightdock.constants import MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SCORING_FUNCTION, DEFAULT_SWARM_FOLDER, \
+                                DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION, \
+                                DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, MIN_EXTENT, MAX_EXTENT
 from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
 from lightdock.scoring.multiple import ScoringConfiguration
+from lightdock.structure.nm import read_nmodes
 
 
 log = LoggingManager.get_logger('lightdock')
 
 
 def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions, seed,
-            step_translation, step_rotation, configuration_file=None, nm=False, nmodes_step=0.1,
+            step_translation, step_rotation, configuration_file=None, 
+            use_anm=False, nmodes_step=0.1, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG,
             local_minimization=False):
     """Creates a lightdock GSO simulation object"""
     # Only dimension is relevant, initial positions are not randomized, but generated
@@ -33,9 +37,9 @@ def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions,
                   Boundary(-MAX_ROTATION, MAX_ROTATION),
                   Boundary(-MAX_ROTATION, MAX_ROTATION),
                   Boundary(-MAX_ROTATION, MAX_ROTATION)]
-    if nm:
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(DEFAULT_NMODES_REC)])
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(DEFAULT_NMODES_LIG)])
+    if use_anm:
+        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(anm_rec)])
+        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(anm_lig)])
 
     bounding_box = BoundingBox(boundaries)
 
@@ -89,28 +93,12 @@ def prepare_gso_tasks(parser, adapters, scoring_functions, starting_points_files
         gso = set_gso(parser.args.glowworms, adapters, scoring_functions, starting_points_files[id_swarm],
                       parser.args.gso_seed, parser.args.translation_step,
                       parser.args.rotation_step, parser.args.configuration_file,
-                      parser.args.use_anm, parser.args.nmodes_step,
+                      parser.args.use_anm, parser.args.nmodes_step, parser.args.anm_rec, parser.args.anm_lig,
                       parser.args.local_minimization)
         saving_path = "%s%d" % (DEFAULT_SWARM_FOLDER, id_swarm)
         task = GSOClusterTask(id_swarm, gso, parser.args.steps, saving_path)
         tasks.append(task)
     return tasks
-
-
-def set_normal_modes(receptor, ligand):
-    """Only calculates normal modes for representative structure"""
-    from lightdock.structure.nm import calculate_nmodes, write_nmodes
-    modes = calculate_nmodes(receptor.structure_file_names[receptor.representative_id],
-                             DEFAULT_NMODES_REC, receptor)
-    receptor.n_modes = modes
-    write_nmodes(modes, DEFAULT_REC_NM_FILE)
-    log.info("%d normal modes calculated for receptor" % DEFAULT_NMODES_REC)
-
-    modes = calculate_nmodes(ligand.structure_file_names[ligand.representative_id],
-                             DEFAULT_NMODES_LIG, ligand)
-    ligand.n_modes = modes
-    write_nmodes(modes, DEFAULT_LIG_NM_FILE)
-    log.info("%d normal modes calculated for ligand" % DEFAULT_NMODES_LIG)
 
 
 def run_simulation(parser):
@@ -132,9 +120,11 @@ def run_simulation(parser):
         ligand = read_input_structure(args.ligand_pdb, args.noxt)
 
         if args.use_anm:
-            set_normal_modes(receptor, ligand)
+            receptor.n_modes = read_nmodes("%s%s" % (DEFAULT_REC_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
+            ligand.n_modes = read_nmodes("%s%s" % (DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
 
-        starting_points_files = load_starting_positions(args.swarms, args.glowworms, args.use_anm)
+        starting_points_files = load_starting_positions(args.swarms, args.glowworms, args.use_anm,
+                                                        args.anm_rec, args.anm_lig)
 
         scoring_functions, adapters = set_scoring_function(parser, receptor, ligand)
 

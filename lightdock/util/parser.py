@@ -4,7 +4,7 @@ import argparse
 import os
 from lightdock.constants import GSO_SEED, STARTING_POINTS_SEED,\
     DEFAULT_TRANSLATION_STEP, DEFAULT_ROTATION_STEP, STARTING_NM_SEED, DEFAULT_NMODES_STEP, DEFAULT_LIST_EXTENSION, \
-    DEFAULT_LIGHTDOCK_PREFIX
+    DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.version import CURRENT_VERSION
 
@@ -73,7 +73,7 @@ class SetupCommandLineParser(object):
         parser.add_argument("swarms", help="Number of swarms of the simulation",
                             type=SetupCommandLineParser.valid_integer_number)
         # Glowworms
-        parser.add_argument("glowworms", help="Number of glowworms per cluster", 
+        parser.add_argument("glowworms", help="Number of glowworms per swarm", 
                             type=SetupCommandLineParser.valid_integer_number)
         # Starting points seed
         parser.add_argument("--seed_points", help="Random seed used in starting positions calculation",
@@ -91,6 +91,12 @@ class SetupCommandLineParser(object):
         # Normal modes extent seed
         parser.add_argument("--seed_anm", help="Random seed used in ANM intial extent",
                             dest="anm_seed", type=int, default=STARTING_NM_SEED)
+        parser.add_argument("-anm_rec", "--anm_rec", help="Number of ANM modes for receptor", 
+                            type=SetupCommandLineParser.valid_integer_number,
+                            dest="anm_rec", default=DEFAULT_NMODES_REC)
+        parser.add_argument("-anm_lig", "--anm_lig", help="Number of ANM modes for ligand", 
+                            type=SetupCommandLineParser.valid_integer_number,
+                            dest="anm_lig", default=DEFAULT_NMODES_LIG)
 
         self.args = parser.parse_args()
 

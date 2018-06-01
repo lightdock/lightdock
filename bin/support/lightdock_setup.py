@@ -13,8 +13,9 @@ import numpy as np
 from lightdock.util.parser import SetupCommandLineParser
 from lightdock.prep.simulation import read_input_structure, save_lightdock_structure, \
                                       calculate_starting_positions, prepare_results_environment, \
-                                      create_setup_file
-from lightdock.constants import DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_ELLIPSOID_DATA_EXTENSION
+                                      create_setup_file, calculate_anm
+from lightdock.constants import DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_ELLIPSOID_DATA_EXTENSION, \
+                                DEFAULT_NMODES_REC, DEFAULT_REC_NM_FILE, DEFAULT_NMODES_LIG, DEFAULT_LIG_NM_FILE
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
 from lightdock.util.logger import LoggingManager
 from lightdock.error.lightdock_errors import LightDockError
@@ -57,11 +58,17 @@ if __name__ == "__main__":
         save_lightdock_structure(receptor)
         save_lightdock_structure(ligand)
 
+        # Calculate and save ANM if required
+        if args.use_anm:
+            calculate_anm(receptor, args.anm_rec, DEFAULT_REC_NM_FILE)
+            calculate_anm(ligand, args.anm_lig, DEFAULT_LIG_NM_FILE)
+
         # Calculate surface points (swarm centers) over receptor structure
         starting_points_files = calculate_starting_positions(receptor, ligand, 
                                                              args.swarms, args.glowworms, 
                                                              args.starting_points_seed, 
-                                                             args.ftdock_file, args.use_anm, args.anm_seed)
+                                                             args.ftdock_file, args.use_anm, args.anm_seed,
+                                                             args.anm_rec, args.anm_lig)
 
         # Create simulation folders
         prepare_results_environment(args.swarms)

@@ -9,6 +9,7 @@ from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, 
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
+from lightdock.structure.nm import calculate_nmodes, write_nmodes
 from lightdock.error.lightdock_errors import LightDockError
 
 
@@ -66,12 +67,21 @@ def save_lightdock_structure(structure):
     log.info("Done.")
 
 
-def check_starting_file(file_name, glowworms, use_anm):
+def calculate_anm(structure, num_nmodes, file_name):
+    """Calculates ANM for representative structure"""
+    modes = calculate_nmodes(structure.structure_file_names[structure.representative_id],
+                             num_nmodes, structure)
+    structure.n_modes = modes
+    write_nmodes(modes, file_name)
+    log.info("%d normal modes calculated" % num_nmodes)
+
+
+def check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig):
     """Check if the file_name file contains the required starting coordinates"""
     with open(file_name) as input_file:
         lines = [line.rstrip(os.linesep) for line in input_file.readlines()]
         num_glowworms = 0
-        expected_size = 7 + DEFAULT_NMODES_REC + DEFAULT_NMODES_LIG if use_anm else 7
+        expected_size = 7 + anm_rec + anm_lig if use_anm else 7
         for line in lines:
             fields = line.split()
             if len(fields) != expected_size:
@@ -81,7 +91,7 @@ def check_starting_file(file_name, glowworms, use_anm):
 
 
 def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_points_seed, 
-    ftdock_file=None, use_anm=False, anm_seed=0):
+    ftdock_file=None, use_anm=False, anm_seed=0, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG):
     """Defines the starting positions of each glowworm in the simulation.
 
     If the init_folder already exists, uses the starting positions from this folder.
@@ -94,7 +104,7 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
                                                         swarms, glowworms,
                                                         starting_points_seed, init_folder,
                                                         ftdock_file, use_anm,
-                                                        anm_seed, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG)
+                                                        anm_seed, anm_rec, anm_lig)
         log.info("Generated %d positions files" % len(starting_points_files))
     else:
         log.warning("Folder %s already exists, skipping calculation" % init_folder)
@@ -103,20 +113,20 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
         if len(starting_points_files) != swarms:
             raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
         for starting_point_file in starting_points_files:
-            if not check_starting_file(starting_point_file, glowworms, use_anm):
+            if not check_starting_file(starting_point_file, glowworms, use_anm, anm_rec, anm_lig):
                 raise LightDockError("Error reading starting coordinates from file %s" % starting_point_file)
     log.info("Done.")
     return starting_points_files
 
 
-def load_starting_positions(swarms, glowworms, use_anm):
+def load_starting_positions(swarms, glowworms, use_anm, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG):
     """Gets the list of starting positions of this simulation"""
     pattern = os.path.join(DEFAULT_POSITIONS_FOLDER, "%s*.dat" % DEFAULT_STARTING_PREFIX)
     starting_points_files = glob.glob(pattern)
     if len(starting_points_files) != swarms:
         raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
     for starting_point_file in starting_points_files:
-        if not check_starting_file(starting_point_file, glowworms, use_anm):
+        if not check_starting_file(starting_point_file, glowworms, use_anm, anm_rec, anm_lig):
             raise LightDockError("Error reading starting coordinates from file %s" % starting_point_file)
     return starting_points_files
 
