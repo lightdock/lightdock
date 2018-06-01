@@ -5,7 +5,7 @@ import time
 from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
     DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, \
-    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO
+    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, DEFAULT_POSITIONS_FOLDER, DEFAULT_STARTING_PREFIX
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
@@ -98,7 +98,8 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
         log.info("Generated %d positions files" % len(starting_points_files))
     else:
         log.warning("Folder %s already exists, skipping calculation" % init_folder)
-        starting_points_files = glob.glob('init/initial_positions*.dat')
+        pattern = os.path.join(DEFAULT_POSITIONS_FOLDER, "%s*.dat" % DEFAULT_STARTING_PREFIX)
+        starting_points_files = glob.glob(pattern)
         if len(starting_points_files) != swarms:
             raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
         for starting_point_file in starting_points_files:
@@ -110,7 +111,8 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
 
 def load_starting_positions(swarms, glowworms, use_anm):
     """Gets the list of starting positions of this simulation"""
-    starting_points_files = glob.glob('init/initial_positions*.dat')
+    pattern = os.path.join(DEFAULT_POSITIONS_FOLDER, "%s*.dat" % DEFAULT_STARTING_PREFIX)
+    starting_points_files = glob.glob(pattern)
     if len(starting_points_files) != swarms:
         raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
     for starting_point_file in starting_points_files:
