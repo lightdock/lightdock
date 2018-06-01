@@ -24,4 +24,4 @@ LIGHTDOCK_LIB=$LIGHTDOCK_BIN/../
 export PYTHONPATH=$PYTHONPATH:$LIGHTDOCK_BIN:$LIGHTDOCK_LIB
 
 # Execute the main controller
-exec $PYTHON $PROFILE_FLAGS $LIGHTDOCK_BIN/controller.py $@
+exec $PYTHON $PROFILE_FLAGS $LIGHTDOCK_BIN/simulation/controller.py $@

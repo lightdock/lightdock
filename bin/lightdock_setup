@@ -1,12 +1,27 @@
 #!/bin/bash 
 
+###################################################################################
+#                                                                                 #
+#                                   LightDock                                     #
+#                                                                                 #
+# Protein-protein docking using GSO algorithm.                                    #
+#                                                                                 #
+# Created by: Brian Jimenez-Garcia <brian.jimenez@bsc.es>                         #
+#                                                                                 #
+# Barcelona Supercomputing Center                                                 #
+# Joint BSC-IRB Research Program in Computational Biology,                        #
+# Life Sciences Department                                                        #
+#                                                                                 #
+###################################################################################
+
 PYTHON=`which python`
 PYVER=`$PYTHON -c 'import platform; print platform.python_version()[:3]'`
 EXPY=`which lightdock`
 LIGHTDOCK_BIN=`dirname $EXPY`
 LIGHTDOCK_LIB=$LIGHTDOCK_BIN/../
 
-# general python variables for use of lightdock
+# General python variables for use of LightDock
 export PYTHONPATH=$PYTHONPATH:$LIGHTDOCK_BIN:$LIGHTDOCK_LIB
 
-exec $PYTHON $PROFILE_FLAGS $LIGHTDOCK_BIN/support/lightdock_setup.py $@
+# Execute the setup program
+exec $PYTHON $PROFILE_FLAGS $LIGHTDOCK_BIN/simulation/lightdock_setup.py $@
