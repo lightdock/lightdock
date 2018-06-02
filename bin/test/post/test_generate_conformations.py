@@ -3,7 +3,7 @@
 import os
 import filecmp
 import shutil
-from bin.test.regression import RegressionTest
+from ..regression import RegressionTest
 
 
 class TestGenerateConformations(RegressionTest):
@@ -26,11 +26,11 @@ class TestGenerateConformations(RegressionTest):
         shutil.copyfile(self.golden_data_path + 'lightdock_1PPE_rec.pdb', self.test_path + 'lightdock_1PPE_rec.pdb')
         shutil.copyfile(self.golden_data_path + 'lightdock_1PPE_lig.pdb', self.test_path + 'lightdock_1PPE_lig.pdb')
         shutil.copyfile(self.golden_data_path + 'gso_1.out', self.test_path + 'gso_1.out')
-        command = "generate_conformations.py %s %s %s %d > test.out" % (self.test_path + '1PPE_rec.pdb',
-                                                                        self.test_path + '1PPE_lig.pdb',
-                                                                        self.test_path + 'gso_1.out',
-                                                                        num_conformations
-                                                                        )
+        command = "lgd_generate_conformations.py %s %s %s %d > test.out" % (self.test_path + '1PPE_rec.pdb',
+                                                                            self.test_path + '1PPE_lig.pdb',
+                                                                            self.test_path + 'gso_1.out',
+                                                                            num_conformations
+                                                                            )
         os.system(command)
 
         assert filecmp.cmp(self.golden_data_path + 'lightdock_0.pdb', self.test_path + 'lightdock_0.pdb')
