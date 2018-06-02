@@ -1,29 +1,28 @@
-[lightdock] INFO: Parameters are:
-[lightdock] INFO: Receptor: /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch/1PPE_rec.pdb
-[lightdock] INFO: Ligand: /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch/1PPE_lig.pdb
-[lightdock] INFO: Number of clusters: 1
-[lightdock] INFO: Number of glowworms per cluster: 20
-[lightdock] INFO: Simulation steps: 2
-[lightdock] INFO: GSO seed: 324324
-[lightdock] INFO: Starting points seed: 324324
-[lightdock] INFO: Translation step: 0.5
-[lightdock] INFO: Rotation step: 0.5
-[lightdock] INFO: Configuration file: /Users/irrati0nal/workspaces/python/lightdock/bin/test/golden_data/regression_2/glowworm.conf
-[lightdock] INFO: FTDock file: /Users/irrati0nal/workspaces/python/lightdock/bin/test/golden_data/regression_2/1PPE.ftdock
-[lightdock] INFO: lightdock parameters saved to ./lightdock.info
-[lightdock] INFO: Reading /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch/1PPE_rec.pdb receptor PDB file...
-[lightdock] INFO: 1628 atoms, 223 residues read.
-[lightdock] INFO: Reading /Users/irrati0nal/workspaces/python/lightdock/bin/test/scratch/1PPE_lig.pdb ligand PDB file...
-[lightdock] INFO: 221 atoms, 29 residues read.
-[lightdock] INFO: Saving processed structures to PDB files...
-[lightdock] INFO: Done.
-[lightdock] INFO: Calculating starting positions...
-[lightdock] INFO: Generated 1 positions files
-[lightdock] INFO: Done.
+[lightdock_setup] INFO: Reading structure from 1PPE_rec.pdb PDB file...
+[lightdock_setup] INFO: 1628 atoms, 223 residues read.
+[lightdock_setup] INFO: Reading structure from 1PPE_rec.pdb PDB file...
+[lightdock_setup] INFO: 1628 atoms, 223 residues read.
+[lightdock_setup] INFO: Calculating reference points for receptor 1PPE_rec.pdb...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Calculating reference points for ligand 1PPE_rec.pdb...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Saving processed structure to PDB file...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Saving processed structure to PDB file...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Calculating starting positions...
+[lightdock_setup] INFO: Generated 1 positions files
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Preparing environment
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: LightDock setup OK
+[lightdock] INFO: simulation parameters saved to ./lightdock.info
+[lightdock_setup] INFO: Reading structure from 1PPE_rec.pdb PDB file...
+[lightdock_setup] INFO: 1628 atoms, 223 residues read.
+[lightdock_setup] INFO: Reading structure from 1PPE_rec.pdb PDB file...
+[lightdock_setup] INFO: 1628 atoms, 223 residues read.
 [lightdock] INFO: Loading scoring function...
 [lightdock] INFO: Using TOBI scoring function
-[lightdock] INFO: Done.
-[lightdock] INFO: Preparing environment
 [lightdock] INFO: Done.
 [kraken] INFO: Kraken has 1 tentacles (cpu cores)
 [kraken] INFO: Tentacle ready with 1 tasks

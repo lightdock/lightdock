@@ -3,7 +3,7 @@
 import shutil
 import os
 import filecmp
-from bin.test.regression import RegressionTest
+from regression import RegressionTest
 
 
 class TestRegressionTOBIShort(RegressionTest):
@@ -21,17 +21,21 @@ class TestRegressionTOBIShort(RegressionTest):
 
     def test_lightdock_1ppe_4_steps_5_glowworms(self):
         os.chdir(self.test_path)
-        num_clusters = 1
+        num_swarms = 1
         num_glowworms = 5
         steps = 4
-        command = "lightdock %s %s %d %d %d -ft %s -f %s " \
-                  "-s tobi -c 1 > test_lightdock.out" % (self.test_path + '1PPE_rec.pdb',
-                                                         self.test_path + '1PPE_lig.pdb',
-                                                         num_clusters,
-                                                         num_glowworms,
-                                                         steps,
-                                                         self.golden_data_path + '1PPE.ftdock',
-                                                         self.golden_data_path + 'glowworm.conf')
+
+        command = "lightdock_setup %s %s %d %d " \
+                  "-ft %s > test_lightdock.out" % ('1PPE_rec.pdb',
+                                                   '1PPE_rec.pdb',
+                                                   num_swarms,
+                                                   num_glowworms,
+                                                   self.golden_data_path + '1PPE.ftdock')
+        os.system(command)
+        command = "lightdock %s %d -c 1 -f %s -s " \
+                  "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',
+                                                  steps,
+                                                  self.golden_data_path + 'glowworm.conf')
         os.system(command)
 
         assert filecmp.cmp(self.golden_data_path + 'init/initial_positions_0.dat',
@@ -40,10 +44,10 @@ class TestRegressionTOBIShort(RegressionTest):
                            self.test_path + 'init/starting_positions_0.pdb')
         assert filecmp.cmp(self.golden_data_path + 'init/cluster_centers.pdb',
                            self.test_path + 'init/cluster_centers.pdb')
-        assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_0.out',
-                           self.test_path + 'cluster_0/gso_0.out')
-        assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_4.out',
-                           self.test_path + 'cluster_0/gso_4.out')
+        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
+                           self.test_path + 'swarm_0/gso_0.out')
+        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_4.out',
+                           self.test_path + 'swarm_0/gso_4.out')
 
 
 class TestRegressionTOBIMoreGlowworms(RegressionTest):
@@ -62,17 +66,21 @@ class TestRegressionTOBIMoreGlowworms(RegressionTest):
     def test_lightdock_1pee_2_steps_20_glowworms(self):
         if os.environ.has_key('LIGHTDOCK_LONG_TEST') and os.environ['LIGHTDOCK_LONG_TEST'] == 'true':
             os.chdir(self.test_path)
-            num_clusters = 1
+            num_swarms = 1
             num_glowworms = 20
             steps = 2
-            command = "lightdock %s %s %d %d %d -ft %s -f %s " \
-                      "-s tobi -c 1 > test_lightdock.out" % (self.test_path + '1PPE_rec.pdb',
-                                                             self.test_path + '1PPE_lig.pdb',
-                                                             num_clusters,
-                                                             num_glowworms,
-                                                             steps,
-                                                             self.golden_data_path + '1PPE.ftdock',
-                                                             self.golden_data_path + 'glowworm.conf')
+            
+            command = "lightdock_setup %s %s %d %d " \
+                      "-ft %s > test_lightdock.out" % ('1PPE_rec.pdb',
+                                                       '1PPE_rec.pdb',
+                                                       num_swarms,
+                                                       num_glowworms,
+                                                       self.golden_data_path + '1PPE.ftdock')
+            os.system(command)
+            command = "lightdock %s %d -c 1 -f %s -s " \
+                      "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',
+                                                      steps,
+                                                      self.golden_data_path + 'glowworm.conf')
             os.system(command)
 
             assert filecmp.cmp(self.golden_data_path + 'init/initial_positions_0.dat',
@@ -81,7 +89,7 @@ class TestRegressionTOBIMoreGlowworms(RegressionTest):
                                self.test_path + 'init/starting_positions_0.pdb')
             assert filecmp.cmp(self.golden_data_path + 'init/cluster_centers.pdb',
                                self.test_path + 'init/cluster_centers.pdb')
-            assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_0.out',
-                               self.test_path + 'cluster_0/gso_0.out')
-            assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_2.out',
-                               self.test_path + 'cluster_0/gso_2.out')
+            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
+                               self.test_path + 'swarm_0/gso_0.out')
+            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_2.out',
+                               self.test_path + 'swarm_0/gso_2.out')
