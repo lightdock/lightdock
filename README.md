@@ -255,5 +255,5 @@ Inside the <code>swarm_0</code> folder 10 new PDB structures corresponding to th
 
 This GitHub [README.md](README.md) file is intended as an installation guide and to show the simplest protein-protein docking example.
 
-The complete information can be found at [http://brianjimenez.github.io/lightdock](http://brianjimenez.github.io/lightdock)
+The complete information can be found at [https://brianjimenez.github.io/lightdock/](https://brianjimenez.github.io/lightdock/)
 
