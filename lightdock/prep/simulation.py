@@ -124,7 +124,7 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
 def load_starting_positions(swarms, glowworms, use_anm, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG):
     """Gets the list of starting positions of this simulation"""
     pattern = os.path.join(DEFAULT_POSITIONS_FOLDER, "%s*.dat" % DEFAULT_STARTING_PREFIX)
-    starting_points_files = glob.glob(pattern)
+    starting_points_files = sorted(glob.glob(pattern))
     if len(starting_points_files) != swarms:
         raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
     for starting_point_file in starting_points_files:
