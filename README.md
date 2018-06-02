@@ -1,4 +1,11 @@
-# LightDock
+![LightDock](docs/media/lightdock_banner.png "LightDock")
+
+#### Table of Contents
+
+- [Introduction](#1-introduction)
+- [Installation](#2-installation)
+- [LightDock for the impatient](#3-lightdock-for-the-impatient)
+- [Documentation](#4-documentation)
 
 ## 1. Introduction
 LightDock is a protein-protein docking framework based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm.
@@ -19,7 +26,7 @@ LightDock has the following dependencies:
 * BioPython (<http://biopython.org>)
 * MPI4py (<http://pythonhosted.org/mpi4py/>)
 * ProDy (<http://prody.csb.pitt.edu/>)
-* Freesasa (only if PyDock scoring function is used and to execute the tests, <http://freesasa.github.io/>)
+* Freesasa (only if `cpydock` scoring function is used and to execute the tests, <http://freesasa.github.io/>)
 
 NumPy, Scipy, Cython, Biopython, Nose and MPI4py libraries are usually available as packages in most of GNU/Linux distributions. To install them in Ubuntu execute:
 
@@ -37,7 +44,7 @@ pip install -U ProDy
 
 More instructions on how to install it can be found in the official documentation (<http://prody.csb.pitt.edu/downloads/>).
 
-In case of using PyDock scoring function or to execute the tests, **Freesasa** library has to be installed and compiled with the python-binding options. Tested version in 
+In case of using `cpydock` scoring function or to execute the tests, **Freesasa** library has to be installed and compiled with the python-binding options. Tested version in 
 LightDock is 1.1 (<https://github.com/mittinatten/freesasa/tree/1.1>). To install freesasa 1.1, please follow these instructions (change `path/to/install`):
 
 ```bash
@@ -99,7 +106,7 @@ export LIGHTDOCK_LONG_TEST=true
 ./run_tests.sh reg
 ```
 
-## 3. Executing LightDock
+## 3. LightDock for the impatient
 The simplest way to perform a protein-protein docking in LightDock is to use default parameters and to only provide two [PDB](http://www.rcsb.org/pdb/static.do?p=file_formats/pdb/index.html) files for both receptor and ligand proteins.
 
 ### 3.1. Simplest example
@@ -242,3 +249,11 @@ Output is:
 ```
 
 Inside the <code>swarm_0</code> folder 10 new PDB structures corresponding to the 10 glowworm agents used in the example have been generated.
+
+
+## 4. Documentation
+
+This GitHub [README.md](README.md) file is intended as an installation guide and to show the simplest protein-protein docking example.
+
+The complete information can be found at [http://brianjimenez.github.io/lightdock](http://brianjimenez.github.io/lightdock)
+
