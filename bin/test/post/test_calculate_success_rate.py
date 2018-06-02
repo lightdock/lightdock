@@ -3,7 +3,7 @@
 import os
 import filecmp
 import shutil
-from bin.test.regression import RegressionTest
+from ..regression import RegressionTest
 
 
 class TestGenerateConformations(RegressionTest):
@@ -22,7 +22,7 @@ class TestGenerateConformations(RegressionTest):
         os.chdir(self.test_path)
         shutil.copyfile(self.golden_data_path + 'rank_by_scoring.list', self.test_path + 'rank_by_scoring.list')
 
-        command = "calculate_success_rate.py %s > test.out" % (self.test_path + 'rank_by_scoring.list')
+        command = "lgd_success_rate.py %s > test.out" % (self.test_path + 'rank_by_scoring.list')
         os.system(command)
 
         assert filecmp.cmp(self.golden_data_path + 'success_rate.out', self.test_path + 'test.out')

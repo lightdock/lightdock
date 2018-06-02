@@ -4,7 +4,7 @@ import shutil
 import os
 import filecmp
 
-from bin.test.regression import RegressionTest
+from regression import RegressionTest
 
 
 class TestRegressionPyDockShort(RegressionTest):
@@ -25,21 +25,25 @@ class TestRegressionPyDockShort(RegressionTest):
 
     def test_lightdock_1ppe_1_step_5_glowworms_1_cluster(self):
         os.chdir(self.test_path)
-        num_clusters = 1
+        num_swarms = 1
         num_glowworms = 5
         steps = 1
-        command = "lightdock %s %s %d %d %d -c 1 -s " \
-                  "cpydock > test_lightdock.out" % (self.test_path + '1PPE_rec.pdb.H',
-                                                    self.test_path + '1PPE_lig.pdb.H',
-                                                    num_clusters,
-                                                    num_glowworms,
-                                                    steps)
+
+        command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
+                                                                        '1PPE_lig.pdb.H',
+                                                                        num_swarms,
+                                                                        num_glowworms
+                                                                        )
+        os.system(command)
+        command = "lightdock %s %d -c 1 -s " \
+                  "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
+                                                     steps)
         os.system(command)
 
-        assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_0.out',
-                           self.test_path + 'cluster_0/gso_0.out')
-        assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_1.out',
-                           self.test_path + 'cluster_0/gso_1.out')
+        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
+                           self.test_path + 'swarm_0/gso_0.out')
+        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_1.out',
+                           self.test_path + 'swarm_0/gso_1.out')
 
 
 class TestRegressionPyDockLong(RegressionTest):
@@ -61,18 +65,22 @@ class TestRegressionPyDockLong(RegressionTest):
     def test_lightdock_1ppe_10_steps_10_glowworms_1_cluster(self):
         if os.environ.has_key('LIGHTDOCK_LONG_TEST') and os.environ['LIGHTDOCK_LONG_TEST'] == 'true':
             os.chdir(self.test_path)
-            num_clusters = 1
+            num_swarms = 1
             num_glowworms = 10
             steps = 10
-            command = "lightdock %s %s %d %d %d -c 1 -s " \
-                      "cpydock > test_lightdock.out" % (self.test_path + '1PPE_rec.pdb.H',
-                                                        self.test_path + '1PPE_lig.pdb.H',
-                                                        num_clusters,
-                                                        num_glowworms,
-                                                        steps)
+            
+            command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
+                                                                            '1PPE_lig.pdb.H',
+                                                                            num_swarms,
+                                                                            num_glowworms
+                                                                            )
+            os.system(command)
+            command = "lightdock %s %d -c 1 -s " \
+                      "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
+                                                         steps)
             os.system(command)
 
-            assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_0.out',
-                               self.test_path + 'cluster_0/gso_0.out')
-            assert filecmp.cmp(self.golden_data_path + 'cluster_0/gso_10.out',
-                               self.test_path + 'cluster_0/gso_10.out')
+            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
+                               self.test_path + 'swarm_0/gso_0.out')
+            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_10.out',
+                               self.test_path + 'swarm_0/gso_10.out')
