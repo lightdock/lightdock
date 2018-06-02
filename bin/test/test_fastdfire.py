@@ -54,8 +54,7 @@ class TestRegressionFastDFIRELong(RegressionTest):
         shutil.copy(os.path.join(self.golden_data_path, '1PPE_lig.pdb'), self.test_path)
 
     def teardown(self):
-        #self.clean_test_path()
-        pass
+        self.clean_test_path()
 
     def test_lightdock_1ppe_10_steps_100_glowworms(self):
         if os.environ.has_key('LIGHTDOCK_LONG_TEST') and os.environ['LIGHTDOCK_LONG_TEST'] == 'true':
