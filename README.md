@@ -8,7 +8,7 @@
 - [Documentation](#4-documentation)
 
 ## 1. Introduction
-LightDock is a protein-protein docking framework based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm.
+LightDock is a protein-protein and protein-DNA docking framework based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm.
 
 **The framework is written in the Python programming language (version 2.7) and allows the users to incorporate their own scoring function.**
 
