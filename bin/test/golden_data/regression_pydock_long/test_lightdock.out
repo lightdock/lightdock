@@ -1,29 +1,34 @@
-[lightdock] INFO: Parameters are:
-[lightdock] INFO: Receptor: 1PPE_rec.pdb.H
-[lightdock] INFO: Ligand: 1PPE_lig.pdb.H
-[lightdock] INFO: Number of clusters: 1
-[lightdock] INFO: Number of glowworms per cluster: 10
-[lightdock] INFO: Simulation steps: 10
-[lightdock] INFO: GSO seed: 324324
-[lightdock] INFO: Starting points seed: 324324
-[lightdock] INFO: Translation step: 0.5
-[lightdock] INFO: Rotation step: 0.5
-[lightdock] INFO: lightdock parameters saved to ./lightdock.info
-[lightdock] INFO: Reading 1PPE_rec.pdb.H receptor PDB file...
-[lightdock] INFO: 3219 atoms, 223 residues read.
-[lightdock] INFO: Reading 1PPE_lig.pdb.H ligand PDB file...
-[lightdock] INFO: 437 atoms, 29 residues read.
-[lightdock] INFO: Saving processed structures to PDB files...
-[lightdock] INFO: Done.
-[lightdock] INFO: Calculating starting positions...
-[lightdock] WARNING: Folder init already exists, skipping calculation
-[lightdock] INFO: Done.
+[lightdock_setup] INFO: Reading structure from 1PPE_rec.pdb.H PDB file...
+[lightdock_setup] INFO: 3219 atoms, 223 residues read.
+[lightdock_setup] INFO: Reading structure from 1PPE_lig.pdb.H PDB file...
+[lightdock_setup] INFO: 437 atoms, 29 residues read.
+[lightdock_setup] INFO: Calculating reference points for receptor 1PPE_rec.pdb.H...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Calculating reference points for ligand 1PPE_lig.pdb.H...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Saving processed structure to PDB file...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Saving processed structure to PDB file...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Calculating starting positions...
+[lightdock_setup] INFO: Generated 1 positions files
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Preparing environment
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: LightDock setup OK
+[lightdock] INFO: simulation parameters saved to ./lightdock.info
+[lightdock_setup] INFO: Reading structure from 1PPE_rec.pdb.H PDB file...
+[lightdock_setup] INFO: 3219 atoms, 223 residues read.
+[lightdock_setup] INFO: Reading structure from 1PPE_lig.pdb.H PDB file...
+[lightdock_setup] INFO: 437 atoms, 29 residues read.
 [lightdock] INFO: Loading scoring function...
-[lightdock] INFO: Using PyDock scoring function
-[pydock] WARNING: Error in vdw.in file, using default VDW cutoff
-[pydock] INFO: PyDock VDW cutoff is: 0.10
-[lightdock] INFO: Done.
-[lightdock] INFO: Preparing environment
+[lightdock] INFO: Using CPyDock scoring function
+[cpydock] INFO: Calculating reference SASA...
+[cpydock] INFO: Done.
+[cpydock] INFO: Calculating reference SASA...
+[cpydock] INFO: Done.
+[cpydock] WARNING: Error ([Errno 2] No such file or directory: 'vdw.in'), using default VDW cutoff
+[cpydock] INFO: PyDock VDW cutoff is: 0.10
 [lightdock] INFO: Done.
 [kraken] INFO: Kraken has 1 tentacles (cpu cores)
 [kraken] INFO: Tentacle ready with 1 tasks

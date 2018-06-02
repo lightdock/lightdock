@@ -1,0 +1,13 @@
+{
+    "anm_seed": 324324, 
+    "ftdock_file": null, 
+    "anm_rec": 10, 
+    "swarms": 1, 
+    "starting_points_seed": 324324, 
+    "receptor_pdb": "1PPE_rec.pdb.H", 
+    "anm_lig": 10, 
+    "noxt": false, 
+    "use_anm": false, 
+    "glowworms": 10, 
+    "ligand_pdb": "1PPE_lig.pdb.H"
+}
