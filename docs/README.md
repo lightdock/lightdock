@@ -78,13 +78,13 @@ We found reasonable those values for number of swarms and glowworms per swarm in
 
 Below there is a description of the rest of accepted paramenters of `lightdock_setup`:
 
-- **seed_points** *STARTING_POINTS_SEED*: An integer can be specified as the seed used in the random number generator of the initial random poses of the ligand.
-- **ft** *ftdock_file*: LightDock can read the output of the venerable [FTDock](http://www.sbg.bio.ic.ac.uk/docking/ftdock.html) software in order to use the FTDock rigid-body predictions as the starting poses of the LightDock simulation. In order to do so, `lightdock_setup` classifies the different FTDock predictions according to its translation into the corresponding swarm over the surface of the receptor.
-- **noxt**: If this option is enabled, LightDock ignores OXT atoms. This is useful for several scoring functions which don't understand this special type of atom.
-- **anm**: If this option is enabled, the ANM mode is activated and backbone flexibility is modeled using ANM (via ProDy).
-- **seed_anm** *ANM_SEED*: An integer can be specified as the seed used in the random number generator of ANM normal modes extents. 
-- **anm_rec** *ANM_REC*: The number of non-trivial normal modes calculated for the recepetor in the ANM mode.
-- **anm_lig** *ANM_LIG*: The number of non-trivial normal modes calculated for the ligand in the ANM mode.
+- **--seed_points** *STARTING_POINTS_SEED*: An integer can be specified as the seed used in the random number generator of the initial random poses of the ligand.
+- **--ft** *ftdock_file*: LightDock can read the output of the venerable [FTDock](http://www.sbg.bio.ic.ac.uk/docking/ftdock.html) software in order to use the FTDock rigid-body predictions as the starting poses of the LightDock simulation. In order to do so, `lightdock_setup` classifies the different FTDock predictions according to its translation into the corresponding swarm over the surface of the receptor.
+- **--noxt**: If this option is enabled, LightDock ignores OXT atoms. This is useful for several scoring functions which don't understand this special type of atom.
+- **--anm**: If this option is enabled, the ANM mode is activated and backbone flexibility is modeled using ANM (via ProDy).
+- **--seed_anm** *ANM_SEED*: An integer can be specified as the seed used in the random number generator of ANM normal modes extents. 
+- **--anm_rec** *ANM_REC*: The number of non-trivial normal modes calculated for the recepetor in the ANM mode.
+- **--anm_lig** *ANM_LIG*: The number of non-trivial normal modes calculated for the ligand in the ANM mode.
 
 ### 2.1. Results of the setup
 
@@ -111,19 +111,239 @@ After the execution of `lightdock_setup` script, several files and directories w
 
 ## 3. Run a simulation
 
-TBC
+### 3.1. Parameters
+
+In order to run a LightDock simulation, the `lightdock` script has to be executed. If the script is executed without arguments, a list of accepted options is displayed:
+
+```bash
+usage: lightdock [-h] [-f configuration_file] [-s SCORING_FUNCTION]
+                 [-sg GSO_SEED] [-t TRANSLATION_STEP] [-r ROTATION_STEP] [-V]
+                 [-c CORES] [--profile] [-mpi] [-ns NMODES_STEP] [-min]
+                 setup_file steps
+lightdock: error: too few arguments
+```
+
+The simplest way to execute a LightDock simulation is:
+
+```bash
+lightdock setup.json 10
+```
+
+The first parameter is the configuration file generated on the setup step, the second is the number of steps of the simulation.
+
+The rest of possible arguments which `lightdock` accepts is:
+
+- **-f** *configuration_file*: This is a special file containing the different parameters of the GSO algorithm. By default, this is not necessary to change, but advanced users might change some of the values. Here it is an example of the content of this file:
+
+```
+##
+#
+# GlowWorm configuration file - algorithm parameters
+#
+##
+
+[GSO]
+
+# Rho
+rho = 0.4
+
+# Gamma
+gamma = 0.6
+
+# Initial Luciferin
+initialLuciferin = 5.0
+
+# Initial glowworm vision range (in A)
+initialVisionRange = 15.0
+
+# Max vision range (in A)
+maximumVisionRange = 40.0
+
+# Beta
+beta = 0.16
+
+# Max number of neighbors
+maximumNeighbors = 5
+```
+
+These are the parameters used in the LightDock publication, many of them inherited from the original GSO publication. Please refer to the [Kaipa, Krishnanand N. and  Ghose, Debasish](https://www.springer.com/gp/book/9783319515946) for more details.
+
+- **-s** *SCORING_FUNCTION*: Probably one of the most important parameters of the simulation. The user is able to change the default scoring function (DFIRE) using this flag. A name of a scoring function or a file containing the name and weight of multiple scoring functions are accepted. See section 3.2 for a complete list of accepted scoring functions and how to combine them.
+- **-c** *CORES*: By default, LightDock makes use of the total number of available CPU cores on the hardware to run the simulation, but a different number of CPU cores can be specified via this option.
+- **-mpi**: If this flag is activated, LightDock will make use of the MPI4py library in order to spread to diffeerent nodes.
+- **--profile**: This is a experimental flag and it is intended for profiling computation time and memory used by LightDock.
+- **-sg** *GSO_SEED*: It is the integer used as a seed for the random number generator in charge of running the simulation. Different seeds will incur in different simulation outputs.
+- **-t** *TRANSLATION_STEP*: When the translation part of the optimization vector is interpolated, this parameter controls the interpolation point. By default is set to 0.5. 
+- **-r** *ROTATION_STEP*: When the rotation part of the optimization vector is interpolated (using [quaternion SLERP](https://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)), this parameter controls the interpolation point. By default is set to 0.5.
+- **-ns** *NMODES_STEP*: When the ANM normal modes extent part of the optimization vector is interpolated, this parameter controls the interpolation point. By default is set to 0.5.
+- **-min**: If this option is enabled, a local minimization of the best glowworm in terms of scoring is performed for each step, at each swarm. The algorithm used is the Powell ([fmin_powell](https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.optimize.fmin_powell.html)) implementation from the scipy.optimize library.
+- **-V**: displays the LightDock version.
+
+
+### 3.2. Available scoring functions
+
+The complete list of scoring functions implemented in LightDock is:
+
+- `cpydock`: Implementation in C of the [pyDock](https://www.ncbi.nlm.nih.gov/pubmed/17444519) scoring function
+- `dfire`: Implementation of the [DFIRE](https://www.ncbi.nlm.nih.gov/pubmed/15162489) scoring function in Cython.
+- `fastdfire`: Implementation of the DFIRE scoring function using the Python C-API, faster than `dfire`.
+- `dfire2`: Implementation of the [DFIRE2](https://www.ncbi.nlm.nih.gov/pubmed/18469178) scoring function using the Python C-API, despite a Cython version is also included for demonstrational purposes.
+- `dna`: Implementation of the pyDockDNA scoring function (no desolvation) and custom Van der Waals weight for protein-DNA docking. Implemented using the Python C-API.
+- `mj3h`: Pairwise contact energies for 20 types of residues, [Mj3h](https://www.ncbi.nlm.nih.gov/pubmed/10336383).
+- `pisa`: A statistical potential from the [Improving ranking of models for protein complexes with side chain modeling and atomic potentials](https://onlinelibrary.wiley.com/doi/abs/10.1002/prot.24214) publication.
+- `sd`: An electrostatics and Van der Waals based scoring function as described in the [SwarmDock publication](https://www.ncbi.nlm.nih.gov/pubmed/21152290), but using AMBER94 force-field charges and parameters.
+- `sipper`: Intermolecular pairwise propensities of exposed residues, [SIPPER](https://www.ncbi.nlm.nih.gov/pubmed/21214199).
+- `tobi`: [TOBI](https://bmcstructbiol.biomedcentral.com/articles/10.1186/1472-6807-10-40) potentials scoring function.
+- `vdw`: A truncated Van der Waals (Lennard-Jones potential) as described in the original [pyDock](https://www.ncbi.nlm.nih.gov/pubmed/17444519) publication.
+
+### 3.2.1. Multiple scoring functions
+
+Several scoring functions can be used simultaneously by LightDock during the minimization. Each glowworm in the simulation will count on a model for each different scoring function, thus physical memory could be a limit on the number of simultaneous scoring functions.
+
+A file containing the name of the scoring function and its weight can be defined as this example:
+
+```bash
+cat socring.conf
+sipper 0.5
+dfire 0.8
+```
+
+For each pose, the scoring would be in this example the linear combination of both functions:
+
+```Scoring = 0.5*SIPPER + 0.8*DFIRE```
+  
+
+### 3.3. Tips and tricks
+
+- All the available scoring fundtions can be found at the path `$LIGHTDOCK_HOME/lightdock/scoring`. Each scoring function has its own directory.
+
 
 
 ## 4. Generate models
 
-TBC
+Once the simulation has completed, the predicted models can be generated as PDB structure files. In order to do so, execute the `lgd_generate_conformations.py` command:
 
+```bash
+lgd_generate_conformations.py 
+usage: conformer_conformations [-h]
+                               receptor_structure ligand_structure
+                               lightdock_output glowworms
+conformer_conformations: error: too few arguments
+```
+
+For example, to generate the 10 models predicted in the step 5 in a swarm populated by 10 glowworms of the 2UUY example:
+
+```bash
+cd $LIGHTDOCK_HOME/examples/2UUY
+cd swarm_0
+lgd_generate_conformations.py ../2UUY_rec.pdb ../2UUY_lig.pdb gso_5.out 10
+```
+
+**IMPORTANT:** note that the structures used by this command are the originals used in the `lightdock_setup` command.
 
 ## 5. Clustering
 
-TBC
+There are two different methods for clustering the predicted models implemented: *BSAS* and *hierarchical*. At the moment, *hierarchical* is deprecated and the *BSAS* method is the preferred one.
 
+For each swarm, you can execute the `lgd_cluster_bsas.py` command. For example:
+
+```bash
+cd swarm_0
+lgd_cluster_bsas.py gso_5.out
+```
+
+The output would be:
+
+```
+Reading CA from lightdock_3.pdb
+Reading CA from lightdock_6.pdb
+Reading CA from lightdock_0.pdb
+Reading CA from lightdock_5.pdb
+Reading CA from lightdock_9.pdb
+Reading CA from lightdock_7.pdb
+Reading CA from lightdock_2.pdb
+Reading CA from lightdock_8.pdb
+Reading CA from lightdock_1.pdb
+Reading CA from lightdock_4.pdb
+Glowworm 6 with pdb lightdock_6.pdb
+RMSD between 3 and 6 is 7.562
+New cluster 1
+Glowworm 0 with pdb lightdock_0.pdb
+RMSD between 3 and 0 is 7.757
+RMSD between 6 and 0 is 9.089
+New cluster 2
+Glowworm 5 with pdb lightdock_5.pdb
+RMSD between 3 and 5 is 6.856
+RMSD between 6 and 5 is 8.706
+RMSD between 0 and 5 is 4.665
+New cluster 3
+Glowworm 9 with pdb lightdock_9.pdb
+RMSD between 3 and 9 is 3.683
+Glowworm 9 goes into cluster 0
+Glowworm 7 with pdb lightdock_7.pdb
+RMSD between 3 and 7 is 6.830
+RMSD between 6 and 7 is 7.673
+RMSD between 0 and 7 is 6.709
+RMSD between 5 and 7 is 4.561
+New cluster 4
+Glowworm 2 with pdb lightdock_2.pdb
+RMSD between 3 and 2 is 7.346
+RMSD between 6 and 2 is 9.084
+RMSD between 0 and 2 is 7.646
+RMSD between 5 and 2 is 7.772
+RMSD between 7 and 2 is 9.414
+New cluster 5
+Glowworm 8 with pdb lightdock_8.pdb
+RMSD between 3 and 8 is 7.980
+RMSD between 6 and 8 is 5.623
+RMSD between 0 and 8 is 8.147
+RMSD between 5 and 8 is 8.182
+RMSD between 7 and 8 is 7.451
+RMSD between 2 and 8 is 8.337
+New cluster 6
+Glowworm 1 with pdb lightdock_1.pdb
+RMSD between 3 and 1 is 5.530
+RMSD between 6 and 1 is 9.025
+RMSD between 0 and 1 is 6.481
+RMSD between 5 and 1 is 6.954
+RMSD between 7 and 1 is 7.928
+RMSD between 2 and 1 is 3.114
+Glowworm 1 goes into cluster 5
+Glowworm 4 with pdb lightdock_4.pdb
+RMSD between 3 and 4 is 9.306
+RMSD between 6 and 4 is 7.367
+RMSD between 0 and 4 is 8.225
+RMSD between 5 and 4 is 9.455
+RMSD between 7 and 4 is 8.641
+RMSD between 2 and 4 is 9.509
+RMSD between 8 and 4 is 7.742
+New cluster 7
+{0: [3, 9], 1: [6], 2: [0], 3: [5], 4: [7], 5: [2, 1], 6: [8], 7: [4]}
+```
+
+A new file in CSV format is created with the clustering information:
+
+```cat cluster.repr
+0:2: 9.87810:3:lightdock_3.pdb
+1:1: 9.66368:6:lightdock_6.pdb
+2:1: 7.52192:0:lightdock_0.pdb
+3:1: 7.36888:5:lightdock_5.pdb
+4:1: 6.46572:7:lightdock_7.pdb
+5:2: 5.66227:2:lightdock_2.pdb
+6:1: 5.03967:8:lightdock_8.pdb
+7:1:-34.67761:4:lightdock_4.pdb
+```
+
+For each line, the information is:
+
+```
+cluster_id : population : best_scoring : number_of_neighbors : representative PDB structure
+```
 
 ## 6. Custom Scoring Functions
 
-TBC
+New scoring functions can be added to the LightDock framework. Every different scoring function called by `lighdock` using the `-s` flag represents a directory in the `$LGITHDOCK_HOME/lightdock/scoring` path.
+
+There is a template available to use as a skeleton in the `$LGITHDOCK_HOME/lightdock/scoring/template` directory.
+
+This section will be completed with more details in the future. In the meantime, you can look to the implementation of the different scoring functions already coded in the framework.
