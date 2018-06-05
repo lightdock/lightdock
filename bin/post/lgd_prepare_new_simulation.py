@@ -8,7 +8,7 @@ import os
 import argparse
 import numpy as np
 import math
-from lightdock.constants import DEFAULT_CLUSTER_FOLDER, CLUSTER_REPRESENTATIVES_FILE, \
+from lightdock.constants import DEFAULT_SWARM_FOLDER, CLUSTER_REPRESENTATIVES_FILE, \
     GSO_OUTPUT_FILE, DEFAULT_POSITIONS_FOLDER, DEFAULT_BILD_STARTING_PREFIX, CLUSTERS_CENTERS_FILE, \
     DEFAULT_STARTING_PREFIX
 from lightdock.prep.poses import create_file_from_poses
@@ -18,11 +18,11 @@ from lightdock.prep.geometry import create_bild_file
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
 
 
-log = LoggingManager.get_logger('new_simulation')
+log = LoggingManager.get_logger('lgd_prepare_new_simulation')
 
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(prog='new_simulation')
+    parser = argparse.ArgumentParser(prog='lgd_prepare_new_simulation')
     parser.add_argument("cluster", help="cluster to consider", type=int, metavar="cluster")
     parser.add_argument("steps", help="steps to consider", type=int, metavar="steps")
     parser.add_argument("destination", help="destination folder", metavar="destination")
@@ -98,10 +98,10 @@ if __name__ == "__main__":
 
         cluster_id = args.cluster
         log.info("cluster %d" % cluster_id)
-        result_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), GSO_OUTPUT_FILE % args.steps)
+        result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), GSO_OUTPUT_FILE % args.steps)
         results = read_lightdock_output(result_file_name)
 
-        cluster_repr_file = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), CLUSTER_REPRESENTATIVES_FILE)
+        cluster_repr_file = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), CLUSTER_REPRESENTATIVES_FILE)
         selected_glowworms = read_cluster_representative_data(cluster_repr_file)
 
         representative_results = []

@@ -4,18 +4,18 @@
 
 import os
 import argparse
-from lightdock.constants import DEFAULT_CLUSTER_FOLDER, GSO_OUTPUT_FILE, EVALUATION_FILE, SCORING_FILE, \
+from lightdock.constants import DEFAULT_SWARM_FOLDER, GSO_OUTPUT_FILE, EVALUATION_FILE, SCORING_FILE, \
     LIGHTDOCK_PDB_FILE, CLUSTER_REPRESENTATIVES_FILE
 from lightdock.util.logger import LoggingManager
 from lightdock.util.analysis import read_rmsd_and_contacts_data, read_lightdock_output, write_ranking_to_file, \
     read_cluster_representatives_file
 
 
-log = LoggingManager.get_logger('lightdock_rank')
+log = LoggingManager.get_logger('lgd_rank')
 
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(prog='lightdock_rank')
+    parser = argparse.ArgumentParser(prog='lgd_rank')
     parser.add_argument("num_clusters", help="number of clusters to consider", type=int, metavar="num_clusters")
     parser.add_argument("steps", help="steps to consider", type=int, metavar="steps")
     parser.add_argument("-c", "--clashes_cutoff", help="clashes cutoff", dest="clashes_cutoff", type=float)
@@ -39,18 +39,18 @@ if __name__ == "__main__":
         num_clusters_found = 0
         for cluster_id in range(args.num_clusters):
             if args.result_file:
-                result_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), args.result_file)
+                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), args.result_file)
             else:
-                result_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id),
+                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id),
                                                 (GSO_OUTPUT_FILE % args.steps))
 
-            cluster_representatives_file = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id),
+            cluster_representatives_file = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id),
                                                         CLUSTER_REPRESENTATIVES_FILE)
             clusters = []
             if os.path.isfile(cluster_representatives_file) and not args.ignore_clusters:
                 clusters = read_cluster_representatives_file(cluster_representatives_file)
 
-            scoring_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), SCORING_FILE)
+            scoring_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), SCORING_FILE)
             try:
                 results = read_lightdock_output(result_file_name)
                 num_clusters_found += 1
