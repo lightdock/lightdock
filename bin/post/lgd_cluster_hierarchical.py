@@ -8,15 +8,15 @@ import math
 import numpy as np
 import scipy.cluster.hierarchy as hier
 import Bio.PDB
-from lightdock.constants import CLUSTER_ANALYSIS_FILE, DEFAULT_CLUSTER_FOLDER, DEFAULT_RMSD_EXTENSION, \
+from lightdock.constants import CLUSTER_ANALYSIS_FILE, DEFAULT_SWARM_FOLDER, DEFAULT_RMSD_EXTENSION, \
     NUMPY_FILE_SAVE_EXTENSION, EVALUATION_FILE, SCORING_FILE, GSO_OUTPUT_FILE, LIGHTDOCK_PDB_FILE, \
     CLUSTER_DEFAULT_NAME, CLUSTER_REPRESENTATIVES_FILE
 from lightdock.util.logger import LoggingManager
-from lightdock.util.analysis import read_rmsd_and_contacts_data,\
-    read_lightdock_output
+from lightdock.util.analysis import read_rmsd_and_contacts_data, read_lightdock_output
 
 
-log = LoggingManager.get_logger('cluster_hierarchical')
+log = LoggingManager.get_logger('lgd_cluster_hierarchical')
+
 
 POPULATION_THRESHOLD = 10
 
@@ -27,7 +27,7 @@ def parse_command_line():
     """
     parser = argparse.ArgumentParser(prog='cluster_poses')
 
-    parser.add_argument("cluster_id", help="cluster to consider", type=int, metavar="cluster_id")
+    parser.add_argument("swarm_id", help="swarm to consider for clustering", type=int, metavar="swarm_id")
     parser.add_argument("steps", help="steps to consider", type=int, metavar="steps")
     parser.add_argument("-f", "--file_name", help="lightdock output file to consider", dest="result_file")
     parser.add_argument("-p", "--ponderated", help="Structures selection takes into account cluster population",
@@ -38,7 +38,7 @@ def parse_command_line():
     return parser.parse_args()
 
 
-def calculate_inter_rmsd(cluster_id):
+def calculate_inter_rmsd(swarm_id):
     N = len(solutions)
     distances = np.zeros((N, N))
     indexes = np.triu_indices(N)
@@ -48,7 +48,7 @@ def calculate_inter_rmsd(cluster_id):
     ca_atoms = [[] for _ in xrange(N)]
     for i in range(N):
         log.info('Reading structure %d' % i)
-        structure_file = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id),
+        structure_file = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id),
                                       LIGHTDOCK_PDB_FILE % i)
         structure = pdb_parser.get_structure("reference", structure_file)
         model = structure[0]
@@ -61,7 +61,7 @@ def calculate_inter_rmsd(cluster_id):
             super_imposer.set_atoms(ca_atoms[i], ca_atoms[j])
             distances[i][j] = super_imposer.rms
             distances[j][i] = distances[i][j]
-    numpy_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id),
+    numpy_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id),
                                    CLUSTER_DEFAULT_NAME + DEFAULT_RMSD_EXTENSION)
     np.save(numpy_file_name, distances)
     log.info('Done.')
@@ -83,17 +83,17 @@ if __name__ == "__main__":
         # Get contacts and rmsds
         contacts, rmsds = read_rmsd_and_contacts_data(EVALUATION_FILE)
 
-        cluster_id = args.cluster_id
-        log.info("cluster %d" % cluster_id)
+        swarm_id = args.swarm_id
+        log.info("cluster %d" % swarm_id)
         solutions = []
         if args.result_file:
-            result_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), args.result_file)
+            result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), args.result_file)
         else:
-            result_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), GSO_OUTPUT_FILE % args.steps)
-        scoring_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), SCORING_FILE)
+            result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), GSO_OUTPUT_FILE % args.steps)
+        scoring_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), SCORING_FILE)
         results = read_lightdock_output(result_file_name)
         for result in results:
-            result.id_cluster = cluster_id
+            result.id_cluster = swarm_id
             try:
                 result.rmsd = rmsds[result.id_cluster][result.id_glowworm]
                 result.contacts = contacts[result.id_cluster][result.id_glowworm]
@@ -104,13 +104,13 @@ if __name__ == "__main__":
 
         if args.rmsd_file:
             log.info('Previous RMSD matrix found. Loading...')
-            rmsd_matrix_file = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id),
+            rmsd_matrix_file = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id),
                                             CLUSTER_DEFAULT_NAME +
                                             DEFAULT_RMSD_EXTENSION + NUMPY_FILE_SAVE_EXTENSION)
             distances = np.load(rmsd_matrix_file)
         else:
             log.info('Calculating RMSD distances...')
-            distances = calculate_inter_rmsd(cluster_id)
+            distances = calculate_inter_rmsd(swarm_id)
         log.info('Done.')
 
         # Calculate clusters
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                                      metric='euclidean', depth=2, method='complete')
 
         # Save data
-        data_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), CLUSTER_ANALYSIS_FILE)
+        data_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), CLUSTER_ANALYSIS_FILE)
         with open(data_file_name, 'w') as output:
             output.write("Clusters found: %d" % max(clusters) + os.linesep)
             output.write(os.linesep)
@@ -150,7 +150,7 @@ if __name__ == "__main__":
                 output.write("Clashes: %s%s" % (stats([solution.contacts for solution in cluster_solutions]), os.linesep))
                 output.write(os.linesep)
 
-        cluster_file_name = os.path.join(DEFAULT_CLUSTER_FOLDER + str(cluster_id), CLUSTER_REPRESENTATIVES_FILE)
+        cluster_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), CLUSTER_REPRESENTATIVES_FILE)
         with open(cluster_file_name, 'w') as output:
             solutions_clustered = {}
             for id_solution, solution in enumerate(solutions):
@@ -192,7 +192,7 @@ if __name__ == "__main__":
                                                         solution.pdb_file) + os.linesep)
 
 
-        log.info("Cluster: %d" % args.cluster_id)
+        log.info("Cluster: %d" % args.swarm_id)
         log.info("Number of steps: %d" % args.steps)
         log.info("Done.")
 
