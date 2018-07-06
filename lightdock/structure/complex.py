@@ -108,6 +108,15 @@ class Complex(object):
         """Moves the structure to the origin of coordinates"""
         translation = [-1*c for c in self.center_of_coordinates()]
         self.translate(translation)
+        return translation
+
+    def get_residue(self, chain_id, residue_name, residue_number):
+        for chain in self.chains:
+            if chain_id == chain.cid:
+                for residue in chain.residues:
+                    if residue.name == residue_name and int(residue.number) == int(residue_number):
+                        return residue
+        return None
 
     def __getitem__(self, item):
         return self.atom_coordinates[item]

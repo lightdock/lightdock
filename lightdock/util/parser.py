@@ -97,6 +97,10 @@ class SetupCommandLineParser(object):
         parser.add_argument("-anm_lig", "--anm_lig", help="Number of ANM modes for ligand", 
                             type=SetupCommandLineParser.valid_integer_number,
                             dest="anm_lig", default=DEFAULT_NMODES_LIG)
+        # Restraints file
+        parser.add_argument("-rst", "--rst", help="Restraints file", 
+                            dest="restraints", type=CommandLineParser.valid_file,
+                            metavar="restraints", default=None)
 
         self.args = parser.parse_args()
 

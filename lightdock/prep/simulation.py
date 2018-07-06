@@ -92,8 +92,9 @@ def check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig):
         return num_glowworms == glowworms
 
 
-def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_points_seed, 
-    ftdock_file=None, use_anm=False, anm_seed=0, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG):
+def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_points_seed,
+    receptor_restraints, ligand_restraints, rec_translation, lig_translation, ftdock_file=None, 
+    use_anm=False, anm_seed=0, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG):
     """Defines the starting positions of each glowworm in the simulation.
 
     If the init_folder already exists, uses the starting positions from this folder.
@@ -104,12 +105,19 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
         os.mkdir(init_folder)
         starting_points_files = calculate_initial_poses(receptor, ligand,
                                                         swarms, glowworms,
-                                                        starting_points_seed, init_folder,
+                                                        starting_points_seed, 
+                                                        receptor_restraints, ligand_restraints,
+                                                        rec_translation, lig_translation,
+                                                        init_folder,
                                                         ftdock_file, use_anm,
                                                         anm_seed, anm_rec, anm_lig)
         log.info("Generated %d positions files" % len(starting_points_files))
     else:
-        log.warning("Folder %s already exists, skipping calculation" % init_folder)
+        if receptor_restraints:
+            log.warning("Folder %s already exists and restraints apply. Check for consistency, possible error!" % init_folder)
+        else:
+            log.warning("Folder %s already exists, skipping calculation" % init_folder)
+
         pattern = os.path.join(DEFAULT_POSITIONS_FOLDER, "%s*.dat" % DEFAULT_STARTING_PREFIX)
         starting_points_files = glob.glob(pattern)
         if len(starting_points_files) != swarms:
@@ -197,3 +205,49 @@ def get_default_box(use_anm, anm_rec, anm_lig):
         boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(anm_lig)])
 
     return BoundingBox(boundaries)
+
+
+def parse_restraints_file(restraints_file_name):
+    with open(restraints_file_name) as input_restraints:
+        raw_restraints = [line.rstrip(os.linesep) for line in input_restraints.readlines()]
+        restraints = {'receptor': [], 'ligand': []}
+        for restraint in raw_restraints:
+            if restraint and restraint[0] in ['R', 'L']:
+                try:
+                    fields = restraint[2:].split('.')
+                    # Only consider first character if many
+                    chain_id = fields[0][0].upper()
+                    # Only considering 3 chars if many
+                    residue = fields[1][0:3].upper()
+                    # Check for integer
+                    residue_number = int(fields[2])
+                    parsed_restraint = "%s.%s.%d" % (chain_id, residue, residue_number)
+                    if restraint[0] == 'R':
+                        restraints['receptor'].append(parsed_restraint)
+                    else:
+                        restraints['ligand'].append(parsed_restraint)
+                except:
+                    log.warning('Ignoring restraints %s' % restraint)
+
+            # Make unique the restraints:
+            restraints['receptor'] = list(set(restraints['receptor']))
+            restraints['ligand'] = list(set(restraints['ligand']))
+
+        return restraints
+
+
+def get_restraints(structure, restraints):
+    """Check for each restraint in the format Chain.ResidueName.ResidueNumber in 
+    restraints if they exist in the given structure.
+    """
+    residues = []
+    for restraint in restraints:
+        chain_id, residue_name, residue_number = restraint.split('.')
+        residue = structure.get_residue(chain_id, residue_name, residue_number)
+        residue
+        if not residue:
+            raise LightDockError("Restraint %s not found in structure" % restraint)
+        else:
+            residues.append(residue)
+    return residues
+

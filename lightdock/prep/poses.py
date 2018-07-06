@@ -1,11 +1,13 @@
 """Module to prepare initial poses for docking"""
 
 import os
+import operator
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
 from lightdock.prep.starting_points import calculate_surface_points
 from lightdock.prep.ftdock import FTDockCoordinatesParser, classify_ftdock_poses
 from lightdock.mathutil.lrandom import MTGenerator, NormalGenerator
 from lightdock.mathutil.cython.quaternion import Quaternion
+from lightdock.mathutil.cython.cutil import distance as cdistance
 from lightdock.constants import CLUSTERS_CENTERS_FILE,\
     DEFAULT_PDB_STARTING_PREFIX, DEFAULT_STARTING_PREFIX, DEFAULT_BILD_STARTING_PREFIX, DEFAULT_EXTENT_MU, \
     DEFAULT_EXTENT_SIGMA
@@ -51,8 +53,32 @@ def create_file_from_poses(pos_file_name, poses):
     positions_file.close()
 
 
+def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, translation, swarms_per_restraint=10):
+    
+    closer_swarms = []
+    for i, residue in enumerate(receptor_restraints):
+        distances = {}
+        ca = residue.get_calpha()
+        for swarm_id, center in enumerate(swarm_centers):
+            distances[swarm_id] = cdistance(ca.x + translation[0], ca.y + translation[1], ca.z + translation[2],
+                                            center[0], center[1], center[2])
+        sorted_distances = sorted(distances.items(), key=operator.itemgetter(1))
+        swarms_considered = 0
+        for swarm in sorted_distances:
+            swarm_id, distance = swarm[0], swarm[1]
+            if distance <= distance_cutoff:
+                closer_swarms.append(swarm_id)
+                swarms_considered += 1
+            if swarms_considered == swarms_per_restraint:
+                break
+    closer_swarms = list(set(closer_swarms))
+    return closer_swarms
+
+
 def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
-                            seed, dest_folder, ftdock_file='', nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0):
+                            seed, receptor_restraints, ligand_restraints, 
+                            rec_translation, lig_translation,
+                            dest_folder, ftdock_file='', nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0):
     """Calculates the starting points for each of the glowworms using the center of clusters
     and FTDock poses.
     """
@@ -70,6 +96,11 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
                                                                                    ligand, 
                                                                                    num_clusters,
                                                                                    distance_step=1.0)
+    # Filter cluster centers far from the restraints
+    if receptor_restraints:
+        filtered_swarms = apply_restraints(cluster_centers, receptor_restraints, ligand_diameter / 2., rec_translation)
+        cluster_centers = [cluster_centers[i] for i in filtered_swarms]
+
     pdb_file_name = os.path.join(dest_folder, CLUSTERS_CENTERS_FILE)
     create_pdb_from_points(pdb_file_name, cluster_centers)
 

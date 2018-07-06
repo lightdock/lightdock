@@ -85,6 +85,10 @@ class Residue(object):
                 return atom
         return None
 
+    def get_calpha(self):
+        """Get the Calpha atom"""
+        return self.get_atom('CA')
+
     def get_non_hydrogen_atoms(self):
         return [atom for atom in self.atoms if not atom.is_hydrogen()]
 
