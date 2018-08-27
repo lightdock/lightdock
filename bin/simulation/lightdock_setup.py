@@ -65,6 +65,7 @@ if __name__ == "__main__":
             calculate_anm(ligand, args.anm_lig, DEFAULT_LIG_NM_FILE)
 
         # Parse restraints if any:
+        receptor_restraints = ligand_restraints = None
         if args.restraints:
             log.info("Reading restraints from %s" % args.restraints)
             restraints = parse_restraints_file(args.restraints)
