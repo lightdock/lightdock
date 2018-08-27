@@ -59,7 +59,7 @@ If you execute `lightdock_setup` several options will appear:
 ```bash
 usage: lightdock_setup [-h] [--seed_points STARTING_POINTS_SEED]
                        [-ft ftdock_file] [--noxt] [-anm] [--seed_anm ANM_SEED]
-                       [-anm_rec ANM_REC] [-anm_lig ANM_LIG]
+                       [-anm_rec ANM_REC] [-anm_lig ANM_LIG] [-rst restraints]
                        receptor_pdb_file ligand_pdb_file swarms glowworms
 lightdock_setup: error: too few arguments
 
@@ -85,6 +85,7 @@ Below there is a description of the rest of accepted paramenters of `lightdock_s
 - **--seed_anm** *ANM_SEED*: An integer can be specified as the seed used in the random number generator of ANM normal modes extents. 
 - **--anm_rec** *ANM_REC*: The number of non-trivial normal modes calculated for the recepetor in the ANM mode.
 - **--anm_lig** *ANM_LIG*: The number of non-trivial normal modes calculated for the ligand in the ANM mode.
+- **-rst** *restraints_file*: If `restraints_file` is provided, distance restraints on the receptor surface will be calculated to provided residues. See `2.2. Restraints` section for more information.
 
 ### 2.1. Results of the setup
 
@@ -101,7 +102,22 @@ After the execution of `lightdock_setup` script, several files and directories w
 - `*.xyz.npy`: Two files with this extension, one for the receptor and one for the ligand, which contains information about the minimum ellipsoid containing each of the structures in NumPy format.
 - `lightdock_rec.nm.npy`and `lightdock_lig.nm.npy`: If ANM is enabled, two files are created containing the normal modes information calculated by the ProDy library.
 
-### 2.2. Tips and tricks
+### 2.2. Distance restraints (Experimental)
+
+In version `0.5.1`, distance restraints on the receptor surface have been implemented. This new feature works in the following way:
+
+From a `restraints_file` file containing the following information:
+
+```
+R A.SER.150 
+R A.TYR.151
+```
+
+Where `R` means for `Receptor` (at the moment only residue restraints on the receptor are accepted) and then the rest of the line is a residue identifier in the format `Chain.Residue_Name.Residue_Number` in the original PDB file numeration.
+
+For each of these residues, only the closest swarms are considered during `lightdock_setup`. At the moment, only the **10 closest swarms** for each residue are considered. If some of the swarms overlap, then only one copy of that swarm is used.
+
+### 2.3. Tips and tricks
 
 - As a general rule of thumb, the receptor structure is the bigger molecule and the ligand the smaller. With bigger and smaller, the metric used is the longest diameter of the minimum ellipsoid containing the molecule. A script called `lgd_calculate_diameter.py` can be found in `$LIGHTDOCK_HOME/bin/support` path in order to calculate an approximation of that metric.
 
