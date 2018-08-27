@@ -244,7 +244,6 @@ def get_restraints(structure, restraints):
     for restraint in restraints:
         chain_id, residue_name, residue_number = restraint.split('.')
         residue = structure.get_residue(chain_id, residue_name, residue_number)
-        residue
         if not residue:
             raise LightDockError("Restraint %s not found in structure" % restraint)
         else:
