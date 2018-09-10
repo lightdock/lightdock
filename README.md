@@ -69,7 +69,7 @@ A directory called `lightdock` is now available. This is the path for `LIGHTDOCK
 
 ```bash
 export LIGHTDOCK_HOME=/path/to/lightdock/folder
-export PATH=$PATH:$LIGHTDOCK_HOME/bin:$LIGHTDOCK_HOME/lightdock/bin/post:$LIGHTDOCK_HOME/lightdock/bin/support
+export PATH=$PATH:$LIGHTDOCK_HOME/bin:$LIGHTDOCK_HOME/bin/post:$LIGHTDOCK_HOME/bin/support
 export PYTHONPATH=$PYTHONPATH:$LIGHTDOCK_HOME/lightdock/
 ```
 
