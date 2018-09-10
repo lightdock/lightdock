@@ -15,7 +15,6 @@ class TestLogger:
         self.test_path = self.path + '/scratch/'
         try:
             shutil.rmtree(self.test_path)
-            pass
         except:
             pass
         os.mkdir(self.test_path)
