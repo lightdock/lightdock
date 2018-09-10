@@ -42,6 +42,12 @@ To install ProDy library, the simplest way is to use pip (you can use sudo to in
 pip install -U ProDy
 ```
 
+You may also need to install `pyparsing` dependency:
+
+```bash
+pip install pyparsing
+```
+
 More instructions on how to install it can be found in the official documentation (<http://prody.csb.pitt.edu/downloads/>).
 
 In case of using `cpydock` scoring function or to execute the tests, **Freesasa** library has to be installed and compiled with the python-binding options. Tested version in 
