@@ -100,7 +100,7 @@ def read_lightdock_output(file_name, initial=None, final=None):
                                        scoring=float(rest[3])
                                        )
             if initial and final:
-                if (id_line + 1) > final:
+                if (id_line + 2) > final:
                     break
                 if (id_line+1) >= initial:
                     results.append(result)
