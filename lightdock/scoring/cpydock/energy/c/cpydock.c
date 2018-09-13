@@ -53,7 +53,7 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
 
         tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
         tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
-
+        
         rec_len = PySequence_Size(tmp0);
         lig_len = PySequence_Size(tmp1);
 
@@ -63,7 +63,7 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
 
         dims[0] = lig_len;
         PyArray_AsCArray((PyObject **)&tmp1, (void **)&lig_array, dims, 2, descr);
-
+        
         // Get pointers to the Python array structures
         rec_c_charges = PyArray_GETPTR1(rec_charges, 0);
         lig_c_charges = PyArray_GETPTR1(lig_charges, 0);
@@ -146,6 +146,9 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
         // Free structures
         PyArray_Free(tmp0, rec_array);
         PyArray_Free(tmp1, lig_array);
+        Py_DECREF(descr);
+        Py_DECREF(tmp0);
+        Py_DECREF(tmp1);
         free(min_rec_distance);
         free(min_lig_distance);
     }
