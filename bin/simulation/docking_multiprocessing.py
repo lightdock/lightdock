@@ -66,7 +66,16 @@ def set_scoring_function(parser, receptor, ligand):
 
         CurrentScoringFunction = getattr(module, "DefinedScoringFunction")
         CurrentModelAdapter = getattr(module, "DefinedModelAdapter")
-        adapter = CurrentModelAdapter(receptor, ligand)
+        receptor_restraints = ligand_restraints = None
+        try:
+            receptor_restraints = parser.args.receptor_restraints
+        except:
+            pass
+        try:
+            ligand_restraints = parser.args.ligand_restraints
+        except:
+                pass
+        adapter = CurrentModelAdapter(receptor, ligand, receptor_restraints, ligand_restraints)
         scoring_function = CurrentScoringFunction(weight)
         adapters.append(adapter)
         scoring_functions.append(scoring_function)

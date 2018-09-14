@@ -7,7 +7,7 @@ from lightdock.error.lightdock_errors import MinimumVolumeEllipsoidError
 
 class DockingModel(object):
     """Represents a docking model of a protein molecule"""
-    def __init__(self, objects, coordinates, reference_points=None, n_modes=None):
+    def __init__(self, objects, coordinates, restraints=None, reference_points=None, n_modes=None):
         self.objects = objects
         if type(coordinates) is list:
             self.coordinates = coordinates
@@ -26,6 +26,7 @@ class DockingModel(object):
             self.reference_points = reference_points
         self.reference_points = SpacePoints(self.reference_points)
         self.n_modes = n_modes
+        self.restraints = restraints
 
     def translate(self, vector):
         """Translates coordinates based on vector"""
