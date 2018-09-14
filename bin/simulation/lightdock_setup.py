@@ -70,7 +70,7 @@ if __name__ == "__main__":
             log.info("Reading restraints from %s" % args.restraints)
             restraints = parse_restraints_file(args.restraints)
             # Check if restraints have been defined for the ligand, but not to the receptor
-            if len(restraints['ligand']) and not len(restrains['receptor']):
+            if len(restraints['ligand']) and not len(restraints['receptor']):
                 raise LightDockError("Restraints defined for ligand, but not receptor. Try switching structures.")
 
             if not len(restraints['receptor']) and not len(restraints['ligand']):
