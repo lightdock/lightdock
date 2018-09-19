@@ -21,19 +21,14 @@ class ScoringFunction(ObjectiveFunction):
         """Calculates the percentage of satisfied restraints"""
         if not restraints:
             return 0.0
-
+        
         residues = restraints.keys()
         total = len(residues)
         satisfied = 0
         for residue in residues:
-            found = False
-            if found:
-                satisfied += 1
-                continue
-            for index in restraints[residue]:
-                found = (index in interface)
-                if found:
-                    break
+            intersection = set(restraints[residue]) & interface
+            if len(intersection) > 0:
+                satisfied += 1 
         return float(satisfied) / total
         
 

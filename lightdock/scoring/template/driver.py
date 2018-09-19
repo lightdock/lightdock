@@ -10,7 +10,7 @@ class TemplateAdapter(ModelAdapter):
     'Template' scoring function.
     """
 
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         # In model_objects we can store any coordinates object (atoms, beans, etc.)
         model_objects = []
@@ -18,9 +18,9 @@ class TemplateAdapter(ModelAdapter):
             for rec_atom in residue.atoms:
                 model_objects.append(rec_atom)
         try:
-            return DockingModel(model_objects, molecule.copy_coordinates(), n_modes=molecule.n_modes.copy())
+            return DockingModel(model_objects, molecule.copy_coordinates(), restraints, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return DockingModel(model_objects, molecule.copy_coordinates())
+            return DockingModel(model_objects, molecule.copy_coordinates(), restraints)
 
 
 class TemplateScoringFunction(ScoringFunction):

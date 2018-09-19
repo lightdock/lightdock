@@ -93,7 +93,7 @@ class DFIREAdapter(ModelAdapter):
     DFIRE scoring function.
     """
 
-    def _get_docking_model(self, protein):
+    def _get_docking_model(self, protein, restraints):
         """Builds a suitable docking model for this scoring function"""
         r3_to_numerical = {}
         for x in range(len(DFIREPotential.RES_3)):
@@ -114,9 +114,9 @@ class DFIREAdapter(ModelAdapter):
                 atoma = DFIREPotential.atom_res_trans[rnuma, anuma]
                 dfire_objects.append(atoma)
         try:
-            return DockingModel(dfire_objects, protein.copy_coordinates(), n_modes=protein.n_modes.copy())
+            return DockingModel(dfire_objects, protein.copy_coordinates(), restraints, n_modes=protein.n_modes.copy())
         except AttributeError:
-            return DockingModel(dfire_objects, protein.copy_coordinates())
+            return DockingModel(dfire_objects, protein.copy_coordinates(), restraints)
 
 
 class DFIRE(ScoringFunction):

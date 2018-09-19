@@ -62,7 +62,7 @@ class MJ3hAdapter(ModelAdapter):
     MJ3h scoring function.
     """
 
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         list_of_coordinates = []
         not_considered_atoms = ['O', 'C', 'N', 'H']

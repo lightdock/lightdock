@@ -22,7 +22,8 @@ freesasa.setVerbosity(freesasa.silent)
 
 class CPyDockModel(DockingModel):
     """Prepares the structure necessary for the C-implementation of the pyDock scoring function"""
-    def __init__(self, objects, coordinates, charges, vdw_energy, vdw_radii, des_energy, des_radii, sasa, hydrogens,
+    def __init__(self, objects, coordinates, restraints, charges, 
+                 vdw_energy, vdw_radii, des_energy, des_radii, sasa, hydrogens,
                  reference_points=None, n_modes=None):
         super(CPyDockModel, self).__init__(objects, coordinates, reference_points)
         self.charges = charges
@@ -36,7 +37,7 @@ class CPyDockModel(DockingModel):
 
     def clone(self):
         """Creates a copy of the current model"""
-        return CPyDockModel(self.objects, self.coordinates.copy(),
+        return CPyDockModel(self.objects, self.coordinates.copy(), self.restraints,
                             self.charges, self.vdw_energy, self.vdw_radii,
                             self.des_energy, self.des_radii, self.sasa, self.hydrogens,
                             reference_points=self.reference_points.copy())
@@ -46,7 +47,7 @@ class CPyDockAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this
     PyDock scoring function.
     """
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
         # Assign properties to atoms
         for atom in atoms:
@@ -96,10 +97,10 @@ class CPyDockAdapter(ModelAdapter):
         reference_points = ModelAdapter.load_reference_points(molecule)
 
         try:
-            return CPyDockModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
+            return CPyDockModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
                                 sasa, hydrogens, reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return CPyDockModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
+            return CPyDockModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
                                 sasa, hydrogens, reference_points=reference_points)
 
 

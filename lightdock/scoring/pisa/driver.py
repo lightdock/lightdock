@@ -149,7 +149,7 @@ class PISAAdapter(ModelAdapter):
     PISA scoring function.
     """
 
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         pisa_objects = []
         coordinates = []
@@ -160,9 +160,9 @@ class PISAAdapter(ModelAdapter):
                 pisa_objects.append(atom)
                 coordinates.append([atom.x, atom.y, atom.z])
         try:
-            return DockingModel(pisa_objects, molecule.copy_coordinates(), n_modes=molecule.n_modes.copy())
+            return DockingModel(pisa_objects, molecule.copy_coordinates(), restraints, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return DockingModel(pisa_objects, molecule.copy_coordinates())
+            return DockingModel(pisa_objects, molecule.copy_coordinates(), restraints)
 
 
 class PISA(ScoringFunction):
