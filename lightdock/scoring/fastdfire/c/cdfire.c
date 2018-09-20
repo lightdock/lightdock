@@ -79,6 +79,8 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
     *indexes = realloc(*indexes, n*sizeof(unsigned int));
     PyArray_Free(tmp0, rec_array);
     PyArray_Free(tmp1, lig_array);
+    Py_DECREF(tmp0);
+    Py_DECREF(tmp1);
 }
 
 
@@ -89,8 +91,9 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
  **/
 static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     PyObject *receptor, *ligand, *dfire_energy, *receptor_coordinates, *ligand_coordinates = NULL;
-    PyObject *take, *array_tuple, *array_object, *df_en_array, *tmp0, *tmp1, **rec_objects, **lig_objects, *result = NULL;
+    PyObject *take, *array_tuple, *array_object, *tmp0, *tmp1, **rec_objects, **lig_objects, *result = NULL;
     PyArray_Descr *descr;
+    PyArrayObject *df_en_array;
     unsigned int n, m, i, j, d, dfire_bin, atoma, atomb, indexes_len, *array, *indexes;
     double energy, *dfire_en_array;
     npy_intp dims[1];
@@ -139,16 +142,16 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
         Py_INCREF(dfire_energy);
         PyTuple_SET_ITEM(array_tuple, 0, dfire_energy);
         PyTuple_SET_ITEM(array_tuple, 1, array_object);
-        df_en_array = PyObject_Call(take, array_tuple, NULL);
+        df_en_array = (PyArrayObject *)PyObject_Call(take, array_tuple, NULL);
         Py_DECREF(array_tuple);
-        PyArray_AsCArray(&df_en_array, (void *)&dfire_en_array, dims, 1, descr);
+        dfire_en_array = PyArray_GETPTR1(df_en_array, 0);
 
         for (n = 0; n < dims[0]; n++) {
             energy += dfire_en_array[n];
         }
         
         free(array);
-        PyArray_Free(df_en_array, dfire_en_array);
+        Py_DECREF(df_en_array);
         free(indexes);
 
         Py_DECREF(take);
