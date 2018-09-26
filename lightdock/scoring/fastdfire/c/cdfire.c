@@ -88,7 +88,7 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
  **/
 static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     PyObject *receptor, *ligand, *dfire_energy, *receptor_coordinates, *ligand_coordinates;
-    PyObject *take, *array_tuple, *intf_rec_array_object, *intf_lig_array_object, *array_object, *tmp0, *tmp1, **rec_objects, **lig_objects, *result = NULL;
+    PyObject *take, *intf_rec_array_object, *intf_lig_array_object, *array_object, *tmp0, *tmp1, **rec_objects, **lig_objects, *result = NULL;
     PyArrayObject *df_en_array;
     unsigned int n, m, i, j, d, dfire_bin, atoma, atomb, indexes_len, interface_len, *array, *interface_receptor, *interface_ligand, *indexes;
     double interface_cutoff, energy, *dfire_en_array;
@@ -142,12 +142,7 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
         take = PyObject_GetAttrString(tmp0, "take");
         Py_DECREF(tmp0);
         array_object = PyArray_SimpleNewFromData(1, dims, NPY_UINT, array);
-        array_tuple = PyTuple_New(2);
-        Py_INCREF(dfire_energy);
-        PyTuple_SET_ITEM(array_tuple, 0, dfire_energy);
-        PyTuple_SET_ITEM(array_tuple, 1, array_object);
-        df_en_array = (PyArrayObject *)PyObject_Call(take, array_tuple, NULL);
-        Py_DECREF(array_tuple);
+        df_en_array = (PyArrayObject *)PyObject_CallFunctionObjArgs(take, dfire_energy, array_object, NULL);
         dfire_en_array = PyArray_GETPTR1(df_en_array, 0);
 
         for (n = 0; n < dims[0]; n++) {
@@ -158,19 +153,20 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
         free(indexes);
 
         Py_DECREF(df_en_array);
+        Py_DECREF(array_object);
         Py_DECREF(take);
 
     }
 
     dims[0] = interface_len;
 
+    interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
+    interface_ligand = realloc(interface_ligand, interface_len*sizeof(unsigned int));
+
     result = PyTuple_New(3);
     PyTuple_SET_ITEM(result, 0, PyFloat_FromDouble((energy*0.0157 - 4.7)*-1));
     PyTuple_SET_ITEM(result, 1, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_receptor));
     PyTuple_SET_ITEM(result, 2, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_ligand));
-
-    //free(interface_receptor);
-    //free(interface_ligand);
 
     return result;
 }
