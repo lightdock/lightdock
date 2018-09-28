@@ -93,7 +93,7 @@ class SIPPER(ScoringFunction):
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Computes the pyDock scoring energy using receptor and ligand which are
-        instances of DockinModel
+        instances of DockingModel
         """
         energy = csipper.calculate_sipper(receptor_coordinates, ligand_coordinates, self.energy,
                                           receptor.indexes, ligand.indexes,

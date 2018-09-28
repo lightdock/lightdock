@@ -81,7 +81,7 @@ class CPyDockDNA(ScoringFunction):
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Computes the pyDockDNA scoring energy using receptor and ligand which are
-        instances of DockinModel.
+        instances of DockingModel.
         """
         elec, vdw = cdna.calculate_energy(receptor_coordinates, ligand_coordinates,
                                           receptor.charges, ligand.charges,
