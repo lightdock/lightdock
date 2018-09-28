@@ -66,7 +66,7 @@ class VdW(ScoringFunction):
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Computes the truncated VdW energy using receptor and ligand which are
-        instances of the DockinModel class"""
+        instances of the DockingModel class"""
         vdw_energy = cvdw.calculate_vdw(receptor_coordinates, ligand_coordinates,
                                         receptor.vdw_energy, ligand.vdw_energy, receptor.vdw_radii, ligand.vdw_radii)
         return vdw_energy * -1.0 * self.weight

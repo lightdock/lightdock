@@ -70,7 +70,7 @@ class SD(ScoringFunction):
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Computes the pyDock scoring energy using receptor and ligand which are
-        instances of DockinModel
+        instances of DockingModel
         """
         # Calculates electrostatics and VdW energies
         energy = sd.calculate_energy(receptor_coordinates, ligand_coordinates,
