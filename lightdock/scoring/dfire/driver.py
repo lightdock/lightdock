@@ -162,16 +162,28 @@ class DFIRE(ScoringFunction):
     def __init__(self, weight=1.0):
         super(DFIRE, self).__init__(weight)
         self.potential = DFIREPotential()
+        try:
+            with open('dfire.cutoff') as cutoff_file:
+                self.cutoff = float(cutoff_file.readline())
+                log.info('DFIRE cutoff is: %3.2f' % self.cutoff)
+        except (IOError, ValueError):
+            log.info('Using default DFIRE cutoff of 3.9')
+            self.cutoff = 3.9
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, receptor_coordinates, 
                                                                        ligand, ligand_coordinates,
                                                                        self.potential.dfire_dist_to_bins, 
-                                                                       self.potential.dfire_energy)
+                                                                       self.potential.dfire_energy
+                                                                       interface_cutoff=self.cutoff)
 
-        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
-        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
-        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        if len(receptor.restraints) and not len(ligand.restraints):
+            return energy
+        else:
+            perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
+            perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
+            return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+
 
 # Needed to dynamically load the scoring functions from command line
 DefinedScoringFunction = DFIRE
