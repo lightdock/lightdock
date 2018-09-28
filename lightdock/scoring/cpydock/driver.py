@@ -119,13 +119,13 @@ class CPyDock(ScoringFunction):
         """Computes the pyDock scoring energy using receptor and ligand which are
         instances of DockinModel.
         """
-        elec, vdw, solv_rec, solv_lig = cpydock.calculate_energy(receptor_coordinates, ligand_coordinates,
-                                                                 receptor.charges, ligand.charges,
-                                                                 receptor.vdw_energy, ligand.vdw_energy,
-                                                                 receptor.vdw_radii, ligand.vdw_radii,
-                                                                 receptor.hydrogens, ligand.hydrogens,
-                                                                 receptor.sasa, ligand.sasa,
-                                                                 receptor.des_energy, ligand.des_energy)
+        elec, vdw, solv_rec, solv_lig, interface_receptor, interface_ligand = cpydock.calculate_energy(receptor_coordinates, ligand_coordinates,
+                                                                              receptor.charges, ligand.charges,
+                                                                              receptor.vdw_energy, ligand.vdw_energy,
+                                                                              receptor.vdw_radii, ligand.vdw_radii,
+                                                                              receptor.hydrogens, ligand.hydrogens,
+                                                                              receptor.sasa, ligand.sasa,
+                                                                              receptor.des_energy, ligand.des_energy)
         solv = -1*(solv_rec + solv_lig)
         return (elec + parameters.scoring_vdw_weight * vdw + solv)*-1.
 
