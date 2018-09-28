@@ -21,9 +21,9 @@ class SIPPERModel(DockingModel):
     """Prepares the structure necessary for the C-implementation of the SIPPER
     scoring function
     """
-    def __init__(self, objects, coordinates, energy, indexes, atoms_per_residue,
+    def __init__(self, objects, coordinates, restraints, energy, indexes, atoms_per_residue,
                  oda=None, reference_points=None, n_modes=None):
-        super(SIPPERModel, self).__init__(objects, coordinates, reference_points)
+        super(SIPPERModel, self).__init__(objects, coordinates, restraints, reference_points)
         self.energy = energy
         self.indexes = indexes
         self.atoms_per_residue = atoms_per_residue
@@ -32,15 +32,15 @@ class SIPPERModel(DockingModel):
 
     def clone(self):
         """Creates a copy of the current model"""
-        return SIPPERModel(self.objects, self.coordinates.copy(), self.energy, self.indexes, self.atoms_per_residue,
-                           self.oda, reference_points=self.reference_points.copy())
+        return SIPPERModel(self.objects, self.coordinates.copy(), self.restraints, self.energy, self.indexes, 
+                           self.atoms_per_residue, self.oda, reference_points=self.reference_points.copy())
 
 
 class SIPPERAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this
     SIPPER scoring function.
     """
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
         energy = sipper_energy
         indexes = np.array([res_to_index[residue.name] for residue in molecule.residues])
@@ -57,10 +57,10 @@ class SIPPERAdapter(ModelAdapter):
         reference_points = ModelAdapter.load_reference_points(molecule)
 
         try:
-            return SIPPERModel(atoms, coordinates, energy, indexes, atoms_per_residue, oda_values,
+            return SIPPERModel(atoms, coordinates, restraints, energy, indexes, atoms_per_residue, oda_values,
                                reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return SIPPERModel(atoms, coordinates, energy, indexes, atoms_per_residue, oda_values,
+            return SIPPERModel(atoms, coordinates, restraints, energy, indexes, atoms_per_residue, oda_values,
                                reference_points=reference_points)
 
     @staticmethod

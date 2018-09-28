@@ -93,7 +93,7 @@ class DFIREAdapter(ModelAdapter):
     DFIRE scoring function.
     """
 
-    def _get_docking_model(self, protein):
+    def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         r3_to_numerical = {}
         for x in range(len(DFIREPotential.RES_3)):
@@ -105,18 +105,29 @@ class DFIREAdapter(ModelAdapter):
                 name = '%s%s' % (DFIREPotential.RES_3[x], DFIREPotential.atoms_in_residues[DFIREPotential.RES_3[x]][y])
                 atomnumber[name] = y
 
+        parsed_restraints = {}
         dfire_objects = []
-        for residue in protein.residues:
-            for rec_atom in residue.atoms:
-                rec_atom_type = rec_atom.residue_name + rec_atom.name
-                rnuma = r3_to_numerical[rec_atom.residue_name]
-                anuma = atomnumber[rec_atom_type]
-                atoma = DFIREPotential.atom_res_trans[rnuma, anuma]
-                dfire_objects.append(atoma)
+        atom_index = 0
+        for chain in molecule.chains:
+            for residue in chain.residues:
+                res_id = "%s.%s.%s" % (chain.cid, residue.name, str(residue.number))
+                in_restraint = False
+                if restraints and res_id in restraints:
+                    parsed_restraints[res_id] = []
+                    in_restraint = True
+                for rec_atom in residue.atoms:
+                    rec_atom_type = rec_atom.residue_name + rec_atom.name
+                    rnuma = r3_to_numerical[rec_atom.residue_name]
+                    anuma = atomnumber[rec_atom_type]
+                    atoma = DFIREPotential.atom_res_trans[rnuma, anuma]
+                    dfire_objects.append(atoma)
+                    if in_restraint:
+                        parsed_restraints[res_id].append(atom_index)
+                    atom_index += 1
         try:
-            return DockingModel(dfire_objects, protein.copy_coordinates(), n_modes=protein.n_modes.copy())
+            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return DockingModel(dfire_objects, protein.copy_coordinates())
+            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints)
 
 
 class DFIRE(ScoringFunction):
@@ -126,8 +137,12 @@ class DFIRE(ScoringFunction):
         self.potential = DFIREPotential()
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
-        return calculate_dfire(receptor, ligand, self.potential.dfire_energy, receptor_coordinates, ligand_coordinates)
-
+        energy, interface_receptor, interface_ligand = calculate_dfire(receptor, ligand, 
+                                                                       self.potential.dfire_energy, 
+                                                                       receptor_coordinates, ligand_coordinates)
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
 
 # Needed to dynamically load the scoring functions from command line
 DefinedScoringFunction = DFIRE

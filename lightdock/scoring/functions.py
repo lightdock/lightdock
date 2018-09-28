@@ -15,17 +15,32 @@ class ScoringFunction(ObjectiveFunction):
         If more negative means better in the scoring function, the sign must be changed.
         """
         raise NotImplementedError()
+
+    @staticmethod
+    def restraints_satisfied(restraints, interface):
+        """Calculates the percentage of satisfied restraints"""
+        if not restraints:
+            return 0.0
+        
+        residues = restraints.keys()
+        total = len(residues)
+        satisfied = 0
+        for residue in residues:
+            intersection = set(restraints[residue]) & interface
+            if len(intersection) > 0:
+                satisfied += 1 
+        return float(satisfied) / total
         
 
 class ModelAdapter(object):
     """Adapts a given Complex object as a DockingModel suitable for this
     ScoringFunction object.
     """
-    def __init__(self, receptor, ligand):
-        self.receptor_model = self._get_docking_model(receptor)
-        self.ligand_model = self._get_docking_model(ligand)
+    def __init__(self, receptor, ligand, receptor_restraints=None, ligand_restraints=None):
+        self.receptor_model = self._get_docking_model(receptor, receptor_restraints)
+        self.ligand_model = self._get_docking_model(ligand, ligand_restraints)
     
-    def _get_docking_model(self, protein):
+    def _get_docking_model(self, protein, restraints):
         """Complex -> DockingModel interface"""
         raise NotImplementedError()
 

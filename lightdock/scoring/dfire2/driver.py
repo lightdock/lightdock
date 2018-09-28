@@ -62,7 +62,7 @@ class DFIRE2Adapter(ModelAdapter, DFIRE2Potential):
     DFIRE2 scoring function.
     """
 
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         objects = []
         coordinates = []
@@ -73,9 +73,9 @@ class DFIRE2Adapter(ModelAdapter, DFIRE2Potential):
                     objects.append(DFIRE2Object(residue.number, DFIRE2_ATOM_TYPES[rec_atom_type]))
                     coordinates.append([rec_atom.x, rec_atom.y, rec_atom.z])
         try:
-            return DockingModel(objects, SpacePoints(coordinates), n_modes=molecule.n_modes.copy())
+            return DockingModel(objects, SpacePoints(coordinates), restraints, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return DockingModel(objects, SpacePoints(coordinates))
+            return DockingModel(objects, SpacePoints(coordinates), restraints)
 
 
 class DFIRE2(ScoringFunction):

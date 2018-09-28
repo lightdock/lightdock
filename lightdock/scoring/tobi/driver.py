@@ -66,7 +66,7 @@ class TOBIAdapter(ModelAdapter):
     TOBI scoring function.
     """
 
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         residues = [residue for chain in molecule.chains for residue in chain.residues]
         tobi_residues = []

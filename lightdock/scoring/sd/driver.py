@@ -19,8 +19,9 @@ log = LoggingManager.get_logger('sd')
 
 class SDModel(DockingModel):
     """Prepares the structure necessary for the C-implementation"""
-    def __init__(self, objects, coordinates, elec_charges, vdw_energy, vdw_radii, reference_points=None, n_modes=None):
-        super(SDModel, self).__init__(objects, coordinates, reference_points)
+    def __init__(self, objects, coordinates, restraints, 
+                 elec_charges, vdw_energy, vdw_radii, reference_points=None, n_modes=None):
+        super(SDModel, self).__init__(objects, coordinates, restraints, reference_points)
         self.charges = elec_charges
         self.vdw_energy = vdw_energy
         self.vdw_radii = vdw_radii
@@ -28,13 +29,13 @@ class SDModel(DockingModel):
 
     def clone(self):
         """Creates a copy of the current model"""
-        return SDModel(self.objects, self.coordinates.copy(), self.charges.copy(), self.vdw_energy.copy(),
+        return SDModel(self.objects, self.coordinates.copy(), self.restraints, self.charges.copy(), self.vdw_energy.copy(),
                        self.vdw_radii.copy(), reference_points=self.reference_points.copy())
 
 
 class SDAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this scoring function."""
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
         # Assign properties to atoms
         for atom in atoms:
@@ -55,10 +56,10 @@ class SDAdapter(ModelAdapter):
         coordinates = molecule.copy_coordinates()
         reference_points = ModelAdapter.load_reference_points(molecule)
         try:
-            return SDModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii,
+            return SDModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii,
                            reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return SDModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii,
+            return SDModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii,
                            reference_points=reference_points)
 
 

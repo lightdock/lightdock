@@ -18,9 +18,9 @@ log = LoggingManager.get_logger('cdna')
 
 class CPyDockDNAModel(DockingModel):
     """Prepares the structure necessary for the scoring function"""
-    def __init__(self, objects, coordinates, charges, vdw_energy, vdw_radii,
+    def __init__(self, objects, coordinates, restraints, charges, vdw_energy, vdw_radii,
                  reference_points=None, n_modes=None):
-        super(CPyDockDNAModel, self).__init__(objects, coordinates, reference_points)
+        super(CPyDockDNAModel, self).__init__(objects, coordinates, restraints, reference_points)
         self.charges = charges
         self.vdw_energy = vdw_energy
         self.vdw_radii = vdw_radii
@@ -28,14 +28,14 @@ class CPyDockDNAModel(DockingModel):
 
     def clone(self):
         """Creates a copy of the current model"""
-        return CPyDockDNAModel(self.objects, self.coordinates.copy(),
+        return CPyDockDNAModel(self.objects, self.coordinates.copy(), self.restraints, 
                             self.charges, self.vdw_energy, self.vdw_radii,
                             reference_points=self.reference_points.copy())
 
 
 class CPyDockDNAAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this scoring function."""
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
         # Assign properties to atoms
         for atom in atoms:
@@ -61,10 +61,10 @@ class CPyDockDNAAdapter(ModelAdapter):
         reference_points = ModelAdapter.load_reference_points(molecule)
 
         try:
-            return CPyDockDNAModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii,
+            return CPyDockDNAModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii,
                                     reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return CPyDockDNAModel(atoms, coordinates, elec_charges, vdw_energies, vdw_radii,
+            return CPyDockDNAModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii,
                                     reference_points=reference_points)
 
 

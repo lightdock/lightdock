@@ -29,7 +29,7 @@ class VdWModel(DockingModel):
 
 class VdWAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this scoring function."""
-    def _get_docking_model(self, molecule):
+    def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
         # Assign properties to atoms
         for atom in atoms:

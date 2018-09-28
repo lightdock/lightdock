@@ -156,11 +156,23 @@ if __name__ == "__main__":
 
         # Use normal modes if provided:
         if len(rec_extents):
-            for nm in range(DEFAULT_NMODES_REC):
-                receptor_pose.coordinates += nmodes_rec[nm] * rec_extents[i][nm]
+            try:
+                for nm in range(DEFAULT_NMODES_REC):
+                    receptor_pose.coordinates += nmodes_rec[nm] * rec_extents[i][nm]
+            except ValueError, e:
+                log.error("Problem found on calculating ANM for receptor:")
+                log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))
+                log.error("Number of ANM is: %s" % str(nmodes_rec.shape))
+                raise SystemExit
         if len(lig_extents):
-            for nm in range(DEFAULT_NMODES_LIG):
-                ligand_pose.coordinates += nmodes_lig[nm] * lig_extents[i][nm]
+            try:
+                for nm in range(DEFAULT_NMODES_LIG):
+                    ligand_pose.coordinates += nmodes_lig[nm] * lig_extents[i][nm]
+            except ValueError, e:
+                log.error("Problem found on calculating ANM for ligand:")
+                log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))
+                log.error("Number of ANM is: %s" % str(nmodes_rec.shape))
+                raise SystemExit
 
         # We rotate first, ligand it's at initial position
         ligand_pose.rotate(rotations[i])
