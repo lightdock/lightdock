@@ -9,7 +9,10 @@ import os
 from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.scoring.dfire.cython.cdfire import calculate_dfire
+from lightdock.util.logger import LoggingManager
 
+
+log = LoggingManager.get_logger('dfire')
 
 class DFIREPotential(object):
     """Loads DFIRE potentials information"""
@@ -174,7 +177,7 @@ class DFIRE(ScoringFunction):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, receptor_coordinates, 
                                                                        ligand, ligand_coordinates,
                                                                        self.potential.dfire_dist_to_bins, 
-                                                                       self.potential.dfire_energy
+                                                                       self.potential.dfire_energy,
                                                                        interface_cutoff=self.cutoff)
 
         if len(receptor.restraints) and not len(ligand.restraints):
