@@ -28,7 +28,7 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
     PyArrayObject *rec_charges, *lig_charges, *rec_vdw, *lig_vdw, *rec_vdw_radii, *lig_vdw_radii = NULL;
     PyArrayObject *rec_hydrogens, *lig_hydrogens, *rec_asa, *lig_asa, *rec_des_energy, *lig_des_energy = NULL;
     double atom_elec, total_elec, total_vdw, total_solvation_rec, total_solvation_lig, vdw_energy, vdw_radius, p6, k, solv_rec, solv_lig;
-    unsigned int rec_len, lig_len, i, j, interface_len, *interface_receptor, *interface_ligand;
+    unsigned int rec_len, lig_len, i, j, interface_len, intf_array_size, *interface_receptor, *interface_ligand;
     double **rec_array, **lig_array, x, y, z, distance2, interface_cutoff;
     npy_intp dims[2];
     double *rec_c_charges, *lig_c_charges, *rec_c_vdw, *lig_c_vdw, *rec_c_vdw_radii, *lig_c_vdw_radii = NULL;
@@ -44,6 +44,7 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
     total_solvation_lig = 0.0;
     interface_cutoff = 3.9;
     interface_len = 0;
+    intf_array_size = 1;
 
     if (PyArg_ParseTuple(args, "OOOOOOOOOOOOOO|d",
             &receptor_coordinates, &ligand_coordinates, &rec_charges, &lig_charges,
@@ -80,8 +81,10 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
         // Structures to store the atom at minimal distance of a given atom
         min_rec_distance = malloc(rec_len*sizeof(double));
         min_lig_distance = malloc(lig_len*sizeof(double));
+
         interface_receptor = malloc(lig_len*sizeof(unsigned int));
         interface_ligand  = malloc(lig_len*sizeof(unsigned int));
+
         for (i = 0; i < rec_len; i++) min_rec_distance[i] = HUGE_DISTANCE;
         for (j = 0; j < lig_len; j++) min_lig_distance[j] = HUGE_DISTANCE;
 
@@ -126,9 +129,10 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
 
             }
 
-            if (!(interface_len%lig_len)) {
-                interface_receptor = realloc(interface_receptor, (interface_len/lig_len + 1)*lig_len*sizeof(unsigned int));
-                interface_ligand = realloc(interface_ligand, (interface_len/lig_len + 1)*lig_len*sizeof(unsigned int));
+            if (((interface_len + lig_len - 1)/lig_len + 1) > intf_array_size) {
+                intf_array_size++;
+                interface_receptor = realloc(interface_receptor, intf_array_size*lig_len*sizeof(unsigned int));
+                interface_ligand = realloc(interface_ligand, intf_array_size*lig_len*sizeof(unsigned int));
             }
         }
         // Convert total electrostatics to Kcal/mol:
