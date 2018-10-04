@@ -7,20 +7,23 @@ import sys
 import os
 import argparse
 import glob
+import shutil
+import re
 from prody.measure.contacts import Contacts
 from prody import parsePDB, confProDy
 from lightdock.util.logger import LoggingManager
+from lightdock.util.analysis import read_ranking_file
 
 
 # Disable ProDy output
 confProDy(verbosity='info')
-
+filtered_folder = 'filtered'
 
 log = LoggingManager.get_logger('lgd_filter_restraints')
 
 
 def get_structures(dir_path):
-    return glob.glob(os.path.join(dir_path, '*.pdb'))
+    return glob.glob(os.path.join(dir_path, 'swarm_*', '*.pdb'))
 
 
 def get_restraints(restraints_file):
@@ -49,29 +52,41 @@ def parse_command_line():
                             dest="cutoff", type=float, default=5.0)
     parser.add_argument("--fnat", "-fnat", "-f", help="Structures with at least this fraction of native contacts",
                             dest="fnat", type=float)
+    parser.add_argument("--rank", "-rank", "-r", help="Ranking file",
+                            dest="ranking_file")
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
  
-    try:
-        # Parse command line
-        args = parse_command_line()
+    # Parse command line
+    args = parse_command_line()
 
-        print("Calculating interface at {:3.1f}A".format(args.cutoff))
+    log.info("Calculating interface at {:3.1f}A".format(args.cutoff))
 
-        # Get all the PDB structures in a given directory
-        structures = get_structures(args.structures_path)
+    # Get all the PDB structures in a given directory
+    structures = get_structures(args.structures_path)
 
-        restraints_receptor, restraints_ligand = get_restraints(args.restraints_file)
+    restraints_receptor, restraints_ligand = get_restraints(args.restraints_file)
 
-        # Total number of restraints to be satisfied
-        total = float(len(restraints_receptor) + len(restraints_ligand))
+    # Total number of restraints to be satisfied
+    total = float(len(restraints_receptor) + len(restraints_ligand))
 
-        for pdb_file in structures:
+    if os.path.exists(filtered_folder):
+        raise SystemExit("Folder {} already exists".format(filtered_folder))
+    else:
+        os.makedirs(filtered_folder)
+
+    filter_passed = {}
+    percentages = {}
+    for pdb_file in structures:
+        try:
             contacts_receptor = set()
             contacts_ligand = set()
+
+            swarm_id = int(re.findall(r'swarm_\d+', pdb_file)[0].split('_')[-1])
+            glowworm_id = int(re.findall(r'lightdock_\d+', pdb_file)[0].split('_')[-1])
 
             # Read molecule and split by receptor and ligand
             molecule = parsePDB(pdb_file)
@@ -94,12 +109,28 @@ if __name__ == '__main__':
 
             # Calculate percentage of satisfied restraints
             perc = (len(contacts_receptor & restraints_receptor) + len(contacts_ligand & restraints_ligand)) / total
+            percentages[(swarm_id, glowworm_id)] = perc
             if args.fnat:
                 if perc >= args.fnat:
-                    print("{}  {:5.3f}".format(pdb_file, perc))
-            else:
-                print("{}  {:5.3f}".format(pdb_file, perc))
+                    shutil.copyfile(pdb_file, os.path.join(filtered_folder, 'swarm_{}_{}.pdb'.format(swarm_id, glowworm_id)))
+                    try:
+                        filter_passed[swarm_id].append(glowworm_id)
+                    except:
+                        filter_passed[swarm_id] = [glowworm_id]
+            print("{:40s}  {:5.3f}".format(pdb_file, perc))
 
-    except Exception, e:
-        log.error('Filtering has failed. Please see error:')
-        print(str(e))
+        except Exception, e:
+            log.error('Filtering has failed for structure {}. Please see error:'.format(pdb_file))
+            log.error(str(e))
+
+    if args.ranking_file:
+        print(filter_passed)
+        ranking = read_ranking_file(args.ranking_file)
+        filtered_ranking = os.path.join(filtered_folder, 'rank_filtered.list')
+        with open(filtered_ranking, 'w') as handle:
+            for rank in ranking:
+                print(rank)
+                if rank.id_cluster in filter_passed and rank.id_glowworm in filter_passed[rank.id_cluster]:
+                    handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_cluster, 
+                        rank.id_glowworm, rank.scoring, percentages[(rank.id_cluster, rank.id_glowworm)]) + os.linesep)
+
