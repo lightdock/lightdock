@@ -25,7 +25,7 @@ class CPyDockModel(DockingModel):
     def __init__(self, objects, coordinates, restraints, charges, 
                  vdw_energy, vdw_radii, des_energy, des_radii, sasa, hydrogens,
                  reference_points=None, n_modes=None):
-        super(CPyDockModel, self).__init__(objects, coordinates, reference_points)
+        super(CPyDockModel, self).__init__(objects, coordinates, restraints, reference_points)
         self.charges = charges
         self.vdw_energy = vdw_energy
         self.vdw_radii = vdw_radii
@@ -49,8 +49,15 @@ class CPyDockAdapter(ModelAdapter):
     """
     def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
+        parsed_restraints = {}
         # Assign properties to atoms
-        for atom in atoms:
+        for atom_index, atom in enumerate(atoms):
+            res_id = "%s.%s.%s" % (atom.chain_id, atom.residue_name, str(atom.residue_number))
+            if restraints and res_id in restraints:
+                try:
+                    parsed_restraints[res_id].append(atom_index)
+                except:
+                    parsed_restraints[res_id] = [atom_index]
             res_name = atom.residue_name
             atom_name = atom.name
             if res_name == "HIS":
@@ -95,12 +102,11 @@ class CPyDockAdapter(ModelAdapter):
         log.info('Done.')
 
         reference_points = ModelAdapter.load_reference_points(molecule)
-
         try:
-            return CPyDockModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
+            return CPyDockModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
                                 sasa, hydrogens, reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return CPyDockModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
+            return CPyDockModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii, des_energy, des_radii,
                                 sasa, hydrogens, reference_points=reference_points)
 
 
@@ -125,9 +131,13 @@ class CPyDock(ScoringFunction):
                                                                               receptor.vdw_radii, ligand.vdw_radii,
                                                                               receptor.hydrogens, ligand.hydrogens,
                                                                               receptor.sasa, ligand.sasa,
-                                                                              receptor.des_energy, ligand.des_energy)
+                                                                              receptor.des_energy, ligand.des_energy, 
+                                                                              3.9)
         solv = -1*(solv_rec + solv_lig)
-        return (elec + parameters.scoring_vdw_weight * vdw + solv)*-1.
+        energy = (elec + parameters.scoring_vdw_weight * vdw + solv)*-1.
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
 
 
 # Needed to dynamically load the scoring functions from command line
