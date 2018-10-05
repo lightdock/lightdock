@@ -104,22 +104,34 @@ After the execution of `lightdock_setup` script, several files and directories w
 
 ### 2.2. Distance restraints (Experimental)
 
-In version `0.5.1`, distance restraints on the receptor surface have been implemented. This new feature works in the following way:
+In version `0.5.2`, distance restraints on both receptor and ligand have been implemented. This new feature works in the following way:
 
 From a `restraints_file` file containing the following information:
 
 ```
 R A.SER.150 
 R A.TYR.151
+L B.LYS.2
+L B.ARG.3
 ```
 
-Where `R` means for `Receptor` (at the moment only residue restraints on the receptor are accepted) and then the rest of the line is a residue identifier in the format `Chain.Residue_Name.Residue_Number` in the original PDB file numeration.
+Where `R` means for `Receptor` and `L` means for `Ligand`, and then the rest of the line is a residue identifier in the format `Chain.Residue_Name.Residue_Number` in the original PDB file numeration.
 
-For each of these residues, only the closest swarms are considered during `lightdock_setup`. At the moment, only the **10 closest swarms** for each residue are considered. If some of the swarms overlap, then only one copy of that swarm is used.
+For each of residue restraints specified for the receptor, only the closest swarms are considered during `lightdock_setup`. At the moment, only the **10 closest swarms** for each residue are considered. If some of the swarms overlap, then only one copy of that swarm is used.
+
+Then, the simulation will try to optimize both energy and restraints satisfied.
+
+The following scoring functions are prepared to be used with restraints:
+
+* [DFIRE](../lightdock/scoring/dfire)
+* [FastDFIRE](../lightdock/scoring/fastdfire)
+* [CPyDock](../lightdock/scoring/cpydock)
+
+Once the simulation has ended, the script `lgd_filter_restraints.py` should be used in order to remove predictions which don't satisfy the given restraints.
 
 ### 2.3. Tips and tricks
 
-- As a general rule of thumb, the receptor structure is the bigger molecule and the ligand the smaller. With bigger and smaller, the metric used is the longest diameter of the minimum ellipsoid containing the molecule. A script called `lgd_calculate_diameter.py` can be found in `$LIGHTDOCK_HOME/bin/support` path in order to calculate an approximation of that metric.
+- As a general rule of thumb, the receptor structure is the bigger molecule and the ligand the smaller. For this concept of size, the metric used is the longest diameter of the minimum ellipsoid containing the molecule. A script called `lgd_calculate_diameter.py` can be found in `$LIGHTDOCK_HOME/bin/support` path in order to calculate an approximation of that metric.
 
 - If the `init` directory exists, `lightdock_setup` makes use of the information contained in that directory.
 
