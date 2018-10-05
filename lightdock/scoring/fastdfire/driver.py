@@ -139,7 +139,7 @@ class DFIRE(ScoringFunction):
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, ligand, 
                                                                        self.potential.dfire_energy, 
-                                                                       receptor_coordinates.coordinates, ligand_coordinates.coordinates)
+                                                                       receptor_coordinates, ligand_coordinates)
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
         return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy

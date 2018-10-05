@@ -35,16 +35,28 @@ int compare(const void *a, const void *b) {
  * Computation of Euclidean distances and selection of nearest atoms
  *
  **/
-void euclidean_dist(PyArrayObject *receptor_coordinates, PyArrayObject *ligand_coordinates,
+void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates,
                     unsigned int **indexes, unsigned int *indexes_len) {
+    PyObject *tmp0, *tmp1;
     unsigned int rec_len, lig_len, i, j, n;
     double dist, **rec_array, **lig_array;
+    npy_intp dims[2];
 
     *indexes_len = 0;
     n = 0;
 
-    rec_array = (double **)PyArray_DATA(PyArray_GETCONTIGUOUS(receptor_coordinates));
-    lig_array = (double **)PyArray_DATA(PyArray_GETCONTIGUOUS(ligand_coordinates));
+    tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
+    tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
+
+    rec_len = PySequence_Size(tmp0);
+    lig_len = PySequence_Size(tmp1);
+
+    dims[1] = 3;
+    dims[0] = rec_len;
+    PyArray_AsCArray((PyObject **)&tmp0, (void **)&rec_array, dims, 2, PyArray_DescrFromType(NPY_DOUBLE));
+
+    dims[0] = lig_len;
+    PyArray_AsCArray((PyObject **)&tmp1, (void **)&lig_array, dims, 2, PyArray_DescrFromType(NPY_DOUBLE));
 
     *indexes = malloc(3*rec_len*lig_len*sizeof(unsigned int));
 
@@ -62,6 +74,10 @@ void euclidean_dist(PyArrayObject *receptor_coordinates, PyArrayObject *ligand_c
         }
     }
     *indexes = realloc(*indexes, n*sizeof(unsigned int));
+    PyArray_Free(tmp0, rec_array);
+    PyArray_Free(tmp1, lig_array);
+    Py_DECREF(tmp0);
+    Py_DECREF(tmp1);
 }
 
 
@@ -83,7 +99,7 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     interface_len = 0;
 
     if (PyArg_ParseTuple(args, "OOOOO|d", &receptor, &ligand, &dfire_energy, &receptor_coordinates, &ligand_coordinates, interface_cutoff)) {
-        euclidean_dist((PyArrayObject *)receptor_coordinates, (PyArrayObject *)ligand_coordinates, &indexes, &indexes_len);
+        euclidean_dist(receptor_coordinates, ligand_coordinates, &indexes, &indexes_len);
 
         array = malloc(indexes_len*sizeof(unsigned int));
         interface_receptor = malloc(indexes_len*sizeof(unsigned int));
