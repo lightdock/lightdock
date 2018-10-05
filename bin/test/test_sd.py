@@ -82,7 +82,3 @@ class TestRegressionSDLong(RegressionTest):
                                self.test_path + 'swarm_0/gso_0.out')
             assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_10.out',
                                self.test_path + 'swarm_0/gso_10.out')
-            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_20.out',
-                               self.test_path + 'swarm_0/gso_20.out')
-            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_30.out',
-                               self.test_path + 'swarm_0/gso_30.out')
