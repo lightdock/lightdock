@@ -98,7 +98,7 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     energy = 0.;
     interface_len = 0;
 
-    if (PyArg_ParseTuple(args, "OOOOO|d", &receptor, &ligand, &dfire_energy, &receptor_coordinates, &ligand_coordinates, interface_cutoff)) {
+    if (PyArg_ParseTuple(args, "OOOOO|d", &receptor, &ligand, &dfire_energy, &receptor_coordinates, &ligand_coordinates, &interface_cutoff)) {
         euclidean_dist(receptor_coordinates, ligand_coordinates, &indexes, &indexes_len);
 
         array = malloc(indexes_len*sizeof(unsigned int));

@@ -49,7 +49,7 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
     if (PyArg_ParseTuple(args, "OOOOOOOOOOOOOO|d",
             &receptor_coordinates, &ligand_coordinates, &rec_charges, &lig_charges,
             &rec_vdw, &lig_vdw, &rec_vdw_radii, &lig_vdw_radii, &rec_hydrogens, &lig_hydrogens,
-            &rec_asa, &lig_asa, &rec_des_energy, &lig_des_energy, interface_cutoff)) {
+            &rec_asa, &lig_asa, &rec_des_energy, &lig_des_energy, &interface_cutoff)) {
 
         tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
         tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
