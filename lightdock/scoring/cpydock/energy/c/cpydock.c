@@ -29,7 +29,7 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
     PyArrayObject *rec_hydrogens, *lig_hydrogens, *rec_asa, *lig_asa, *rec_des_energy, *lig_des_energy = NULL;
     double atom_elec, total_elec, total_vdw, total_solvation_rec, total_solvation_lig, vdw_energy, vdw_radius, p6, k, solv_rec, solv_lig;
     unsigned int rec_len, lig_len, i, j, interface_len, intf_array_size, *interface_receptor, *interface_ligand;
-    double **rec_array, **lig_array, x, y, z, distance2, interface_cutoff;
+    double **rec_array, **lig_array, x, y, z, distance2, interface_cutoff, interface_cutoff2;
     npy_intp dims[2];
     double *rec_c_charges, *lig_c_charges, *rec_c_vdw, *lig_c_vdw, *rec_c_vdw_radii, *lig_c_vdw_radii = NULL;
     double *rec_c_asa, *lig_c_asa, *rec_c_des_energy, *lig_c_des_energy = NULL;
@@ -50,6 +50,8 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
             &receptor_coordinates, &ligand_coordinates, &rec_charges, &lig_charges,
             &rec_vdw, &lig_vdw, &rec_vdw_radii, &lig_vdw_radii, &rec_hydrogens, &lig_hydrogens,
             &rec_asa, &lig_asa, &rec_des_energy, &lig_des_energy, &interface_cutoff)) {
+
+        interface_cutoff2 = interface_cutoff*interface_cutoff;
 
         tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
         tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
@@ -122,7 +124,7 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
                     total_vdw += k;
                 }
 
-                if (sqrt(distance2) <= interface_cutoff) {
+                if (distance2 <= interface_cutoff2) {
                    interface_receptor[interface_len] = i;
                    interface_ligand[interface_len++] = j;
                 }
