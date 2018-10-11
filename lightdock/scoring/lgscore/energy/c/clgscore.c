@@ -17,7 +17,7 @@
 
 /**
  *
- * calculate_energy pyDock C implementation
+ * calculate_energy lgscore C implementation
  *
  **/
 static PyObject * clgscore_calculate_energy(PyObject *self, PyObject *args) {
@@ -167,7 +167,7 @@ static PyObject * clgscore_calculate_energy(PyObject *self, PyObject *args) {
  *
  **/
 static PyMethodDef module_methods[] = {
-    {"calculate_energy", (PyCFunction)clgscore_calculate_energy, METH_VARARGS, "pyDock C implementation"},
+    {"calculate_energy", (PyCFunction)clgscore_calculate_energy, METH_VARARGS, "lgscore C implementation"},
     {NULL}
 };
 
