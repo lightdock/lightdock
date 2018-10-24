@@ -6,7 +6,6 @@ from __future__ import print_function
 import sys
 import os
 import argparse
-import glob
 import shutil
 import re
 from prody.measure.contacts import Contacts
@@ -22,8 +21,15 @@ filtered_folder = 'filtered'
 log = LoggingManager.get_logger('lgd_filter_restraints')
 
 
-def get_structures(dir_path):
-    return glob.glob(os.path.join(dir_path, 'swarm_*', '*.pdb'))
+def get_structures(ranking, base_path='.'):
+    structures = []
+    for rank in ranking:
+        swarm_id = rank.id_cluster
+        glowworm_id = rank.id_glowworm
+        structures.append(os.path.join(base_path, 
+                                       'swarm_{}'.format(swarm_id), 
+                                       'lightdock_{}.pdb'.format(glowworm_id)))
+    return structures
 
 
 def get_restraints(restraints_file):
@@ -44,7 +50,7 @@ def parse_command_line():
     """Parses command line arguments"""
     parser = argparse.ArgumentParser(prog='lgd_filter_restraints')
 
-    parser.add_argument("structures_path", help="Path of generated structures", metavar="structures_path")
+    parser.add_argument("ranking_file", help="Path of ranking to be used", metavar="ranking_file")
     parser.add_argument("restraints_file", help="File including restraints", metavar="restraints_file")
     parser.add_argument("receptor_chains", help="Chains on the receptor partner", metavar="receptor_chains")
     parser.add_argument("ligand_chains", help="Chains on the receptor partner", metavar="ligand_chains")
@@ -52,8 +58,6 @@ def parse_command_line():
                             dest="cutoff", type=float, default=5.0)
     parser.add_argument("--fnat", "-fnat", "-f", help="Structures with at least this fraction of native contacts",
                             dest="fnat", type=float)
-    parser.add_argument("--rank", "-rank", "-r", help="Ranking file",
-                            dest="ranking_file")
 
     return parser.parse_args()
 
@@ -65,8 +69,12 @@ if __name__ == '__main__':
 
     log.info("Calculating interface at {:3.1f}A".format(args.cutoff))
 
+    # Get ranking
+    ranking = read_ranking_file(args.ranking_file)
+
     # Get all the PDB structures in a given directory
-    structures = get_structures(args.structures_path)
+    base_path = os.path.abspath(os.path.dirname(args.ranking_file))
+    structures = get_structures(ranking, base_path)
 
     restraints_receptor, restraints_ligand = get_restraints(args.restraints_file)
 
@@ -123,14 +131,12 @@ if __name__ == '__main__':
             log.error('Filtering has failed for structure {}. Please see error:'.format(pdb_file))
             log.error(str(e))
 
-    if args.ranking_file:
-        print(filter_passed)
-        ranking = read_ranking_file(args.ranking_file)
-        filtered_ranking = os.path.join(filtered_folder, 'rank_filtered.list')
-        with open(filtered_ranking, 'w') as handle:
-            for rank in ranking:
-                print(rank)
-                if rank.id_cluster in filter_passed and rank.id_glowworm in filter_passed[rank.id_cluster]:
-                    handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_cluster, 
-                        rank.id_glowworm, rank.scoring, percentages[(rank.id_cluster, rank.id_glowworm)]) + os.linesep)
 
+    print(filter_passed)
+    filtered_ranking = os.path.join(filtered_folder, 'rank_filtered.list')
+    with open(filtered_ranking, 'w') as handle:
+        for rank in ranking:
+            print(rank)
+            if rank.id_cluster in filter_passed and rank.id_glowworm in filter_passed[rank.id_cluster]:
+                handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_cluster, 
+                    rank.id_glowworm, rank.scoring, percentages[(rank.id_cluster, rank.id_glowworm)]) + os.linesep)
