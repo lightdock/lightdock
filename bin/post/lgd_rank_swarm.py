@@ -33,6 +33,9 @@ if __name__ == '__main__':
             os.chdir(os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id)))
             result_file_name = os.path.join(GSO_OUTPUT_FILE % args.steps)
             lightdock_output = read_lightdock_output(result_file_name)
+            for g in lightdock_output:
+                g.id_cluster = swarm_id
+                g.pdb_file = "lightdock_" + str(g.id_glowworm) + ".pdb"
             write_ranking_to_file(lightdock_output, order_by="scoring")
             os.chdir(CURRENT_FOLDER)
     except IOError:
