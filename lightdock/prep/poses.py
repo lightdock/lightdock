@@ -34,7 +34,10 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, cx, cy, cz):
     c = np.cross(a, b)
     d = np.dot(a, b)
 
-    s = np.sqrt( (1+d)*2 )
+    try:
+        s = np.sqrt( (1+d)*2 )
+    except FloatingPointError:
+        return Quaternion()
     invs = 1. / s
     x = c[0] * invs
     y = c[1] * invs
