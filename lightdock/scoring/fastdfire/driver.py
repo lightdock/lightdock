@@ -140,9 +140,11 @@ class DFIRE(ScoringFunction):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, ligand, 
                                                                        self.potential.dfire_energy, 
                                                                        receptor_coordinates, ligand_coordinates)
-        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
-        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
-        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        # Code to consider contacts in the interface
+        #perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
+        #perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
+        #return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        return energy
 
 # Needed to dynamically load the scoring functions from command line
 DefinedScoringFunction = DFIRE

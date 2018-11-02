@@ -94,7 +94,8 @@ def check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig):
 
 def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_points_seed,
     receptor_restraints, ligand_restraints, rec_translation, lig_translation, ftdock_file=None, 
-    use_anm=False, anm_seed=0, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG):
+    use_anm=False, anm_seed=0, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG,
+    is_membrane=False):
     """Defines the starting positions of each glowworm in the simulation.
 
     If the init_folder already exists, uses the starting positions from this folder.
@@ -110,7 +111,8 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
                                                         rec_translation, lig_translation,
                                                         init_folder,
                                                         ftdock_file, use_anm,
-                                                        anm_seed, anm_rec, anm_lig)
+                                                        anm_seed, anm_rec, anm_lig,
+                                                        is_membrane)
         log.info("Generated %d positions files" % len(starting_points_files))
     else:
         if receptor_restraints:

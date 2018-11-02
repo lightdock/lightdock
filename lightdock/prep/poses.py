@@ -2,6 +2,7 @@
 
 import os
 import operator
+import numpy as np
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
 from lightdock.prep.starting_points import calculate_surface_points
 from lightdock.prep.ftdock import FTDockCoordinatesParser, classify_ftdock_poses
@@ -24,8 +25,27 @@ def get_random_point_within_sphere(number_generator, radius):
         if x**2 + y**2 + z**2 <= r2:
             return x, y, z
 
+def get_quaternion_for_restraint(rec_residue, lig_residue, cx, cy, cz):
+    """Calculates the quaternion required for orienting the ligand towards the restraint"""
+    r_ca = rec_residue.get_calpha()
+    l_ca = lig_residue.get_calpha()
+    a = np.array([r_ca.x, r_ca.y, r_ca.z])  
+    b = np.array([l_ca.x-cx, l_ca.y-cy, l_ca.z-cz])
+    c = np.cross(a, b)
+    d = np.dot(a, b)
 
-def populate_poses(to_generate, center, radius, number_generator, rng_nm=None, rec_nm=0, lig_nm=0):
+    s = np.sqrt( (1+d)*2 )
+    invs = 1. / s
+    x = c[0] * invs
+    y = c[1] * invs
+    z = c[2] * invs
+    w = s * 0.5
+
+    return Quaternion(w=w, x=x, y=y, z=z).normalize()
+
+
+def populate_poses(to_generate, center, radius, number_generator, rng_nm=None, rec_nm=0, lig_nm=0,
+                    receptor_restraints=None, ligand_restraints=None):
     """Creates new poses around a given center and a given radius"""
     new_poses = []
     for _ in xrange(to_generate):
@@ -33,7 +53,12 @@ def populate_poses(to_generate, center, radius, number_generator, rng_nm=None, r
         tx = center[0] + x
         ty = center[1] + y
         tz = center[2] + z
-        q = Quaternion.random(number_generator)
+        if receptor_restraints and ligand_restraints:
+            rec_residue = receptor_restraints[number_generator.randint(0, len(receptor_restraints)-1)]
+            lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
+            q = get_quaternion_for_restraint(rec_residue, lig_residue, center[0], center[1], center[2])
+        else:
+            q = Quaternion.random(number_generator)
         op_vector = [tx, ty, tz, q.w, q.x, q.y, q.z]
         if rng_nm:
             if rec_nm > 0:
@@ -53,7 +78,8 @@ def create_file_from_poses(pos_file_name, poses):
     positions_file.close()
 
 
-def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, translation, swarms_per_restraint=10):
+def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, translation, 
+                     is_membrane=False, swarms_per_restraint=10):
     
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
@@ -72,14 +98,25 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
             if swarms_considered == swarms_per_restraint:
                 break
     closer_swarms = list(set(closer_swarms))
-    return closer_swarms
+    if is_membrane:
+        # Requieres the receptor to be aligned in the Z axis with the membrane
+        min_z = min([residue.get_calpha().z for residue in receptor_restraints]) + translation[2]
+        compatible = []
+        for swarm_id, center in enumerate(swarm_centers):
+            if swarm_id in closer_swarms:
+                if center[2] >= min_z:
+                    compatible.append(swarm_id)
+        return compatible
+    else:
+        return closer_swarms
 
 
 def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
                             seed, receptor_restraints, ligand_restraints, 
                             rec_translation, lig_translation,
-                            dest_folder, ftdock_file='', nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0):
-    """Calculates the starting points for each of the glowworms using the center of clusters
+                            dest_folder, ftdock_file='', nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
+                            is_membrane=False):
+    """Calculates the starting points for each of the glowworms using the center of swarms
     and FTDock poses.
     """
     # Random number generator for poses
@@ -91,18 +128,19 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
     else:
         rng_nm = None
     
-    # Calculate cluster centers
-    cluster_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor, 
+    # Calculate swarm centers
+    swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor, 
                                                                                    ligand, 
                                                                                    num_clusters,
                                                                                    distance_step=1.0)
     # Filter cluster centers far from the restraints
     if receptor_restraints:
-        filtered_swarms = apply_restraints(cluster_centers, receptor_restraints, ligand_diameter / 2., rec_translation)
-        cluster_centers = [cluster_centers[i] for i in filtered_swarms]
+        filtered_swarms = apply_restraints(swarm_centers, receptor_restraints, ligand_diameter / 2., 
+                                           rec_translation, is_membrane=is_membrane)
+        swarm_centers = [swarm_centers[i] for i in filtered_swarms]
 
     pdb_file_name = os.path.join(dest_folder, CLUSTERS_CENTERS_FILE)
-    create_pdb_from_points(pdb_file_name, cluster_centers)
+    create_pdb_from_points(pdb_file_name, swarm_centers)
 
     ligand_center = ligand.center_of_coordinates()
     radius = 10.    # ligand_diameter / 2.
@@ -114,7 +152,7 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
             raise NotImplementedError('Using FTDock poses with NM is not supported')
 
         poses = FTDockCoordinatesParser.get_list_of_poses(ftdock_file, ligand_center)
-        clusters = classify_ftdock_poses(poses, cluster_centers, radius)
+        clusters = classify_ftdock_poses(poses, swarm_centers, radius)
 
         for cluster_id, ftdock_poses in clusters.iteritems():
             # Translate FTDock poses into lightdock poses
@@ -131,7 +169,7 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
             # Populate new poses if needed
             if len(poses) < num_glowworms:
                 needed = num_glowworms - len(poses)
-                poses.extend(populate_poses(needed, cluster_centers[cluster_id], radius, rng))
+                poses.extend(populate_poses(needed, swarm_centers[cluster_id], radius, rng))
 
             # Save poses as pdb file
             pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, cluster_id))
@@ -144,8 +182,9 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
             positions_files.append(pos_file_name)
             create_bild_file(bild_file_name, poses)
     else:
-        for cluster_id, cluster_center in enumerate(cluster_centers):
-            poses = populate_poses(num_glowworms, cluster_center, radius, rng, rng_nm, rec_nm, lig_nm)
+        for cluster_id, cluster_center in enumerate(swarm_centers):
+            poses = populate_poses(num_glowworms, cluster_center, radius, rng, rng_nm, rec_nm, lig_nm,
+                                    receptor_restraints, ligand_restraints)
             # Save poses as pdb file
             pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, cluster_id))
             create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])

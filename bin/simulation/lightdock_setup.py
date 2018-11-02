@@ -89,7 +89,7 @@ if __name__ == "__main__":
                                                              receptor_restraints, ligand_restraints, 
                                                              rec_translation, lig_translation,
                                                              args.ftdock_file, args.use_anm, args.anm_seed,
-                                                             args.anm_rec, args.anm_lig)
+                                                             args.anm_rec, args.anm_lig, args.membrane)
         if len(starting_points_files) != args.swarms:
             args.swarms = len(starting_points_files)
             log.info('Number of swarms is %d after applying restraints' % args.swarms)

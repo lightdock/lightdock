@@ -101,6 +101,9 @@ class SetupCommandLineParser(object):
         parser.add_argument("-rst", "--rst", help="Restraints file", 
                             dest="restraints", type=CommandLineParser.valid_file,
                             metavar="restraints", default=None)
+        # Membrane setup
+        parser.add_argument("-membrane", "--membrane", help="Enables the extra filter for membrane restraints", 
+                            dest="membrane", action='store_true', default=False)
 
         self.args = parser.parse_args()
 
