@@ -79,20 +79,17 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
     rx = r_ca.x + rt[0]
     ry = r_ca.y + rt[1]
     rz = r_ca.z + rt[2]
-    print rx, ry, rz
 
     lx = l_ca.x + lt[0]
     ly = l_ca.y + lt[1]
     lz = l_ca.z + lt[2]
-    print lx, ly, lz
 
     # Define restraints vectors
     a = np.array([lx, ly, lz])
     b = np.array([rx - tx, ry - ty, rz - tz])
     
     q = quaternion_from_vectors(a, b)
-    #print q
-    #print "***************"
+
     return q
 
 
