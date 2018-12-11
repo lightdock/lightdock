@@ -25,19 +25,43 @@ def get_random_point_within_sphere(number_generator, radius):
         if x**2 + y**2 + z**2 <= r2:
             return x, y, z
 
-def get_quaternion_for_restraint(rec_residue, lig_residue, cx, cy, cz):
-    """Calculates the quaternion required for orienting the ligand towards the restraint"""
-    r_ca = rec_residue.get_calpha()
-    l_ca = lig_residue.get_calpha()
-    a = np.array([r_ca.x, r_ca.y, r_ca.z])  
-    b = np.array([l_ca.x-cx, l_ca.y-cy, l_ca.z-cz])
+
+def normalize_vector(v):
+    norm = np.linalg.norm(v)
+    if norm < 0.00001: 
+       return v
+    return v / norm
+
+
+def orthogonal(v):
+    """Returns the orthogonal vector to v"""
+    x = abs(v[0])
+    y = abs(v[1])
+    z = abs(v[2])
+    if x < y:
+        if x < z:
+            other = np.array([1.0, 0.0, 0.0])
+        else:
+            other = np.array([0.0, 0.0, 1.0])
+    else:
+        if y < z:
+            other = np.array([0.0, 1.0, 0.0])
+        else:
+            other = np.array([0.0, 0.0, 1.0])
+    return np.cross(v, other)
+
+
+def quaternion_from_vectors(a, b):
+    """Calculate quaternion between two vectors a and b."""
+    a = normalize_vector(a)
+    b = normalize_vector(b)
+    # Check for scenario where vectors are in the same direction
+    if np.allclose(a, -b):
+        o = orthogonal(a)
+        return Quaternion(w=0., x=o[0], y=o[1], z=o[2])
     c = np.cross(a, b)
     d = np.dot(a, b)
-
-    try:
-        s = np.sqrt( (1+d)*2 )
-    except FloatingPointError:
-        return Quaternion()
+    s = np.sqrt( (1+abs(d))*2 )
     invs = 1. / s
     x = c[0] * invs
     y = c[1] * invs
@@ -47,19 +71,57 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, cx, cy, cz):
     return Quaternion(w=w, x=x, y=y, z=z).normalize()
 
 
-def populate_poses(to_generate, center, radius, number_generator, rng_nm=None, rec_nm=0, lig_nm=0,
-                    receptor_restraints=None, ligand_restraints=None):
+def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
+    """Calculates the quaternion required for orienting the ligand towards the restraint"""
+    r_ca = rec_residue.get_calpha()
+    l_ca = lig_residue.get_calpha()
+
+    rx = r_ca.x + rt[0]
+    ry = r_ca.y + rt[1]
+    rz = r_ca.z + rt[2]
+    print rx, ry, rz
+
+    lx = l_ca.x + lt[0]
+    ly = l_ca.y + lt[1]
+    lz = l_ca.z + lt[2]
+    print lx, ly, lz
+
+    # Define restraints vectors
+    a = np.array([lx, ly, lz])
+    b = np.array([rx - tx, ry - ty, rz - tz])
+    
+    q = quaternion_from_vectors(a, b)
+    #print q
+    #print "***************"
+    return q
+
+
+def populate_poses(to_generate, center, radius, number_generator, rec_translation, lig_translation,
+                    rng_nm=None, rec_nm=0, lig_nm=0, receptor_restraints=None, ligand_restraints=None):
     """Creates new poses around a given center and a given radius"""
     new_poses = []
+
+    # Calculate closer residue restraints
+    closest_residues = []
+    if receptor_restraints:
+        distances = []
+        for i, residue in enumerate(receptor_restraints):
+            ca = residue.get_calpha()
+            distances.append((i, cdistance(ca.x , ca.y , ca.z ,
+                                            center[0], center[1], center[2])))
+        distances.sort(key=lambda tup: tup[1])
+        closest_residues = [x[0] for x in distances[:10]]
+
     for _ in xrange(to_generate):
         x, y, z = get_random_point_within_sphere(number_generator, radius)
         tx = center[0] + x
         ty = center[1] + y
         tz = center[2] + z
         if receptor_restraints and ligand_restraints:
-            rec_residue = receptor_restraints[number_generator.randint(0, len(receptor_restraints)-1)]
+            rec_residue = receptor_restraints[closest_residues[number_generator.randint(0, len(closest_residues)-1)]]
             lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
-            q = get_quaternion_for_restraint(rec_residue, lig_residue, center[0], center[1], center[2])
+            q = get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz,
+                                             rec_translation, lig_translation)
         else:
             q = Quaternion.random(number_generator)
         op_vector = [tx, ty, tz, q.w, q.x, q.y, q.z]
@@ -172,7 +234,7 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
             # Populate new poses if needed
             if len(poses) < num_glowworms:
                 needed = num_glowworms - len(poses)
-                poses.extend(populate_poses(needed, swarm_centers[cluster_id], radius, rng))
+                poses.extend(populate_poses(needed, swarm_centers[cluster_id], radius, rng, rec_translation, lig_translation))
 
             # Save poses as pdb file
             pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, cluster_id))
@@ -186,8 +248,8 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
             create_bild_file(bild_file_name, poses)
     else:
         for cluster_id, cluster_center in enumerate(swarm_centers):
-            poses = populate_poses(num_glowworms, cluster_center, radius, rng, rng_nm, rec_nm, lig_nm,
-                                    receptor_restraints, ligand_restraints)
+            poses = populate_poses(num_glowworms, cluster_center, radius, rng, rec_translation, lig_translation,
+                                    rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints)
             # Save poses as pdb file
             pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, cluster_id))
             create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])
