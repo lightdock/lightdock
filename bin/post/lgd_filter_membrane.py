@@ -118,7 +118,7 @@ if __name__ == '__main__':
             perc = out / float(len(ca_ligand))
             
             if perc >= args.cutoff:
-            percentages[(swarm_id, glowworm_id)] = perc
+                percentages[(swarm_id, glowworm_id)] = perc
                 shutil.copyfile(pdb_file, os.path.join(filtered_folder, 'swarm_{}_{}.pdb'.format(swarm_id, glowworm_id)))
                 try:
                     filter_passed[swarm_id].append(glowworm_id)
