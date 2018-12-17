@@ -69,11 +69,18 @@ if __name__ == "__main__":
         if args.restraints:
             log.info("Reading restraints from %s" % args.restraints)
             restraints = parse_restraints_file(args.restraints)
+
+            # Calculate number of restraints in order to check them
+            num_rec_active = len(restraints['receptor']['active'])
+            num_rec_passive = len(restraints['receptor']['passive'])
+            num_lig_active = len(restraints['ligand']['active'])
+            num_lig_passive = len(restraints['ligand']['passive'])
+
             # Check if restraints have been defined for the ligand, but not to the receptor
-            if len(restraints['ligand']) and not len(restraints['receptor']):
+            if not num_rec_active and not num_rec_passive and (num_lig_active or num_lig_passive):
                 raise LightDockError("Restraints defined for ligand, but not receptor. Try switching structures.")
 
-            if not len(restraints['receptor']) and not len(restraints['ligand']):
+            if not num_rec_active and not num_rec_passive and not num_lig_active and not num_lig_passive:
                 raise LightDockError("Restraints file specified, but not a single restraint found")
 
             # Check if restraints correspond with real residues
@@ -82,11 +89,26 @@ if __name__ == "__main__":
             ligand_restraints = get_restraints(ligand, restraints['ligand'])
             args.ligand_restraints = restraints['ligand']
 
+            log.info("Number of receptor restraints is: %d (active), %d (passive)" % (num_rec_active, num_rec_passive))
+            log.info("Number of ligand restraints is: %d (active), %d (passive)" % (num_lig_active, num_lig_passive))
+
+        rec_restraints = None
+        try:
+            rec_restraints = receptor_restraints['active'] + receptor_restraints['passive']
+        except:
+            pass
+
+        lig_restraints = None
+        try:
+            lig_restraints = ligand_restraints['active'] + ligand_restraints['passive']
+        except:
+            pass
+
         # Calculate surface points (swarm centers) over receptor structure
         starting_points_files = calculate_starting_positions(receptor, ligand, 
                                                              args.swarms, args.glowworms, 
                                                              args.starting_points_seed,
-                                                             receptor_restraints, ligand_restraints, 
+                                                             rec_restraints, lig_restraints,
                                                              rec_translation, lig_translation,
                                                              args.ftdock_file, args.use_anm, args.anm_seed,
                                                              args.anm_rec, args.anm_lig, args.membrane)

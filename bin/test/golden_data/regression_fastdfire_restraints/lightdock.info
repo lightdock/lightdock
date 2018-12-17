@@ -8,30 +8,37 @@
     "glowworms": 25, 
     "gso_seed": 324324, 
     "ligand_pdb": "2UUY_lig.pdb", 
-    "ligand_restraints": [
-        "B.CYS.69", 
-        "B.ALA.70", 
-        "B.GLY.67", 
-        "B.GLU.68"
-    ], 
+    "ligand_restraints": {
+        "active": [
+            "B.GLY.67", 
+            "B.GLU.68", 
+            "B.CYS.69", 
+            "B.ALA.70"
+        ], 
+        "passive": []
+    }, 
     "local_minimization": false, 
+    "membrane": false, 
     "mpi": false, 
     "nmodes_step": 0.5, 
     "noxt": false, 
     "profiling": false, 
     "receptor_pdb": "2UUY_rec.pdb", 
-    "receptor_restraints": [
-        "A.SER.236", 
-        "A.LYS.239", 
-        "A.TRP.237", 
-        "A.ILE.238", 
-        "A.VAL.235", 
-        "A.TYR.234"
-    ], 
-    "restraints": "restraints.list", 
+    "receptor_restraints": {
+        "active": [
+            "A.TYR.234", 
+            "A.VAL.235", 
+            "A.SER.236", 
+            "A.TRP.237", 
+            "A.ILE.238", 
+            "A.LYS.239"
+        ], 
+        "passive": []
+    }, 
+    "restraints": "/Users/bjimenez/workspaces/python/lightdock/bin/test/golden_data/regression_fastdfire_restraints/restraints.list", 
     "rotation_step": 0.5, 
     "scoring_function": "fastdfire", 
-    "setup_file": "setup.json", 
+    "setup_file": "/Users/bjimenez/workspaces/python/lightdock/bin/test/scratch_fastdfire_restraints/setup.json", 
     "starting_points_seed": 324324, 
     "steps": 20, 
     "swarms": 1, 

@@ -1,0 +1,42 @@
+[lightdock] INFO: simulation parameters saved to ./lightdock.info
+[lightdock_setup] INFO: Reading structure from 2UUY_rec.pdb PDB file...
+[lightdock_setup] INFO: 1628 atoms, 223 residues read.
+[lightdock_setup] INFO: Reading structure from 2UUY_lig.pdb PDB file...
+[lightdock_setup] INFO: 415 atoms, 55 residues read.
+[lightdock] INFO: Loading scoring function...
+[lightdock] INFO: Using CPyDock scoring function
+[cpydock] INFO: Calculating reference SASA...
+[cpydock] INFO: Done.
+[cpydock] INFO: Calculating reference SASA...
+[cpydock] INFO: Done.
+[cpydock] WARNING: Error ([Errno 2] No such file or directory: 'vdw.in'), using default VDW cutoff
+[cpydock] INFO: PyDock VDW cutoff is: 0.10
+[lightdock] INFO: Done.
+[kraken] INFO: Kraken has 1 tentacles (cpu cores)
+[kraken] INFO: Tentacle ready with 1 tasks
+[kraken] INFO: 1 ships ready to be smashed
+[lightdock] INFO: Monster spotted
+[kraken] INFO: Release the Kraken!
+[0] step 1
+[0] step 2
+[0] step 3
+[0] step 4
+[0] step 5
+[0] step 6
+[0] step 7
+[0] step 8
+[0] step 9
+[0] step 10
+[0] step 11
+[0] step 12
+[0] step 13
+[0] step 14
+[0] step 15
+[0] step 16
+[0] step 17
+[0] step 18
+[0] step 19
+[0] step 20
+[kraken] INFO: folding tentacle Tentacle-1
+[kraken] INFO: 1 ships destroyed
+[lightdock] INFO: Finished.

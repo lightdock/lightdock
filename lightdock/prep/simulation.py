@@ -212,28 +212,41 @@ def get_default_box(use_anm, anm_rec, anm_lig):
 def parse_restraints_file(restraints_file_name):
     with open(restraints_file_name) as input_restraints:
         raw_restraints = [line.rstrip(os.linesep) for line in input_restraints.readlines()]
-        restraints = {'receptor': [], 'ligand': []}
+        restraints = {'receptor': {'active':[], 'passive':[]}, 'ligand': {'active':[], 'passive':[]}}
         for restraint in raw_restraints:
             if restraint and restraint[0] in ['R', 'L']:
                 try:
-                    fields = restraint[2:].split('.')
+                    fields = restraint.split()
+                    residue_identifier = fields[1].split('.')
                     # Only consider first character if many
-                    chain_id = fields[0][0].upper()
+                    chain_id = residue_identifier[0][0].upper()
                     # Only considering 3 chars if many
-                    residue = fields[1][0:3].upper()
+                    residue = residue_identifier[1][0:3].upper()
                     # Check for integer
-                    residue_number = int(fields[2])
+                    residue_number = int(residue_identifier[2])
                     parsed_restraint = "%s.%s.%d" % (chain_id, residue, residue_number)
-                    if restraint[0] == 'R':
-                        restraints['receptor'].append(parsed_restraint)
+                    # Check type of restraint:
+                    active = True
+                    try:
+                        active = not (fields[2][0].upper() == 'P')
+                    except:
+                        pass
+                    if fields[0] == 'R':
+                        if parsed_restraint not in restraints['receptor']['active'] and \
+                            parsed_restraint not in restraints['receptor']['passive']:
+                            if active:
+                                restraints['receptor']['active'].append(parsed_restraint)
+                            else:
+                                restraints['receptor']['passive'].append(parsed_restraint)
                     else:
-                        restraints['ligand'].append(parsed_restraint)
+                        if parsed_restraint not in restraints['ligand']['active'] and \
+                            parsed_restraint not in restraints['ligand']['passive']:
+                            if active:
+                                restraints['ligand']['active'].append(parsed_restraint)
+                            else:
+                                restraints['ligand']['passive'].append(parsed_restraint)
                 except:
-                    log.warning('Ignoring restraints %s' % restraint)
-
-            # Make unique the restraints:
-            restraints['receptor'] = list(set(restraints['receptor']))
-            restraints['ligand'] = list(set(restraints['ligand']))
+                    log.warning('Ignoring malformed restraint %s' % restraint)
 
         return restraints
 
@@ -242,13 +255,14 @@ def get_restraints(structure, restraints):
     """Check for each restraint in the format Chain.ResidueName.ResidueNumber in 
     restraints if they exist in the given structure.
     """
-    residues = []
-    for restraint in restraints:
-        chain_id, residue_name, residue_number = restraint.split('.')
-        residue = structure.get_residue(chain_id, residue_name, residue_number)
-        if not residue:
-            raise LightDockError("Restraint %s not found in structure" % restraint)
-        else:
-            residues.append(residue)
+    residues = {'active':[], 'passive':[]}
+    for restraint_type in ['active', 'passive']:
+        for restraint in restraints[restraint_type]:
+            chain_id, residue_name, residue_number = restraint.split('.')
+            residue = structure.get_residue(chain_id, residue_name, residue_number)
+            if not residue:
+                raise LightDockError("Restraint %s not found in structure" % restraint)
+            else:
+                residues[restraint_type].append(residue)
     return residues
 

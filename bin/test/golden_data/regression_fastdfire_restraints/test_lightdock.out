@@ -1,0 +1,58 @@
+[lightdock_setup] INFO: Reading structure from 2UUY_rec.pdb PDB file...
+[lightdock_setup] INFO: 1628 atoms, 223 residues read.
+[lightdock_setup] INFO: Reading structure from 2UUY_lig.pdb PDB file...
+[lightdock_setup] INFO: 415 atoms, 55 residues read.
+[lightdock_setup] INFO: Calculating reference points for receptor 2UUY_rec.pdb...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Calculating reference points for ligand 2UUY_lig.pdb...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Saving processed structure to PDB file...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Saving processed structure to PDB file...
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Reading restraints from restraints.list
+[lightdock_setup] INFO: Number of receptor restraints is: 6 (active), 0 (passive)
+[lightdock_setup] INFO: Number of ligand restraints is: 4 (active), 0 (passive)
+[lightdock_setup] INFO: Calculating starting positions...
+[lightdock_setup] INFO: Generated 1 positions files
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: Number of swarms is 1 after applying restraints
+[lightdock_setup] INFO: Preparing environment
+[lightdock_setup] INFO: Done.
+[lightdock_setup] INFO: LightDock setup OK
+[lightdock] INFO: simulation parameters saved to ./lightdock.info
+[lightdock_setup] INFO: Reading structure from 2UUY_rec.pdb PDB file...
+[lightdock_setup] INFO: 1628 atoms, 223 residues read.
+[lightdock_setup] INFO: Reading structure from 2UUY_lig.pdb PDB file...
+[lightdock_setup] INFO: 415 atoms, 55 residues read.
+[lightdock] INFO: Loading scoring function...
+[lightdock] INFO: Using DFIRE scoring function
+[lightdock] INFO: Done.
+[kraken] INFO: Kraken has 1 tentacles (cpu cores)
+[kraken] INFO: Tentacle ready with 1 tasks
+[kraken] INFO: 1 ships ready to be smashed
+[lightdock] INFO: Monster spotted
+[kraken] INFO: Release the Kraken!
+[0] step 1
+[0] step 2
+[0] step 3
+[0] step 4
+[0] step 5
+[0] step 6
+[0] step 7
+[0] step 8
+[0] step 9
+[0] step 10
+[0] step 11
+[0] step 12
+[0] step 13
+[0] step 14
+[0] step 15
+[0] step 16
+[0] step 17
+[0] step 18
+[0] step 19
+[0] step 20
+[kraken] INFO: folding tentacle Tentacle-1
+[kraken] INFO: 1 ships destroyed
+[lightdock] INFO: Finished.

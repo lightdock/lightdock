@@ -69,11 +69,11 @@ def set_scoring_function(parser, receptor, ligand, minion_id):
 
         receptor_restraints = ligand_restraints = None
         try:
-            receptor_restraints = parser.args.receptor_restraints
+            receptor_restraints = parser.args.receptor_restraints['active']
         except:
             pass
         try:
-            ligand_restraints = parser.args.ligand_restraints
+            ligand_restraints = parser.args.ligand_restraints['active']
         except:
             pass
         adapter = CurrentModelAdapter(receptor, ligand, receptor_restraints, ligand_restraints)

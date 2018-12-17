@@ -114,6 +114,7 @@ class TestRegressionFastDFIRERestraints(RegressionTest):
                                 '/golden_data/regression_fastdfire_restraints/'
         shutil.copy(os.path.join(self.golden_data_path, '2UUY_rec.pdb'), self.test_path)
         shutil.copy(os.path.join(self.golden_data_path, '2UUY_lig.pdb'), self.test_path)
+        shutil.copy(os.path.join(self.golden_data_path, 'restraints.list'), self.test_path)
 
     def teardown(self):
         self.clean_test_path()
@@ -128,7 +129,7 @@ class TestRegressionFastDFIRERestraints(RegressionTest):
                                                                                 '2UUY_lig.pdb',
                                                                                 num_swarms,
                                                                                 num_glowworms,
-                                                                                self.golden_data_path + 'restraints.list'
+                                                                                'restraints.list'
                                                                                 )
         os.system(command)
         command = "lightdock %s %d -c 1 -s " \
