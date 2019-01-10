@@ -17,19 +17,19 @@
 ## 1. Introduction
 
 ### 1.1. What is LightDock?
-LightDock is a protein-protein and protein-DNA docking protocol based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm. The LightDock protocol has been published in Oxford Bioinformatics:
+LightDock is a protein-protein and protein-DNA docking protocol based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm. The first version of the LightDock protocol was published in [Oxford Bioinformatics](https://academic.oup.com/bioinformatics) journal:
 
 **LightDock: a new multi-scale approach to protein–protein docking**<br>
-[Brian Jiménez-García](https://scholar.google.es/citations?user=eVN1WVYAAAAJ&hl=en), Jorge Roel-Touris, Miguel Romero-Durana, Miquel Vidal, Daniel Jiménez-González and Juan Fernández-Recio<br>
+[Brian Jiménez-García](http://bjimenezgarcia.com), Jorge Roel-Touris, Miguel Romero-Durana, Miquel Vidal, Daniel Jiménez-González and Juan Fernández-Recio<br>
 *Bioinformatics*, Volume 34, Issue 1, 1 January 2018, Pages 49–55, [https://doi.org/10.1093/bioinformatics/btx555](https://doi.org/10.1093/bioinformatics/btx555)
 
 Specific details of the protocol can be found in the publication mentioned above, but in summary, LightDock is:
 
-- *Ab initio* protocol, which means that only requires of the 3D coordinates of the protein partners for predicting the protein-protein or protein-DNA complex.
+- *Ab initio* protocol, which means that only requires of the 3D coordinates of the protein partners for predicting the protein-protein, protein-peptide or protein-DNA complex.
 
-- Capable of modeling protein-protein and protein-DNA complexes in rigid-body fashion or modeling backbone flexibility using [Anisotropic Network Model](https://en.wikipedia.org/wiki/Anisotropic_Network_Model) (ANM). If ANM mode is activated, LightDock calculates the Ca-Ca ANM model using the awesome [ProDy](http://prody.csb.pitt.edu/) Python library. By default, the first 10 non-trivial normal modes are calculated for both receptor and ligand (in every residue backbone, extended to side-chains). See [Prody ANM documentation](http://prody.csb.pitt.edu/tutorials/enm_analysis/anm.html) for an example.
+- Capable of modeling protein-protein, protein-peptide and protein-DNA complexes in rigid-body fashion or modeling backbone flexibility using [Anisotropic Network Model](https://en.wikipedia.org/wiki/Anisotropic_Network_Model) (ANM). If ANM mode is activated, LightDock calculates the Ca-Ca ANM model using the awesome [ProDy](http://prody.csb.pitt.edu/) Python library. By default, the first 10 non-trivial normal modes are calculated for both receptor and ligand (in every residue backbone, extended to side-chains). See [Prody ANM documentation](http://prody.csb.pitt.edu/tutorials/enm_analysis/anm.html) for an example. The number of non-trivial normal modes can be tuned by the user. 
 
-- Customizable by the user. LightDock is not only a protocol, but a framework for testing and developing custom scoring functions. The GSO optimization algorithm is agnostic of the force-field used, so in theory LightDock is capable of minimizing the docking energies in any force-field given by the user. See *Custom Scoring Functions* section for more details.
+- Customizable by the user. LightDock is not only a protocol, but a framework for testing and developing custom scoring functions. The GSO optimization algorithm is agnostic of the force-field used, so in theory LightDock is capable of minimizing the docking energies in any force-field given by the user. See [Custom Scoring Functions](#6-custom-scoring-functions) section for more details.
 
 - Prepared to scale in [HPC](https://en.wikipedia.org/wiki/Supercomputer) architectures. LightDock nature is *embarrassingly parallel* as each swarm is treated as an independent simulation. This property makes LightDock to scale up to a number of CPU cores equal to the number of swarms simulated. Two implementations are given: 1) [multiprocessing](https://docs.python.org/2/library/multiprocessing.html) (by default) and 2) MPI (using [mpi4py](http://mpi4py.scipy.org/docs/) library).
 
@@ -37,11 +37,11 @@ Specific details of the protocol can be found in the publication mentioned above
 
 
 ### 1.2. Swarms
-In LightDock, the receptor molecule is keep fixed (despite atoms positions can move if ANM mode is enabled). Over its surface, a set of points is calculated. Each of these points is a swarm center which represent an independent simulation. For example, for complex [1VFB](https://www.rcsb.org/structure/1VFB), 400 swarms are calculated:
+In LightDock, the receptor molecule is kept fixed (despite atoms positions can move if ANM mode is enabled). Over its surface, a set of points is calculated. Each of these points is a swarm center which represents an independent simulation. For example, for complex [1VFB](https://www.rcsb.org/structure/1VFB), 400 swarms are calculated:
 
 ![Swarms centers](media/1vfb_cswarms_centers.png "Swarm centers")
 
-For each of these swarm centers, a number *N* of glowworms, the algorithm agents, are disposed in a random way. Every glowworm represents a possible ligand conformation. In the following figure a set of 300 glowworms are displayed in a single swarm:
+For each of these swarm centers, a number *N* of glowworms, the algorithm agents, are disposed in a random way (if residue restraints are not being applied). Every glowworm represents a possible ligand conformation. In the following figure a set of 300 glowworms is displayed in a single swarm:
 
 ![Swarms and glowworms](media/swarm.png "Swarm and glowworms")
 
@@ -52,7 +52,7 @@ More in detail, each glowworm is represented as a 3D-axis object in its center o
 
 ## 2. Setup a simulation
 
-In LightDock versions prior to 0.5.0, this step was optional. From version 0.5.0, a setup step is mandatory for any simulation. This new Lightdock setup reduces complexity of the main program and it will allow the user to apply distance restraints.
+In LightDock versions prior to 0.5.0, this step was optional. From version 0.5.0, a setup step is mandatory for any simulation. This new setup step reduces complexity of the main program and it allows the use of residue restraints.
 
 If you execute `lightdock_setup` several options will appear:
 
@@ -60,12 +60,18 @@ If you execute `lightdock_setup` several options will appear:
 usage: lightdock_setup [-h] [--seed_points STARTING_POINTS_SEED]
                        [-ft ftdock_file] [--noxt] [-anm] [--seed_anm ANM_SEED]
                        [-anm_rec ANM_REC] [-anm_lig ANM_LIG] [-rst restraints]
+                       [-membrane]
                        receptor_pdb_file ligand_pdb_file swarms glowworms
 lightdock_setup: error: too few arguments
 
 ```
 
-The mandatory arguments are the PDB file containing the receptor structure, the PDB file containing the ligand structure, the number of swarms of the simulations and the number or glowworms of each swarm in this order.
+The mandatory arguments (not enclosed by `[` and `]`)  are:
+
+- **receptor\_pdb\_file**: the PDB file containing the receptor structure
+- **ligand\_pdb\_file**: the PDB file containing the ligand structure
+- **swarms**: the number of swarms of the simulations
+- **glowworms**: the number or glowworms for each swarm
 
 In the original publication, for each complex of the [Protein-Protein Benchmark v5](https://zlab.umassmed.edu/benchmark/) analyzed, the number of swarms and glowworms were:
 
@@ -76,16 +82,18 @@ Number of glowworms per swarm: 300
 
 We found reasonable those values for number of swarms and glowworms per swarm in order to ensure a certain density and exhaustiveness of sampling, despite for smaller molecules, a smaller number of swarms could be completely valid.
 
-Below there is a description of the rest of accepted paramenters of `lightdock_setup`:
+Below, there is a description of the rest of accepted paramenters by `lightdock_setup`:
 
 - **--seed_points** *STARTING_POINTS_SEED*: An integer can be specified as the seed used in the random number generator of the initial random poses of the ligand.
-- **--ft** *ftdock_file*: LightDock can read the output of the venerable [FTDock](http://www.sbg.bio.ic.ac.uk/docking/ftdock.html) software in order to use the FTDock rigid-body predictions as the starting poses of the LightDock simulation. In order to do so, `lightdock_setup` classifies the different FTDock predictions according to its translation into the corresponding swarm over the surface of the receptor.
+- **--ft** *ftdock_file*: LightDock can read the output of the venerable [FTDock](http://www.sbg.bio.ic.ac.uk/docking/ftdock.html) software in order to use the FTDock rigid-body predictions as the starting poses of the LightDock simulation. In order to do so, `lightdock_setup` classifies the different FTDock predictions according to its translation into the corresponding swarm over the surface of the receptor. **This option is deprecated**.
 - **--noxt**: If this option is enabled, LightDock ignores OXT atoms. This is useful for several scoring functions which don't understand this special type of atom.
 - **--anm**: If this option is enabled, the ANM mode is activated and backbone flexibility is modeled using ANM (via ProDy).
 - **--seed_anm** *ANM_SEED*: An integer can be specified as the seed used in the random number generator of ANM normal modes extents. 
 - **--anm_rec** *ANM_REC*: The number of non-trivial normal modes calculated for the recepetor in the ANM mode.
 - **--anm_lig** *ANM_LIG*: The number of non-trivial normal modes calculated for the ligand in the ANM mode.
-- **-rst** *restraints_file*: If `restraints_file` is provided, distance restraints on the receptor surface will be calculated to provided residues. See `2.2. Restraints` section for more information.
+- **-rst** *restraints_file*: If `restraints_file` is provided, residue restraints will be considered during the setup and the simulation. See `2.2. Residue Restraints` section for more information.
+- **-membrane**: When enabled, this experimental flag considers the receptor molecule aligned to the Z-axis and filters out swarms which would not be compatible with a trans-membrane domain. To do so, it makes use of the residues provided as receptor restraints. Therefore, this flag will be only valid when **-rst** is enabled.
+
 
 ### 2.1. Results of the setup
 
@@ -93,41 +101,43 @@ After the execution of `lightdock_setup` script, several files and directories w
 
 - `init`: A directory containing initialization data, see below:
     - `cluster_centers.pdb`: A file in PDB format containing dummy atoms which coordinates correspond to a swarm center.
-    - `initial_positions_X.dat`: One file like this for each swarm (where X indicates the id of the swarm), containing the translation, quaternion and normal modes extents (if ANM is activated) for each of the glowworms in this swarm.
+    - `initial_positions_X.dat`: One file like this for each swarm (where `X` indicates the id of the swarm), containing the translation, quaternion and normal modes extents (if ANM is activated) for each of the glowworms in this swarm.
     - `starting_positions_X.pdb`: Same as before, but a PDB file with the glowworm translation vector expressed as a dummy atom.
     - `starting_poses_X.bild`: Same as before, but this time every glowworm pose in rotational space is expressed as a BILD 3D object which can be readed by UCSF Chimera. More information about the format can be found [here](https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/bild.html).
-- `swarm_0, ..., swarm_(N-1)`: For each of the N swarms specified by the `swarms` argument, a directory is created. Note that the first directory is called `swarm_0` and not `swarm_1`.
+- `swarm_0, ..., swarm_(N-1)`: For each of the `N` swarms specified by the `swarms` argument, a directory is created. Note that the first directory is called `swarm_0` and not `swarm_1`.
 - `setup.json`: A file with a summary of the setup step in JSON format. This file will be necessary for running the simulation in the next step.
-- `lightdock_*.pdb`: LightDock parses the input PDB structures and creates two new PDB files, one for the receptor and one for the ligand.
+- `lightdock_*.pdb`: LightDock parses the input PDB structures and creates two new PDB files, one for the receptor and one for the ligand where the molecules have been centered to the origin of coordinates.
 - `*.xyz.npy`: Two files with this extension, one for the receptor and one for the ligand, which contains information about the minimum ellipsoid containing each of the structures in NumPy format.
 - `lightdock_rec.nm.npy`and `lightdock_lig.nm.npy`: If ANM is enabled, two files are created containing the normal modes information calculated by the ProDy library.
 
-### 2.2. Distance restraints (Experimental)
+### 2.2. Residue Restraints (Experimental)
 
-In version `0.5.2`, distance restraints on both receptor and ligand have been implemented. This new feature works in the following way:
+From version `0.5.5`, distance restraints on both receptor and ligand have been implemented. This new feature works in the following way:
 
 From a `restraints_file` file containing the following information:
 
 ```
 R A.SER.150 
-R A.TYR.151
+R A.TYR.151 P
 L B.LYS.2
-L B.ARG.3
+L B.ARG.3 P
 ```
 
-Where `R` means for `Receptor` and `L` means for `Ligand`, and then the rest of the line is a residue identifier in the format `Chain.Residue_Name.Residue_Number` in the original PDB file numeration.
+Where `R` means for `Receptor` and `L` means for `Ligand`, and then the rest of the line is a residue identifier in the format `Chain.Residue_Name.Residue_Number` in the original PDB file numeration. A `P` label in the end indicates this restraint is **passive** in contrast to **active**.
 
-For each of residue restraints specified for the receptor, only the closest swarms are considered during `lightdock_setup`. At the moment, only the **10 closest swarms** for each residue are considered. If some of the swarms overlap, then only one copy of that swarm is used.
+For each residue restraint specified for the receptor, only the closest swarms are considered during `lightdock_setup`. At the moment, only the **10 closest swarms** for each residue are considered. If some of the swarms overlap, then only one copy of that swarm is used. If no residue restraints at ligand level are specified, random orientations for the ligand molecule will be generated. On the other hand, if residue restraints on the ligand level have been defined, `lightdock_setup` will find random `{receptor residue restraint, ligand residue restraint}` pairs (only considering the closest receptor residue restraints to the given swarm) and it will orient the given `ligand residue restraint` towards `receptor residue restraint`. With this mechanism, the algorithm is biased towards correct orientations of the ligand molecule.
 
-Then, the simulation will try to optimize both energy and restraints satisfied.
+Then, the simulation will try to optimize both energy and restraints satisfied taking into account only **active** residues.
 
-The following scoring functions are prepared to be used with restraints:
+The following scoring functions are prepared to be used with residue restraints:
 
 * [DFIRE](../lightdock/scoring/dfire)
 * [FastDFIRE](../lightdock/scoring/fastdfire)
 * [CPyDock](../lightdock/scoring/cpydock)
 
-Once the simulation has ended, the script `lgd_filter_restraints.py` should be used in order to remove predictions which don't satisfy the given restraints.
+Once the simulation has ended, the script `lgd_filter_restraints.py` should be used in order to remove predictions which do not satisfy the provided restraints.
+
+**See a complete example of the LightDock protocol (setup with restraints, simulation, clustering and filtering) [here](4G6M.md).**
 
 ### 2.3. Tips and tricks
 
@@ -136,6 +146,9 @@ Once the simulation has ended, the script `lgd_filter_restraints.py` should be u
 - If the `init` directory exists, `lightdock_setup` makes use of the information contained in that directory.
 
 - The file `setup.json` is intended for reproducibility of the results, but not to be modified by the user.
+
+- Passive residue restraints are used only to filter or bias the orientations, but not considered in the scoring function.
+
 
 ## 3. Run a simulation
 
