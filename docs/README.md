@@ -12,6 +12,7 @@
 - [Generate models](#4-generate-models)
 - [Clustering](#5-clustering)
 - [Custom Scoring Functions](#6-custom-scoring-functions)
+- [Examples](#7-examples)
 
 
 ## 1. Introduction
@@ -388,3 +389,11 @@ New scoring functions can be added to the LightDock framework. Every different s
 There is a template available to use as a skeleton in the `$LGITHDOCK_HOME/lightdock/scoring/template` directory.
 
 This section will be completed with more details in the future. In the meantime, you can look to the implementation of the different scoring functions already coded in the framework.
+
+
+## 7. Examples
+At the moment, these are the examples provided:
+
+- Quick and dirty protein-protein docking: [2UUY Simple Example](2UUY.md)
+- Complete protein-protein docking example using restraints: [4G6M](4G6M.md)
+
