@@ -2,10 +2,11 @@
 
 #### Table of Contents
 
-- [Introduction](#1-introduction)
-- [Reference](#2-reference)
-- [Installation](#3-installation)
-- [Documentation](#4-documentation)
+- [1. Introduction](#1-introduction)
+- [2. Reference](#2-reference)
+- [3. Installation](#3-installation)
+- [4. Documentation](#4-documentation)
+- [5. Get Help](#5-get-help)
 
 ## 1. Introduction
 LightDock is a protein-protein, protein-peptide and protein-DNA docking framework based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm.
@@ -129,12 +130,22 @@ export LIGHTDOCK_LONG_TEST=true
 
 ## 4. Documentation
 
-This GitHub [README.md](README.md) file is intended as an installation guide and to show how to run LightDock in deep.
+This GitHub [README.md](README.md) file is intended as an installation guide.
 
 The complete documentation about how to run the LightDock protocol can be found at:
 
----
+<p align="center">
+	<b><a href="https://brianjimenez.github.io/lightdock">https://brianjimenez.github.io/lightdock/</a>
+	</b>
+</p>
 
-**<https://brianjimenez.github.io/lightdock/>**
 
----
+## 5. Get Help
+
+LightDock is being actively developed and some issues may arise or you may get some extra help to run LightDock. In those cases, there are two main ways to get help:
+
+1. Open a [new issue in this repository](/issues)
+2. Or write an email to <b.jimenezgarcia@uu.nl>
+
+
+
