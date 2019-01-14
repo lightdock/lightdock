@@ -9,7 +9,7 @@
 The simplest way to perform a protein-protein docking in LightDock is to use default parameters and to only provide two [PDB](http://www.rcsb.org/pdb/static.do?p=file_formats/pdb/index.html) files for both receptor and ligand proteins.
 
 ### 1.1. Simplest example
-You fill find in the [examples](../examples/) a folder [2UUY](../examples/2UUY/) with a PDB file for the receptor [2UUY_rec.pdb](../examples/2UUY/2UUY_rec.pdb) and the ligand [2UUY_lig.pdb](../examples/2UUY/2UUY_lig.pdb).
+You fill find in the [examples](https://github.com/brianjimenez/lightdock/tree/master/examples/) a folder [2UUY](https://github.com/brianjimenez/lightdock/tree/master/examples/2UUY) with a PDB file for the receptor [2UUY_rec.pdb](https://github.com/brianjimenez/lightdock/tree/master/examples/2UUY/2UUY_rec.pdb) and the ligand [2UUY_lig.pdb](https://github.com/brianjimenez/lightdock/tree/master/examples/2UUY2UUY_lig.pdb).
 
 In previous versions of LightDock, a setup step was not required. This has changed from **version 0.5.0** and now a simulation setup is required. Follow the next steps in order to perform your first protein-protein docking with LightDock:
 
