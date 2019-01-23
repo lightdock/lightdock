@@ -26,9 +26,10 @@ def get_structures(ranking, base_path='.'):
     for rank in ranking:
         swarm_id = rank.id_cluster
         glowworm_id = rank.id_glowworm
-        structures.append(os.path.join(base_path, 
+        score = rank.scoring
+        structures.append([os.path.join(base_path, 
                                        'swarm_{}'.format(swarm_id), 
-                                       'lightdock_{}.pdb'.format(glowworm_id)))
+                                       'lightdock_{}.pdb'.format(glowworm_id)), score])
     return structures
 
 
@@ -93,50 +94,53 @@ if __name__ == '__main__':
             contacts_receptor = set()
             contacts_ligand = set()
 
-            swarm_id = int(re.findall(r'swarm_\d+', pdb_file)[0].split('_')[-1])
-            glowworm_id = int(re.findall(r'lightdock_\d+', pdb_file)[0].split('_')[-1])
+            pdb = pdb_file[0]
+            swarm_id = int(re.findall(r'swarm_\d+', pdb)[0].split('_')[-1])
+            glowworm_id = int(re.findall(r'lightdock_\d+', pdb)[0].split('_')[-1])
+            score = float(pdb_file[-1])
 
             # Read molecule and split by receptor and ligand
-            molecule = parsePDB(pdb_file)
-            receptor = molecule.select('protein and chain {}'.format(args.receptor_chains))
-            ligand = molecule.select('protein and chain {}'.format(args.ligand_chains))
+            if score > 0.0:
+                molecule = parsePDB(pdb)
+                receptor = molecule.select('protein and chain {}'.format(args.receptor_chains))
+                ligand = molecule.select('protein and chain {}'.format(args.ligand_chains))
 
-            # Contacts on receptor side
-            protein_contacts = Contacts(receptor)
-            contacts = protein_contacts.select(args.cutoff, ligand)
-            if contacts:
-                for contact in contacts:
-                    contacts_receptor.add("R {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                # Contacts on receptor side
+                protein_contacts = Contacts(receptor)
+                contacts = protein_contacts.select(args.cutoff, ligand)
+                if contacts:
+                    for contact in contacts:
+                        contacts_receptor.add("R {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
 
-            # Contacts on ligand side
-            protein_contacts = Contacts(ligand)
-            contacts = protein_contacts.select(args.cutoff, receptor)
-            if contacts:
-                for contact in contacts:
-                    contacts_ligand.add("L {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                # Contacts on ligand side
+                protein_contacts = Contacts(ligand)
+                contacts = protein_contacts.select(args.cutoff, receptor)
+                if contacts:
+                    for contact in contacts:
+                        contacts_ligand.add("L {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
 
-            # Calculate percentage of satisfied restraints
-            perc = (len(contacts_receptor & restraints_receptor) + len(contacts_ligand & restraints_ligand)) / total
-            percentages[(swarm_id, glowworm_id)] = perc
-            if args.fnat:
-                if perc >= args.fnat:
-                    shutil.copyfile(pdb_file, os.path.join(filtered_folder, 'swarm_{}_{}.pdb'.format(swarm_id, glowworm_id)))
-                    try:
-                        filter_passed[swarm_id].append(glowworm_id)
-                    except:
-                        filter_passed[swarm_id] = [glowworm_id]
-            print("{:40s}  {:5.3f}".format(pdb_file, perc))
+                # Calculate percentage of satisfied restraints
+                perc = (len(contacts_receptor & restraints_receptor) + len(contacts_ligand & restraints_ligand)) / total
+                percentages[(swarm_id, glowworm_id)] = perc
+                if args.fnat:
+                    if perc >= args.fnat:
+                        shutil.copyfile(pdb, os.path.join(filtered_folder, 'swarm_{}_{}.pdb'.format(swarm_id, glowworm_id)))
+                        try:
+                            filter_passed[swarm_id].append(glowworm_id)
+                        except:
+                            filter_passed[swarm_id] = [glowworm_id]
+                print("{:40s}  {:5.3f}".format(pdb, perc))
 
         except Exception, e:
-            log.error('Filtering has failed for structure {}. Please see error:'.format(pdb_file))
+            log.error('Filtering has failed for structure {}. Please see error:'.format(pdb))
             log.error(str(e))
 
 
-    print(filter_passed)
+    #print(filter_passed)
     filtered_ranking = os.path.join(filtered_folder, 'rank_filtered.list')
     with open(filtered_ranking, 'w') as handle:
         for rank in ranking:
-            print(rank)
+            #print(rank)
             if rank.id_cluster in filter_passed and rank.id_glowworm in filter_passed[rank.id_cluster]:
                 handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_cluster, 
                     rank.id_glowworm, rank.scoring, percentages[(rank.id_cluster, rank.id_glowworm)]) + os.linesep)
