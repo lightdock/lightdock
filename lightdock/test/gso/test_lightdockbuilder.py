@@ -53,7 +53,7 @@ class TestLightDockGSOBuilder:
         gso = builder.create_from_file(number_of_glowworms, self.random_number_generator, 
                                        self.gso_parameters, [adapter], [scoring_function], self.bounding_box,
                                        self.golden_data_path+'initial_positions_1PPE.txt',
-                                       0.5, 0.5, 0.5, local_minimization=False)
+                                       0.5, 0.5, 0.5, False, 10, 10)
         
         assert 5 == gso.swarm.get_size()
         

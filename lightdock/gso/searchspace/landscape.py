@@ -97,17 +97,10 @@ class DockingLandscapePosition(LandscapePosition):
     """
     def __init__(self, scoring_function, coordinates, receptor, ligand, receptor_id=0, ligand_id=0,
                  step_translation=DEFAULT_TRANSLATION_STEP, step_rotation=DEFAULT_ROTATION_STEP,
-                 step_nmodes=DEFAULT_NMODES_STEP):
+                 step_nmodes=0, num_rec_nmodes=0, num_lig_nmodes=0):
         self.objective_function = scoring_function
         self.translation = np.array(coordinates[:3])
         self.rotation = Quaternion(coordinates[3], coordinates[4], coordinates[5], coordinates[6])
-        # Copy ANM information if required
-        if len(coordinates) > 7 and len(coordinates) == (7 + DEFAULT_NMODES_REC + DEFAULT_NMODES_LIG):
-            self.rec_extent = np.array(coordinates[7:7+DEFAULT_NMODES_REC])
-            self.lig_extent = np.array(coordinates[-DEFAULT_NMODES_LIG:])
-        else:
-            self.rec_extent = np.array([])
-            self.lig_extent = np.array([])
         self.receptor = receptor
         self.ligand = ligand
         self.receptor_id = receptor_id
@@ -115,6 +108,11 @@ class DockingLandscapePosition(LandscapePosition):
         self.step_translation = step_translation
         self.step_rotation = step_rotation
         self.step_nmodes = step_nmodes
+        self.num_rec_nmodes = num_rec_nmodes
+        self.num_lig_nmodes = num_lig_nmodes
+        # Copy ANM information if required
+        self.rec_extent = np.array(coordinates[7:7+self.num_rec_nmodes]) if self.num_rec_nmodes > 0 else np.array([])
+        self.lig_extent = np.array(coordinates[-self.num_lig_nmodes:]) if self.num_lig_nmodes > 0 else np.array([])
         # This part is important, each position needs to retain its own pose coordinates
         self.receptor_pose = self.receptor.coordinates[self.receptor_id].clone()
         self.ligand_pose = self.ligand.coordinates[self.ligand_id].clone()
@@ -129,7 +127,8 @@ class DockingLandscapePosition(LandscapePosition):
         return DockingLandscapePosition(self.objective_function, coordinates,
                                         self.receptor, self.ligand,
                                         self.receptor_id, self.ligand_id,
-                                        self.step_translation, self.step_rotation, self.step_nmodes)
+                                        self.step_translation, self.step_rotation, self.step_nmodes,
+                                        self.num_rec_nmodes, self.num_lig_nmodes)
 
     def evaluate_objective_function(self, receptor_structure_id=None, ligand_structure_id=None):
         """Evaluates the objective function at the given coordinates"""
@@ -147,13 +146,11 @@ class DockingLandscapePosition(LandscapePosition):
         self.ligand_reference_points = self.ligand.reference_points.clone()
 
         # Use normal modes if provided:
-        num_rec_nmodes = len(self.rec_extent)
-        if num_rec_nmodes:
-            for i in range(num_rec_nmodes):
+        if self.num_rec_nmodes > 0:
+            for i in range(self.num_rec_nmodes):
                 self.receptor_pose.coordinates += self.receptor.n_modes[i] * self.rec_extent[i]
-        num_lig_nmodes = len(self.lig_extent)
-        if num_lig_nmodes:
-            for i in range(num_lig_nmodes):
+        if self.num_lig_nmodes > 0:
+            for i in range(self.num_lig_nmodes):
                 self.ligand_pose.coordinates += self.ligand.n_modes[i] * self.lig_extent[i]
 
         # We rotate first, ligand it's at initial position
@@ -198,14 +195,14 @@ class DockingLandscapePosition(LandscapePosition):
             # Rotation (Quaternion SLERP)
             self.rotation = self.rotation.slerp(other.rotation, self.step_rotation)
             # NModes
-            if len(self.rec_extent):
+            if self.num_rec_nmodes > 0:
                 delta_x = other.rec_extent - self.rec_extent
                 n = np.linalg.norm(delta_x)
                 # Only move if required
                 if not np.allclose([0.0], [n]):
                     delta_x *= (self.step_nmodes / n)
                     self.rec_extent += delta_x
-            if len(self.lig_extent):
+            if self.num_lig_nmodes > 0:
                 delta_x = other.lig_extent - self.lig_extent
                 n = np.linalg.norm(delta_x)
                 # Only move if required
@@ -238,8 +235,8 @@ class DockingLandscapePosition(LandscapePosition):
         """Updates the current pose"""
         self.translation = optimized_vector[:3]
         self.rotation = Quaternion(optimized_vector[3], optimized_vector[4], optimized_vector[5], optimized_vector[6])
-        self.rec_extent = optimized_vector[7:7+DEFAULT_NMODES_REC]
-        self.lig_extent = optimized_vector[-DEFAULT_NMODES_LIG:]
+        self.rec_extent = optimized_vector[7:7+self.num_rec_nmodes] if self.num_rec_nmodes > 0 else np.array([])
+        self.lig_extent = optimized_vector[-self.num_lig_nmodes:] if self.num_lig_nmodes > 0 else np.array([])
 
     def minimize(self):
         """Returns the new scoring after minimizing this landscape position using a local non-grandient

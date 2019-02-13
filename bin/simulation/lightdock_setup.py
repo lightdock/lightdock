@@ -61,8 +61,12 @@ if __name__ == "__main__":
 
         # Calculate and save ANM if required
         if args.use_anm:
-            calculate_anm(receptor, args.anm_rec, DEFAULT_REC_NM_FILE)
-            calculate_anm(ligand, args.anm_lig, DEFAULT_LIG_NM_FILE)
+            if args.anm_rec > 0:
+                log.info("Calculating ANM for receptor molecule...")
+                calculate_anm(receptor, args.anm_rec, DEFAULT_REC_NM_FILE)
+            if args.anm_lig > 0:
+                log.info("Calculating ANM for ligand molecule...")
+                calculate_anm(ligand, args.anm_lig, DEFAULT_LIG_NM_FILE)
 
         # Parse restraints if any:
         receptor_restraints = ligand_restraints = None

@@ -107,13 +107,14 @@ class LightdockGSOBuilder(object):
     """Creates a GSO simulation object for the LightDock framework"""
     def create_from_file(self, number_of_glowworms, random_number_generator, gso_parameters,
                          adapters, scoring_functions, bounding_box, initial_population_file,
-                         step_translation, step_rotation, step_nmodes, local_minimization):
+                         step_translation, step_rotation, step_nmodes, local_minimization,
+                         anm_rec, anm_lig):
         """Creates a new GSO instance of the algorithm reading the initial position of the glowworms
         agents from initial_population_file and using the scoring function adapter.
         """
         self._initializer = LightdockFromFileInitializer(adapters, scoring_functions, number_of_glowworms,
                                                          gso_parameters, bounding_box.dimension,
                                                          initial_population_file, step_translation, step_rotation,
-                                                         random_number_generator, step_nmodes)
+                                                         random_number_generator, step_nmodes, anm_rec, anm_lig)
         return GSO(self._initializer.generate_glowworms(), gso_parameters, random_number_generator,
                    local_minimization=local_minimization)

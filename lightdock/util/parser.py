@@ -49,6 +49,16 @@ class SetupCommandLineParser(object):
         if int_value <= 0:
             raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
         return int_value
+
+    @staticmethod
+    def valid_natural_number(int_value):
+        try:
+            int_value = int(int_value)
+        except:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        if int_value < 0:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        return int_value
     
     @staticmethod
     def valid_float_number(float_value):
@@ -92,10 +102,10 @@ class SetupCommandLineParser(object):
         parser.add_argument("--seed_anm", help="Random seed used in ANM intial extent",
                             dest="anm_seed", type=int, default=STARTING_NM_SEED)
         parser.add_argument("-anm_rec", "--anm_rec", help="Number of ANM modes for receptor", 
-                            type=SetupCommandLineParser.valid_integer_number,
+                            type=SetupCommandLineParser.valid_natural_number,
                             dest="anm_rec", default=DEFAULT_NMODES_REC)
         parser.add_argument("-anm_lig", "--anm_lig", help="Number of ANM modes for ligand", 
-                            type=SetupCommandLineParser.valid_integer_number,
+                            type=SetupCommandLineParser.valid_natural_number,
                             dest="anm_lig", default=DEFAULT_NMODES_LIG)
         # Restraints file
         parser.add_argument("-rst", "--rst", help="Restraints file", 

@@ -13,6 +13,7 @@ from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.structure.nm import read_nmodes
+from lightdock.prep.simulation import get_setup_from_file
 
 
 log = LoggingManager.get_logger('generate_conformations')
@@ -59,7 +60,7 @@ def get_lightdock_structures(input_file):
     return file_names
 
 
-def parse_output_file(lightdock_output):
+def parse_output_file(lightdock_output, num_anm_rec, num_anm_lig):
     translations = []
     rotations = []
     receptor_ids = []
@@ -79,9 +80,9 @@ def parse_output_file(lightdock_output):
             coord = line[1:last].split(',')
             translations.append([float(coord[0]), float(coord[1]), float(coord[2])])
             rotations.append(Quaternion(float(coord[3]), float(coord[4]), float(coord[5]), float(coord[6])))
-            if len(coord) == (7 + DEFAULT_NMODES_REC + DEFAULT_NMODES_LIG):
-                rec_extents.append(np.array([float(x) for x in coord[7:7+DEFAULT_NMODES_REC]]))
-                lig_extents.append(np.array([float(x) for x in coord[-DEFAULT_NMODES_LIG:]]))
+            if len(coord) > 7:
+                rec_extents.append(np.array([float(x) for x in coord[7:7+num_anm_rec]]))
+                lig_extents.append(np.array([float(x) for x in coord[-num_anm_lig:]]))
             raw_data = line[last+1:].split()
             receptor_id = int(raw_data[0])
             ligand_id = int(raw_data[1])
@@ -105,8 +106,20 @@ if __name__ == "__main__":
                         type=valid_file, metavar="lightdock_output")
     # Number of glowworms
     parser.add_argument("glowworms", help="number of glowworms", type=valid_integer_number)
+    # Optional, setup file
+    parser.add_argument("--setup", "-setup", "-s", help="Simulation setup file",
+                            dest="setup_file", metavar="setup_file", type=valid_file, default=None)
 
     args = parser.parse_args()
+
+    # Load setup configuration if provided
+    setup = get_setup_from_file(args.setup_file) if args.setup_file else None
+
+    num_anm_rec = DEFAULT_NMODES_REC
+    num_anm_lig = DEFAULT_NMODES_LIG
+    if setup and setup['use_anm']:
+        num_anm_rec = setup['anm_rec']
+        num_anm_lig = setup['anm_lig']
 
     # Receptor
     structures = []
@@ -128,7 +141,7 @@ if __name__ == "__main__":
 
     # Output file
     translations, rotations, receptor_ids, ligand_ids, \
-        rec_extents, lig_extents = parse_output_file(args.lightdock_output)
+        rec_extents, lig_extents = parse_output_file(args.lightdock_output, num_anm_rec, num_anm_lig)
 
     found_conformations = len(translations)
     num_conformations = args.glowworms
@@ -157,21 +170,29 @@ if __name__ == "__main__":
         # Use normal modes if provided:
         if len(rec_extents):
             try:
-                for nm in range(DEFAULT_NMODES_REC):
+                for nm in range(num_anm_rec):
                     receptor_pose.coordinates += nmodes_rec[nm] * rec_extents[i][nm]
-            except ValueError, e:
+            except ValueError:
                 log.error("Problem found on calculating ANM for receptor:")
                 log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))
                 log.error("Number of ANM is: %s" % str(nmodes_rec.shape))
                 raise SystemExit
+            except IndexError:
+                log.error("Problem found on calculating ANM for receptor:")
+                log.error("If you have used anm_rec different than default, please use --setup")
+                raise SystemExit
         if len(lig_extents):
             try:
-                for nm in range(DEFAULT_NMODES_LIG):
+                for nm in range(num_anm_lig):
                     ligand_pose.coordinates += nmodes_lig[nm] * lig_extents[i][nm]
-            except ValueError, e:
+            except ValueError:
                 log.error("Problem found on calculating ANM for ligand:")
                 log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))
                 log.error("Number of ANM is: %s" % str(nmodes_rec.shape))
+                raise SystemExit
+            except IndexError:
+                log.error("Problem found on calculating ANM for ligand:")
+                log.error("If you have used anm_lig different than default, please use --setup")
                 raise SystemExit
 
         # We rotate first, ligand it's at initial position

@@ -37,9 +37,12 @@ def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions,
     else:
         gso_parameters = GSOParameters()
     builder = LightdockGSOBuilder()
+    if not use_anm:
+        anm_rec = anm_lig = 0
     gso = builder.create_from_file(number_of_glowworms, random_number_generator, gso_parameters,
                                    adapters, scoring_functions, bounding_box, initial_positions,
-                                   step_translation, step_rotation, nmodes_step, local_minimization)
+                                   step_translation, step_rotation, nmodes_step, local_minimization,
+                                   anm_rec, anm_lig)
     return gso
 
 
@@ -121,8 +124,16 @@ def run_simulation(parser):
         ligand.move_to_origin()
 
         if args.use_anm:
-            receptor.n_modes = read_nmodes("%s%s" % (DEFAULT_REC_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
-            ligand.n_modes = read_nmodes("%s%s" % (DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
+            try:
+                receptor.n_modes = read_nmodes("%s%s" % (DEFAULT_REC_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
+            except:
+                log.warning("No ANM found for receptor molecule")
+                receptor.n_modes = None
+            try:
+                ligand.n_modes = read_nmodes("%s%s" % (DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION) )
+            except:
+                log.warning("No ANM found for ligand molecule")
+                ligand.n_modes = None
 
         starting_points_files = load_starting_positions(args.swarms, args.glowworms, args.use_anm,
                                                         args.anm_rec, args.anm_lig)

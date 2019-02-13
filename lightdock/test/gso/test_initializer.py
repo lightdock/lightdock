@@ -109,7 +109,7 @@ class TestLightdockFromFileInitializer:
         initializer = LightdockFromFileInitializer([self.adapter], [self.scoring_function],
                                                    number_of_glowworms, gso_parameters, 
                                                    7, self.golden_data_path+'initial_positions_1PPE.txt', 
-                                                   0.5, 0.5, random_number_generator, 0.5)
+                                                   0.5, 0.5, random_number_generator, 0.5, 10, 10)
         swarm = initializer.generate_glowworms()
         
         assert number_of_glowworms == swarm.get_size()
@@ -123,7 +123,7 @@ class TestLightdockFromFileInitializer:
         initializer = LightdockFromFileInitializer(self.adapter, self.scoring_function, 
                                                    number_of_glowworms, gso_parameters, 
                                                    7, self.golden_data_path+'initial_positions_empty.txt', 
-                                                   0.5, 0.5, random_number_generator, 0.5)
+                                                   0.5, 0.5, random_number_generator, 0.5, 10, 10)
         swarm = initializer.generate_glowworms()
         
         assert swarm.get_size() > 0
@@ -137,7 +137,7 @@ class TestLightdockFromFileInitializer:
         initializer = LightdockFromFileInitializer(self.adapter, self.scoring_function, 
                                                    number_of_glowworms, gso_parameters, 
                                                    7, self.golden_data_path+'initial_positions_1PPE.txt', 
-                                                   0.5, 0.5, random_number_generator, 0.5)
+                                                   0.5, 0.5, random_number_generator, 0.5, 10, 10)
         swarm = initializer.generate_glowworms()
         
         assert swarm.get_size() > 0

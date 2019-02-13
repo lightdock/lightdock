@@ -88,7 +88,7 @@ class LightdockFromFileInitializer(Initializer):
     """This initializer takes into account the complex provided by the adapter"""
     def __init__(self, adapters, scoring_functions, number_of_glowworms, gso_parameters,
                  dimensions, initial_population_file, step_translation, step_rotation,
-                 random_number_generator, step_nmodes):
+                 random_number_generator, step_nmodes, anm_rec, anm_lig):
         super(LightdockFromFileInitializer, self).__init__(scoring_functions, number_of_glowworms, gso_parameters)
         self.dimensions = dimensions
         self.initial_population_file = initial_population_file
@@ -98,6 +98,8 @@ class LightdockFromFileInitializer(Initializer):
         self.step_nmodes = step_nmodes
         # Patch to not mess with old simulations
         self.random_number_generator = MTGenerator(random_number_generator.seed)
+        self.anm_rec = anm_rec
+        self.anm_lig = anm_lig
     
     def generate_landscape_positions(self):
         """Generates a list of landscape positions that have been read
@@ -122,6 +124,5 @@ class LightdockFromFileInitializer(Initializer):
                                                              adapter.receptor_model, adapter.ligand_model,
                                                              receptor_index, ligand_index,
                                                              self.step_translation, self.step_rotation,
-                                                             self.step_nmodes))
-
+                                                             self.step_nmodes, self.anm_rec, self.anm_lig))
         return positions
