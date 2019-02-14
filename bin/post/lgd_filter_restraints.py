@@ -41,9 +41,9 @@ def get_restraints(restraints_file):
             line = line.rstrip(os.linesep)
             if line:
                 if line.startswith('R'):
-                    restraints_receptor.add(line)
+                    restraints_receptor.add(line.split[1])
                 if line.startswith('L'):
-                    restraints_ligand.add(line)
+                    restraints_ligand.add(line.split[1])
     return restraints_receptor, restraints_ligand
 
 
@@ -110,14 +110,14 @@ if __name__ == '__main__':
                 contacts = protein_contacts.select(args.cutoff, ligand)
                 if contacts:
                     for contact in contacts:
-                        contacts_receptor.add("R {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                        contacts_receptor.add("{}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
 
                 # Contacts on ligand side
                 protein_contacts = Contacts(ligand)
                 contacts = protein_contacts.select(args.cutoff, receptor)
                 if contacts:
                     for contact in contacts:
-                        contacts_ligand.add("L {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                        contacts_ligand.add("{}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
 
                 # Calculate percentage of satisfied restraints
                 perc = (len(contacts_receptor & restraints_receptor) + len(contacts_ligand & restraints_ligand)) / total
