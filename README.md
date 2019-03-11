@@ -40,7 +40,7 @@ LightDock has the following dependencies:
 NumPy, Scipy, Cython, Biopython, Nose and MPI4py libraries are usually available as packages in most of GNU/Linux distributions. For example, to install them in Ubuntu execute:
 
 ```bash
-sudo apt-get update && apt-get install python-numpy python-scipy cython python-biopython python-nose2 python-mpi4py
+sudo apt-get update && apt-get install python-numpy python-scipy cython python-biopython python-nose python-nose2 python-mpi4py
 ```
 
 **Make sure all libraries are from the Python 2.7.x series.**
