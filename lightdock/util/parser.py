@@ -118,6 +118,14 @@ class SetupCommandLineParser(object):
         self.args = parser.parse_args()
 
 
+class ListScoringAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        from lightdock import scoring
+        scoring_path = os.path.dirname(scoring.__file__)
+        scoring_functions = [ name for name in os.listdir(scoring_path) if os.path.isdir(os.path.join(scoring_path, name)) ]
+        print 'Available scoring functions are: ', ', '.join(scoring_functions)
+        raise SystemExit
+
 
 class CommandLineParser(object):
     """Parses the command line"""
@@ -190,6 +198,8 @@ class CommandLineParser(object):
         # Local minimization
         parser.add_argument("-min", "--min", help="activates the local minimization",
                             dest="local_minimization", action='store_true', default=False)
+        # List of available scoring functions
+        parser.add_argument("--listscoring", help="list all available scoring functions", 
+                            action=ListScoringAction, nargs=0)
 
         self.args = parser.parse_args()
-

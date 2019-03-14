@@ -161,6 +161,7 @@ In order to run a LightDock simulation, the `lightdock` script has to be execute
 usage: lightdock [-h] [-f configuration_file] [-s SCORING_FUNCTION]
                  [-sg GSO_SEED] [-t TRANSLATION_STEP] [-r ROTATION_STEP] [-V]
                  [-c CORES] [--profile] [-mpi] [-ns NMODES_STEP] [-min]
+                 [--listscoring]
                  setup_file steps
 lightdock: error: too few arguments
 ```
@@ -219,6 +220,7 @@ These are the parameters used in the LightDock publication, many of them inherit
 - **-r** *ROTATION_STEP*: When the rotation part of the optimization vector is interpolated (using [quaternion SLERP](https://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)), this parameter controls the interpolation point. By default is set to 0.5.
 - **-ns** *NMODES_STEP*: When the ANM normal modes extent part of the optimization vector is interpolated, this parameter controls the interpolation point. By default is set to 0.5.
 - **-min**: If this option is enabled, a local minimization of the best glowworm in terms of scoring is performed for each step, at each swarm. The algorithm used is the Powell ([fmin_powell](https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.optimize.fmin_powell.html)) implementation from the scipy.optimize library.
+- **--listscoring**: shows the scoring functions available.
 - **-V**: displays the LightDock version.
 
 
@@ -226,7 +228,7 @@ These are the parameters used in the LightDock publication, many of them inherit
 
 The complete list of scoring functions implemented in LightDock is:
 
-- `cpydock`: Implementation in C of the [pyDock](https://www.ncbi.nlm.nih.gov/pubmed/17444519) scoring function
+- `cpydock`: Implementation in C of the [pyDock](https://www.ncbi.nlm.nih.gov/pubmed/17444519) scoring function (also known as pyDockLite).
 - `dfire`: Implementation of the [DFIRE](https://www.ncbi.nlm.nih.gov/pubmed/15162489) scoring function in Cython.
 - `fastdfire`: Implementation of the DFIRE scoring function using the Python C-API, faster than `dfire`.
 - `dfire2`: Implementation of the [DFIRE2](https://www.ncbi.nlm.nih.gov/pubmed/18469178) scoring function using the Python C-API, despite a Cython version is also included for demonstrational purposes.
