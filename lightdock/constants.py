@@ -22,7 +22,7 @@ DEFAULT_REC_NM_FILE = "lightdock_rec.nm"
 DEFAULT_LIG_NM_FILE = "lightdock_lig.nm"
 
 # Scoring function constants
-DEFAULT_SCORING_FUNCTION = "dfire"      # Lightdock default scoring function if none is specified
+DEFAULT_SCORING_FUNCTION = "fastdfire"  # Lightdock default scoring function if none is specified
 
 # Default file extensions
 DEFAULT_REFERENCE_POINTS_EXTENSION = ".vol"

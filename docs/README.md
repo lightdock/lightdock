@@ -111,9 +111,9 @@ After the execution of `lightdock_setup` script, several files and directories w
 - `*.xyz.npy`: Two files with this extension, one for the receptor and one for the ligand, which contains information about the minimum ellipsoid containing each of the structures in NumPy format.
 - `lightdock_rec.nm.npy`and `lightdock_lig.nm.npy`: If ANM is enabled, two files are created containing the normal modes information calculated by the ProDy library.
 
-### 2.2. Residue Restraints (Experimental)
+### 2.2. Residue Restraints
 
-From version `0.5.5`, distance restraints on both receptor and ligand have been implemented. This new feature works in the following way:
+From version `0.6.0`, distance restraints on both receptor and ligand have been implemented. This new feature works in the following way:
 
 From a `restraints_file` file containing the following information:
 
@@ -211,7 +211,7 @@ maximumNeighbors = 5
 
 These are the parameters used in the LightDock publication, many of them inherited from the original GSO publication. Please refer to the [Kaipa, Krishnanand N. and  Ghose, Debasish](https://www.springer.com/gp/book/9783319515946) for more details.
 
-- **-s** *SCORING_FUNCTION*: Probably one of the most important parameters of the simulation. The user is able to change the default scoring function (DFIRE) using this flag. A name of a scoring function or a file containing the name and weight of multiple scoring functions are accepted. See section 3.2 for a complete list of accepted scoring functions and how to combine them.
+- **-s** *SCORING_FUNCTION*: Probably one of the most important parameters of the simulation. The user is able to change the default scoring function (DFIRE, fast C implementation `fastdfire`) using this flag. A name of a scoring function or a file containing the name and weight of multiple scoring functions are accepted. See section 3.2 for a complete list of accepted scoring functions and how to combine them.
 - **-c** *CORES*: By default, LightDock makes use of the total number of available CPU cores on the hardware to run the simulation, but a different number of CPU cores can be specified via this option.
 - **-mpi**: If this flag is activated, LightDock will make use of the MPI4py library in order to spread to diffeerent nodes.
 - **--profile**: This is a experimental flag and it is intended for profiling computation time and memory used by LightDock.
