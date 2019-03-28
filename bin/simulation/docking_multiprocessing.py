@@ -155,3 +155,11 @@ def run_simulation(parser):
         except:
             pass
         log.info("bye.")
+
+    except OSError, e:
+        log.error("OS error found")
+        try:
+            kraken.sink()
+        except:
+            pass
+        raise e

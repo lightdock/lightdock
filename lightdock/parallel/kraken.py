@@ -37,6 +37,9 @@ class Kraken(object):
             self.num_processes = int(num_cpus)
             if self.num_processes < 1:
                 raise ValueError()
+            if self.num_processes > cpu_count():
+                self.log.warning("Number of cores (%d) larger than available." % self.num_processes)
+                raise ValueError()
         except (ValueError, TypeError):
             self.log.warning("Number of cores has not been specified or is incorrect. Using available cores.")
             self.num_processes = cpu_count()
