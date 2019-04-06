@@ -22,7 +22,7 @@ The first version of the LightDock protocol was published in [Oxford Bioinformat
 [Brian Jiménez-García](http://bjimenezgarcia.com), Jorge Roel-Touris, Miguel Romero-Durana, Miquel Vidal, Daniel Jiménez-González and Juan Fernández-Recio<br>
 *Bioinformatics*, Volume 34, Issue 1, 1 January 2018, Pages 49–55, [https://doi.org/10.1093/bioinformatics/btx555](https://doi.org/10.1093/bioinformatics/btx555)
 
-A preprint about the implementation details and performance of the new protocol for include residue restraints is avaiable at [biorxiv](https://www.biorxiv.org/content/10.1101/595983v1):
+A preprint about the implementation details and performance of the new protocol for including residue restraints is avaiable at [biorxiv](https://www.biorxiv.org/content/10.1101/595983v1):
 
 **LightDock goes information-driven**<br>
 Jorge Roel-Touris, Alexandre M.J.J. Bonvin, Brian Jiménez-García<br>
@@ -32,7 +32,7 @@ Jorge Roel-Touris, Alexandre M.J.J. Bonvin, Brian Jiménez-García<br>
 ### 3.1. Dependencies
 LightDock has the following dependencies:
 
-* Python 2.7.x
+* **Python 2.7.x**
 * Nose (<http://nose.readthedocs.io/en/latest/>)
 * NumPy (<http://www.numpy.org/>)
 * Scipy (<http://www.scipy.org/>)
@@ -40,7 +40,7 @@ LightDock has the following dependencies:
 * BioPython (<http://biopython.org>)
 * MPI4py (<http://pythonhosted.org/mpi4py/>)
 * ProDy (<http://prody.csb.pitt.edu/>)
-* Freesasa (only if `cpydock` scoring function is used and to execute the tests, <http://freesasa.github.io/>)
+* Freesasa (only if `cpydock` scoring function is used and to run the complete test set, <http://freesasa.github.io/>)
 
 #### 3.1.1. Installing NumPy, Scipy, Cython, Biopython, Nose and MPI4py
 NumPy, Scipy, Cython, Biopython, Nose and MPI4py libraries are usually available as packages in most of GNU/Linux distributions. For example, to install them in Ubuntu execute:
