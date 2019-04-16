@@ -150,8 +150,9 @@ The complete documentation about how to run the LightDock protocol can be found 
 
 LightDock is being actively developed and some issues may arise or you may get some extra help to run LightDock. In those cases, there are two main ways to get help:
 
-1. Open a [new issue in this repository](https://github.com/brianjimenez/lightdock/issues/new)
-2. Or write an email to <b.jimenezgarcia@uu.nl>
+1. Read the [FAQ](docs/FAQ.md) in case your problem is known
+2. Open a [new issue in this repository](https://github.com/brianjimenez/lightdock/issues/new)
+3. Or write an email to <b.jimenezgarcia@uu.nl>
 
 
 
