@@ -60,11 +60,3 @@ class TestEllipsoid:
         ellipsoid = MinimumVolumeEllipsoid(coordinates)
 
         assert len(ellipsoid.poles) > 0
-
-    def test_calculate_center(self):
-        coordinates = np.array([[1.2, -1., 2.], [0., 0., 0.], [0.5, 3., 0.5]])
-
-        ellipsoid = MinimumVolumeEllipsoid(coordinates)
-
-        assert len(ellipsoid.poles) > 0
-        assert np.allclose(ellipsoid.center, [0.67988148, 0.50782009, 1.02831747], ERROR_TOLERANCE)
