@@ -29,7 +29,7 @@ def get_pdb_files(input_file):
     return file_names
 
 
-def read_input_structure(pdb_file_name, ignore_oxt=True):
+def read_input_structure(pdb_file_name, ignore_oxt=True, ignore_hydrogens=False, verbose_parser=False):
     """Reads the input structure.
 
     The arguments pdb_file_name can be a PDB file or a file 
@@ -40,6 +40,10 @@ def read_input_structure(pdb_file_name, ignore_oxt=True):
     atoms_to_ignore = []
     if ignore_oxt:
         atoms_to_ignore.append('OXT')
+        log.info('Ignoring OXT atoms')
+    if ignore_hydrogens:
+        atoms_to_ignore.append('H')
+        log.info('Ignoring Hydrogen atoms')
 
     structures = []
     file_names = []
@@ -50,7 +54,7 @@ def read_input_structure(pdb_file_name, ignore_oxt=True):
         file_names.append(pdb_file_name)
     for file_name in file_names:
         log.info("Reading structure from %s PDB file..." % file_name)
-        atoms, residues, chains = parse_complex_from_file(file_name, atoms_to_ignore)
+        atoms, residues, chains = parse_complex_from_file(file_name, atoms_to_ignore, verbose_parser)
         structures.append({'atoms': atoms, 'residues': residues, 'chains': chains, 'file_name': file_name})
         log.info("%s atoms, %s residues read." % (len(atoms), len(residues)))
 

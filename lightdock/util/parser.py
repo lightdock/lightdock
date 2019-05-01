@@ -95,6 +95,12 @@ class SetupCommandLineParser(object):
         # Dealing with OXT atoms
         parser.add_argument("--noxt", help="Remove OXT atoms",
                             dest="noxt", action='store_true', default=False)
+        # Dealing with hydrogen atoms
+        parser.add_argument("--noh", help="Remove Hydrogen atoms",
+                            dest="noh", action='store_true', default=False)
+        # Verbose PDB parser
+        parser.add_argument("--verbose_parser", help="PDB parsing verbose mode",
+                            dest="verbose_parser", action='store_true', default=False)
         # Normal modes
         parser.add_argument("-anm", "--anm", help="Activates the use of ANM backbone flexibility",
                             dest="use_anm", action='store_true', default=False)

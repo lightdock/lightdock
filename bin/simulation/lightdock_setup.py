@@ -32,8 +32,8 @@ if __name__ == "__main__":
         args = parser.args
 
         # Read input structures
-        receptor = read_input_structure(args.receptor_pdb, args.noxt)
-        ligand = read_input_structure(args.ligand_pdb, args.noxt)
+        receptor = read_input_structure(args.receptor_pdb, args.noxt, args.noh, args.verbose_parser)
+        ligand = read_input_structure(args.ligand_pdb, args.noxt, args.noh, args.verbose_parser)
         
         # Move structures to origin
         rec_translation = receptor.move_to_origin()

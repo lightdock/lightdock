@@ -94,8 +94,7 @@ class Residue(object):
 
     def mutate_side_chain(self, rotamer):
         """Moves this residue's side chain using the rotamer angles"""
-        for atom in self.sidechain:
-            print atom
+        pass
 
     def __str__ (self):
         if len(self.atoms):

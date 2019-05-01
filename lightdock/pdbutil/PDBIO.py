@@ -36,8 +36,6 @@ def read_atom_line(line, line_type='', atoms_to_ignore=[]):
     atom_name = cstrip(line[12:16])
     atom_alternative = cstrip(line[16])
     residue_name = cstrip(line[17:21])
-    if atom_name in atoms_to_ignore:
-        raise PDBParsingWarning("Ignored %s.%s atom" % (atom_name, residue_name))
     chain_id = cstrip(line[21])
     residue_ext = line[26]
     
@@ -46,6 +44,12 @@ def read_atom_line(line, line_type='', atoms_to_ignore=[]):
     except ValueError:
         raise PDBParsingError("Wrong residue number in '%s'" % line)
     
+    if ('H' in atoms_to_ignore and atom_name[0] == 'H') or atom_name in atoms_to_ignore:
+        raise PDBParsingWarning("Ignored atom %s.%s.%s %s" % (chain_id, 
+                                                              residue_name, 
+                                                              residue_number, 
+                                                              atom_name))
+
     try:
         occupancy = float(line[54:60])
     except:
@@ -69,7 +73,7 @@ def read_atom_line(line, line_type='', atoms_to_ignore=[]):
                        x, y, z, occupancy, b_factor, element)
 
 
-def parse_complex_from_file(input_file_name, atoms_to_ignore=[]):
+def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
     """Reads and parses a given input_file_name PDB file.
     
     TODO: Check if chain have been already created and insert it into the first one
@@ -97,7 +101,8 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[]):
                     atom = read_atom_line(line, line_type, atoms_to_ignore)
                     atoms.append(atom)
                 except PDBParsingWarning, warning:
-                    print warning
+                    if verbose:
+                        print warning
 
                 if last_chain_id != atom.chain_id:
                     last_chain_id = atom.chain_id
