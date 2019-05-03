@@ -31,6 +31,7 @@ def calculate_nmodes(pdb_file_name, n_modes, molecule):
     num_atoms_prody = prody_molecule.numAtoms()
 
     if num_atoms_prody != molecule.num_atoms:
+        log.error("Number of atoms in ProDy (%d) vs LightDock (%d)" % (num_atoms_prody, molecule.num_atoms))
         raise NormalModesCalculationError("Number of atoms is different")
 
     # Check for sanity in atoms from both structures just in case
