@@ -13,7 +13,7 @@ from lightdock.mathutil.lrandom import MTGenerator
 from lightdock.gso.parameters import GSOParameters
 from lightdock.constants import DEFAULT_SCORING_FUNCTION, DEFAULT_SWARM_FOLDER, \
                                 DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION, \
-                                DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG
+                                DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_LIGHTDOCK_PREFIX
 from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
 from lightdock.scoring.multiple import ScoringConfiguration
@@ -115,9 +115,13 @@ def run_simulation(parser):
         info_file = create_simulation_info_file(args)
         log.info("simulation parameters saved to %s" % info_file)
 
-        # Read input structures
-        receptor = read_input_structure(args.receptor_pdb, args.noxt)
-        ligand = read_input_structure(args.ligand_pdb, args.noxt)
+        # Read input structures (use parsed ones)
+        parsed_lightdock_receptor = os.path.join(os.path.dirname(args.receptor_pdb),
+                                       DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(args.receptor_pdb))
+        receptor = read_input_structure(parsed_lightdock_receptor, args.noxt, args.noh, args.verbose_parser)
+        parsed_lightdock_ligand = os.path.join(os.path.dirname(args.ligand_pdb),
+                                       DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(args.ligand_pdb))
+        ligand = read_input_structure(parsed_lightdock_ligand, args.noxt, args.noh, args.verbose_parser)
 
         # CRITICAL to not break compatibility with previous results
         receptor.move_to_origin()
