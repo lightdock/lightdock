@@ -59,9 +59,9 @@ If you execute `lightdock_setup` several options will appear:
 
 ```bash
 usage: lightdock_setup [-h] [--seed_points STARTING_POINTS_SEED]
-                       [-ft ftdock_file] [--noxt] [-anm] [--seed_anm ANM_SEED]
-                       [-anm_rec ANM_REC] [-anm_lig ANM_LIG] [-rst restraints]
-                       [-membrane]
+                       [-ft ftdock_file] [--noxt] [--noh] [--verbose_parser]
+                       [-anm] [--seed_anm ANM_SEED] [-anm_rec ANM_REC]
+                       [-anm_lig ANM_LIG] [-rst restraints] [-membrane]
                        receptor_pdb_file ligand_pdb_file swarms glowworms
 lightdock_setup: error: too few arguments
 
@@ -88,6 +88,8 @@ Below, there is a description of the rest of accepted paramenters by `lightdock_
 - **--seed_points** *STARTING_POINTS_SEED*: An integer can be specified as the seed used in the random number generator of the initial random poses of the ligand.
 - **--ft** *ftdock_file*: LightDock can read the output of the venerable [FTDock](http://www.sbg.bio.ic.ac.uk/docking/ftdock.html) software in order to use the FTDock rigid-body predictions as the starting poses of the LightDock simulation. In order to do so, `lightdock_setup` classifies the different FTDock predictions according to its translation into the corresponding swarm over the surface of the receptor. **This option is deprecated**.
 - **--noxt**: If this option is enabled, LightDock ignores OXT atoms. This is useful for several scoring functions which don't understand this special type of atom.
+- **--noh**: If this option is enabled, LightDock ignores hydrogen atoms. This is relevant for DFIRE, FASTDIRE and DFIRE2 scoring functions.
+- **--verbose_parser**: If this option is enabled, LightDock will output in a verbose mode the atoms ignored when parsing PDB structures.
 - **--anm**: If this option is enabled, the ANM mode is activated and backbone flexibility is modeled using ANM (via ProDy).
 - **--seed_anm** *ANM_SEED*: An integer can be specified as the seed used in the random number generator of ANM normal modes extents. 
 - **--anm_rec** *ANM_REC*: The number of non-trivial normal modes calculated for the recepetor in the ANM mode.
@@ -219,7 +221,7 @@ These are the parameters used in the LightDock publication, many of them inherit
 - **-t** *TRANSLATION_STEP*: When the translation part of the optimization vector is interpolated, this parameter controls the interpolation point. By default is set to 0.5. 
 - **-r** *ROTATION_STEP*: When the rotation part of the optimization vector is interpolated (using [quaternion SLERP](https://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)), this parameter controls the interpolation point. By default is set to 0.5.
 - **-ns** *NMODES_STEP*: When the ANM normal modes extent part of the optimization vector is interpolated, this parameter controls the interpolation point. By default is set to 0.5.
-- **-min**: If this option is enabled, a local minimization of the best glowworm in terms of scoring is performed for each step, at each swarm. The algorithm used is the Powell ([fmin_powell](https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.optimize.fmin_powell.html)) implementation from the scipy.optimize library.
+- **-min**: If this option is enabled, a local minimization of the best glowworm in terms of scoring is performed for each step, at each swarm. The algorithm used is the Powell ([fmin_powell](https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.optimize.fmin_powell.html)) implementation from the scipy.optimize library. Optimization also includes ANM space (together with translation and rotational spaces) if anm is enabled in the simulation.
 - **--listscoring**: shows the scoring functions available.
 - **-V**: displays the LightDock version.
 
