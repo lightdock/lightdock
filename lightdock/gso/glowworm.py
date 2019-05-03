@@ -111,7 +111,7 @@ class Glowworm(object):
 
     def minimize(self):
         """Minimizes the glowworm's landscape position and updates its scoring"""
-        self.scoring = sum([landscape_position.minimize() for landscape_position in self.landscape_position])
+        self.scoring = sum([landscape_position.minimize() for landscape_position in self.landscape_positions])
 
     def __repr__(self):
         """String representation of a glowworm"""

@@ -252,7 +252,7 @@ class DockingLandscapePosition(LandscapePosition):
 
         # Minimize using Powell algorythm
         result = fmin_powell(DockingLandscapePosition._calculate_scoring,
-                             optimization_vector, args=(self,), maxiter=1, full_output=1, xtol=0.5, ftol=0.0001)
+                             optimization_vector, args=(self,), maxiter=5, full_output=1, xtol=0.5, ftol=0.0001)
         # Update the landscape position vector
         optimized_vector = result[0]
         self.update_landscape_position(optimized_vector)
