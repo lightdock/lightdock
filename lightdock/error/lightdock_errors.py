@@ -41,6 +41,21 @@ class StructureError(LightDockError):
     pass
 
 
+class BackboneError(StructureError):
+    """General structure error"""
+    pass
+
+
+class SideChainError(StructureError):
+    """General structure error"""
+    pass
+
+
+class ResidueNonStandardError(StructureError):
+    """General structure error"""
+    pass
+
+
 class AtomError(StructureError):
     """Atom error exception"""
     pass

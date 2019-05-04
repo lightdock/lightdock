@@ -103,6 +103,7 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
                 except PDBParsingWarning, warning:
                     if verbose:
                         print warning
+                    continue
 
                 if last_chain_id != atom.chain_id:
                     last_chain_id = atom.chain_id
@@ -119,6 +120,10 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
     # Set backbone and side-chain atoms
     for residue in residues:
         residue.set_backbone_and_sidechain()
+        try:
+            residue.check()
+        except Exception, e:
+            log.warning("Possible problem: %s" % str(e))
 
     return atoms, residues, chains
 

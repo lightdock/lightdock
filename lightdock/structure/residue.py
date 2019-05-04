@@ -1,14 +1,17 @@
 """Module to package a complex residue representation and operations"""
 
+from lightdock.error.lightdock_errors import ResidueNonStandardError, SideChainError, BackboneError
+
+
 backbone = ["N", "CA", "C", "O"]
 
 sidechain = {"ALA": ['CB'],
              "ARG": ['CB', 'CG', 'CD', 'NE', 'CZ', 'NH1', 'NH2'],
              "ASN": ['CB', 'CG', 'OD1', 'ND2'],
-             "ASP": ['CB', 'CG', 'OD1', 'ND2'],
+             "ASP": ['CB', 'CG', 'OD1', 'OD2'],
              "CYS": ['CB', 'SG'],
              "GLU": ['CB', 'CG', 'CD', 'OE1', 'OE2'],
-             "GLN": ['CB', 'CG', 'CD', 'NE1', 'NE2'],
+             "GLN": ['CB', 'CG', 'CD', 'OE1', 'NE2'],
              "GLY": [],
              "HIS": ['CB', 'CG', 'ND1', 'CD2', 'CE1', 'NE2'],
              "ILE": ['CB', 'CG1', 'CG2', 'CD1'],
@@ -69,6 +72,21 @@ class Residue(object):
         else:
             self.backbone = []
             self.sidechain = []
+
+    def check(self):
+        """Check if the residue has all the backbone and sidechain atoms"""
+        if self.is_standard():
+            backbone_correct = sorted([a.name for a in self.backbone]) == sorted(backbone)
+            if not backbone_correct:
+                raise BackboneError("Incomplete backbone for residue %s.%s" % (self.name, self.number))
+            
+            sd_correct = sorted([a.name for a in self.sidechain]) == sorted(sidechain[self.name])
+            if not sd_correct:
+                raise SideChainError("Incomplete sidechain for residue %s.%s" % (self.name, self.number))
+            
+            return True
+        else:
+            raise ResidueNonStandardError("Can not check non-standard residue %s.%s" % (self.name, self.number))
 
     def __eq__(self, other):
         """Compares two residues for equality."""
