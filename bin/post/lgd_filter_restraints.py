@@ -24,7 +24,7 @@ log = LoggingManager.get_logger('lgd_filter_restraints')
 def get_structures(ranking, base_path='.'):
     structures = []
     for rank in ranking:
-        swarm_id = rank.id_cluster
+        swarm_id = rank.id_swarm
         glowworm_id = rank.id_glowworm
         score = rank.scoring
         structures.append([os.path.join(base_path, 
@@ -41,9 +41,9 @@ def get_restraints(restraints_file):
             line = line.rstrip(os.linesep)
             if line:
                 if line.startswith('R'):
-                    restraints_receptor.add(line.split[1])
+                    restraints_receptor.add(line)
                 if line.startswith('L'):
-                    restraints_ligand.add(line.split[1])
+                    restraints_ligand.add(line)
     return restraints_receptor, restraints_ligand
 
 
@@ -110,14 +110,14 @@ if __name__ == '__main__':
                 contacts = protein_contacts.select(args.cutoff, ligand)
                 if contacts:
                     for contact in contacts:
-                        contacts_receptor.add("{}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                        contacts_receptor.add("R {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
 
                 # Contacts on ligand side
                 protein_contacts = Contacts(ligand)
                 contacts = protein_contacts.select(args.cutoff, receptor)
                 if contacts:
                     for contact in contacts:
-                        contacts_ligand.add("{}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                        contacts_ligand.add("L {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
 
                 # Calculate percentage of satisfied restraints
                 perc = (len(contacts_receptor & restraints_receptor) + len(contacts_ligand & restraints_ligand)) / total
@@ -136,11 +136,9 @@ if __name__ == '__main__':
             log.error(str(e))
 
 
-    #print(filter_passed)
     filtered_ranking = os.path.join(filtered_folder, 'rank_filtered.list')
     with open(filtered_ranking, 'w') as handle:
         for rank in ranking:
-            #print(rank)
-            if rank.id_cluster in filter_passed and rank.id_glowworm in filter_passed[rank.id_cluster]:
-                handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_cluster, 
-                    rank.id_glowworm, rank.scoring, percentages[(rank.id_cluster, rank.id_glowworm)]) + os.linesep)
+            if rank.id_swarm in filter_passed and rank.id_glowworm in filter_passed[rank.id_swarm]:
+                handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_swarm, 
+                    rank.id_glowworm, rank.scoring, percentages[(rank.id_swarm, rank.id_glowworm)]) + os.linesep)

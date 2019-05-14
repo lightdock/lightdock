@@ -12,10 +12,10 @@ log = LoggingManager.get_logger('analysis')
 
 class DockingResult(object):
     """Represents a LightDock docking result line"""
-    def __init__(self, id_cluster=0, id_glowworm=0, receptor_id=0, ligand_id=0, luciferin=0.0,
+    def __init__(self, id_swarm=0, id_glowworm=0, receptor_id=0, ligand_id=0, luciferin=0.0,
                  num_neighbors=0, vision_range=0.0, pose=None, rmsd=-1.0,
                  pdb_file='', contacts=0, scoring=0.0):
-        self.id_cluster = id_cluster
+        self.id_swarm = id_swarm
         self.id_glowworm = id_glowworm
         self.receptor_id = receptor_id
         self.ligand_id = ligand_id
@@ -32,7 +32,7 @@ class DockingResult(object):
         self.scoring = scoring
 
     def __str__(self):
-        return "%5d %6d %60s %6d %6d %11.5f %5d %7.3f %8.3f %16s %6d %8.3f" % (self.id_cluster,
+        return "%5d %6d %60s %6d %6d %11.5f %5d %7.3f %8.3f %16s %6d %8.3f" % (self.id_swarm,
                                                                                self.id_glowworm,
                                                                                self.coord,
                                                                                self.receptor_id,
@@ -118,7 +118,7 @@ def read_ranking_file(ranking_file):
         for line in raw_lines:
             coord, first, last = parse_coordinates(line)
             raw_fields = line[:first].split()
-            id_cluster = int(raw_fields[0])
+            id_swarm = int(raw_fields[0])
             id_glowworm = int(raw_fields[1])
             raw_fields = line[last + 1:].split()
             receptor_id = int(raw_fields[0])
@@ -130,7 +130,7 @@ def read_ranking_file(ranking_file):
             pdb_file = raw_fields[6]
             clashes = int(raw_fields[7])
             scoring = float(raw_fields[8])
-            result = DockingResult(id_cluster=id_cluster,
+            result = DockingResult(id_swarm=id_swarm,
                                    id_glowworm=id_glowworm,
                                    receptor_id=receptor_id,
                                    ligand_id=ligand_id,
@@ -161,7 +161,7 @@ def write_ranking_to_file(solutions, clashes_cutoff=None, order_by=None):
         output_file = RANKING_FILE
 
     output = open(output_file, 'w')
-    output.write("Cluster  Glowworm   Coordinates                                             "
+    output.write("Swarm  Glowworm   Coordinates                                             "
                  "RecID  LigID  Luciferin  Neigh   VR     RMSD    PDB             Clashes  Scoring\n")
     for solution in solutions:
         if clashes_cutoff:
@@ -173,7 +173,7 @@ def write_ranking_to_file(solutions, clashes_cutoff=None, order_by=None):
 
 
 def read_rmsd_and_contacts_data(file_name):
-    """Reads a contacts file with columns identified by cluster, glowworm, num_contacts and rmsd"""
+    """Reads a contacts file with columns identified by swarms, glowworm, num_contacts and rmsd"""
     contacts = {}
     rmsds = {}
     if os.path.isfile(file_name):
@@ -183,18 +183,18 @@ def read_rmsd_and_contacts_data(file_name):
             for id_line, line in enumerate(lines[1:]):
                 try:
                     fields = line.split()
-                    cluster_id = int(fields[0])
+                    swarm_id = int(fields[0])
                     structure_id = int(fields[1])
                     num_contacts = int(fields[2])
                     rmsd = float(fields[3])
-                    if cluster_id in contacts:
-                        contacts[cluster_id][structure_id] = num_contacts
+                    if swarm_id in contacts:
+                        contacts[swarm_id][structure_id] = num_contacts
                     else:
-                        contacts[cluster_id] = {structure_id: num_contacts}
-                    if cluster_id in rmsds:
-                        rmsds[cluster_id][structure_id] = rmsd
+                        contacts[swarm_id] = {structure_id: num_contacts}
+                    if swarm_id in rmsds:
+                        rmsds[swarm_id][structure_id] = rmsd
                     else:
-                        rmsds[cluster_id] = {structure_id: rmsd}
+                        rmsds[swarm_id] = {structure_id: rmsd}
                 except:
                     log.warning('Ignoring line %d in file %s' % (id_line, file_name))
     return contacts, rmsds

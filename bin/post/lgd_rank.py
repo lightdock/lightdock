@@ -16,7 +16,7 @@ log = LoggingManager.get_logger('lgd_rank')
 
 def parse_command_line():
     parser = argparse.ArgumentParser(prog='lgd_rank')
-    parser.add_argument("num_clusters", help="number of clusters to consider", type=int, metavar="num_clusters")
+    parser.add_argument("num_swarms", help="number of swarms to consider", type=int, metavar="num_swarms")
     parser.add_argument("steps", help="steps to consider", type=int, metavar="steps")
     parser.add_argument("-c", "--clashes_cutoff", help="clashes cutoff", dest="clashes_cutoff", type=float)
     parser.add_argument("-f", "--file_name", help="lightdock output file to consider", dest="result_file")
@@ -36,26 +36,26 @@ if __name__ == "__main__":
         if os.path.isfile(EVALUATION_FILE):
             contacts, rmsds = read_rmsd_and_contacts_data(EVALUATION_FILE)
 
-        num_clusters_found = 0
-        for cluster_id in range(args.num_clusters):
+        num_swarms_found = 0
+        for swarm_id in range(args.num_swarms):
             if args.result_file:
-                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), args.result_file)
+                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), args.result_file)
             else:
-                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id),
+                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id),
                                                 (GSO_OUTPUT_FILE % args.steps))
 
-            cluster_representatives_file = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id),
+            cluster_representatives_file = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id),
                                                         CLUSTER_REPRESENTATIVES_FILE)
             clusters = []
             if os.path.isfile(cluster_representatives_file) and not args.ignore_clusters:
                 clusters = read_cluster_representatives_file(cluster_representatives_file)
 
-            scoring_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), SCORING_FILE)
+            scoring_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), SCORING_FILE)
             try:
                 results = read_lightdock_output(result_file_name)
-                num_clusters_found += 1
+                num_swarms_found += 1
                 for result in results:
-                    result.id_cluster = cluster_id
+                    result.id_cluster = swarm_id
                     result.pdb_file = LIGHTDOCK_PDB_FILE % result.id_glowworm
                     try:
                         result.rmsd = rmsds[result.id_cluster][result.id_glowworm]
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         write_ranking_to_file(solutions, args.clashes_cutoff, order_by="rmsd")
         write_ranking_to_file(solutions, args.clashes_cutoff, order_by="scoring")
 
-        log.info("Number of clusters: %d" % args.num_clusters)
+        log.info("Number of swarms: %d" % args.num_swarms)
         log.info("Number of steps: %d" % args.steps)
         if args.clashes_cutoff:
             log.info("Clashes cutoff: %5.3f" % args.clashes_cutoff)
@@ -85,7 +85,7 @@ if __name__ == "__main__":
             log.info("Output files: %s" % args.result_file)
         else:
             log.info("Output files: %s" % (GSO_OUTPUT_FILE % args.steps))
-        log.info("Number of clusters processed: %d" % num_clusters_found)
+        log.info("Number of swarms processed: %d" % num_swarms_found)
         log.info("Done.")
 
     except KeyboardInterrupt:
