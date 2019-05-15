@@ -35,14 +35,24 @@ class CPyDockDNAModel(DockingModel):
 
 class CPyDockDNAAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this scoring function."""
+
+    to_translate = {'HIS':'HID', 'THY':'DT', 'ADE':'DA', 'CYT':'DC', 'GUA':'DG'}
+
     def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
+        parsed_restraints = {}
         # Assign properties to atoms
-        for atom in atoms:
+        for atom_index, atom in enumerate(atoms):
+            res_id = "%s.%s.%s" % (atom.chain_id, atom.residue_name, str(atom.residue_number))
+            if restraints and res_id in restraints:
+                try:
+                    parsed_restraints[res_id].append(atom_index)
+                except:
+                    parsed_restraints[res_id] = [atom_index]
             res_name = atom.residue_name
             atom_name = atom.name
-            if res_name == "HIS":
-                res_name = 'HID'
+            if res_name in CPyDockDNAAdapter.to_translate:
+                res_name = CPyDockDNAAdapter.to_translate[res_name]
             if atom_name in amber.translate:
                 atom_name = amber.translate[atom.name]
             atom_id = "%s-%s" % (res_name, atom_name)
@@ -61,10 +71,10 @@ class CPyDockDNAAdapter(ModelAdapter):
         reference_points = ModelAdapter.load_reference_points(molecule)
 
         try:
-            return CPyDockDNAModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii,
+            return CPyDockDNAModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii,
                                     reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return CPyDockDNAModel(atoms, coordinates, restraints, elec_charges, vdw_energies, vdw_radii,
+            return CPyDockDNAModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii,
                                     reference_points=reference_points)
 
 
@@ -83,11 +93,15 @@ class CPyDockDNA(ScoringFunction):
         """Computes the pyDockDNA scoring energy using receptor and ligand which are
         instances of DockingModel.
         """
-        elec, vdw = cdna.calculate_energy(receptor_coordinates, ligand_coordinates,
-                                          receptor.charges, ligand.charges,
-                                          receptor.vdw_energy, ligand.vdw_energy,
-                                          receptor.vdw_radii, ligand.vdw_radii)
-        return (elec + parameters.scoring_vdw_weight * vdw)*-1.
+        elec, vdw, interface_receptor, interface_ligand = cdna.calculate_energy(receptor_coordinates, ligand_coordinates,
+                                                                                receptor.charges, ligand.charges,
+                                                                                receptor.vdw_energy, ligand.vdw_energy,
+                                                                                receptor.vdw_radii, ligand.vdw_radii,
+                                                                                3.9)
+        energy = (elec + parameters.scoring_vdw_weight * vdw)*-1.
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
 
 
 # Needed to dynamically load the scoring functions from command line
