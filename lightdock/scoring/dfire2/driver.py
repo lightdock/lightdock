@@ -11,6 +11,7 @@ from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.structure.space import SpacePoints
 from lightdock.scoring.dfire2.c.cdfire2 import calculate_dfire2
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 # Potential constants
 atom_type_number = 167
@@ -66,16 +67,26 @@ class DFIRE2Adapter(ModelAdapter, DFIRE2Potential):
         """Builds a suitable docking model for this scoring function"""
         objects = []
         coordinates = []
+        parsed_restraints = {}
+        atom_index = 0
         for residue in molecule.residues:
             for rec_atom in residue.atoms:
                 rec_atom_type = rec_atom.residue_name + ' ' + rec_atom.name
                 if rec_atom_type in DFIRE2_ATOM_TYPES:
                     objects.append(DFIRE2Object(residue.number, DFIRE2_ATOM_TYPES[rec_atom_type]))
                     coordinates.append([rec_atom.x, rec_atom.y, rec_atom.z])
+                    # Restraints support
+                    res_id = "%s.%s.%s" % (rec_atom.chain_id, residue.name, str(residue.number))
+                    if restraints and res_id in restraints:
+                        try:
+                            parsed_restraints[res_id].append(atom_index)
+                        except:
+                            parsed_restraints[res_id] = [atom_index]
+                    atom_index += 1
         try:
-            return DockingModel(objects, SpacePoints(coordinates), restraints, n_modes=molecule.n_modes.copy())
+            return DockingModel(objects, SpacePoints(coordinates), parsed_restraints, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return DockingModel(objects, SpacePoints(coordinates), restraints)
+            return DockingModel(objects, SpacePoints(coordinates), parsed_restraints)
 
 
 class DFIRE2(ScoringFunction):
@@ -100,13 +111,21 @@ class DFIRE2(ScoringFunction):
             self.atom_index = np.array(self.atom_index, dtype=np.int32)
             self.molecule_length = len(self.res_index)
             self.cached = True
-        return self.evaluate_energy(receptor_coordinates, ligand_coordinates)
+        return self.evaluate_energy(receptor, receptor_coordinates, ligand, ligand_coordinates)
 
-    def evaluate_energy(self, receptor_coordinates, ligand_coordinates):
+    def evaluate_energy(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         coordinates = np.append(receptor_coordinates.coordinates, ligand_coordinates.coordinates).reshape((-1, 3))
-        result = calculate_dfire2(self.res_index, self.atom_index, coordinates, self.potential.energy,
-                                  self.molecule_length)
-        return result
+        energy, interface_receptor, interface_ligand = calculate_dfire2(self.res_index, 
+                                                                        self.atom_index, 
+                                                                        coordinates, 
+                                                                        self.potential.energy,
+                                                                        self.molecule_length, 
+                                                                        DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
+        
+        # Code to consider contacts in the interface
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
 
 
 # Needed to dynamically load the scoring functions from command line

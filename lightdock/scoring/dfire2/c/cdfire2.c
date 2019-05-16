@@ -11,8 +11,8 @@
  **/
 static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
     PyObject *res_index, *atom_index, *coordinates, *dfire2_energy, *result = NULL;
-    unsigned int mol_length, i, j, b, atom1, atom2, index;
-    double energy, dist, **mol_array, *energies;
+    unsigned int mol_length, i, j, b, atom1, atom2, index, interface_len, *interface_receptor = NULL, *interface_ligand = NULL;
+    double energy, dist, **mol_array, *energies, interface_cutoff;
     int *atom_indexes, *res_indexes;
 
     npy_intp dims[2];
@@ -21,9 +21,11 @@ static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
     PyObject *atom_array;
     PyObject *energy_array;
 
+    interface_cutoff = 3.9;
     energy = 0.;
+    interface_len = 0;
 
-    if (PyArg_ParseTuple(args, "OOOOi", &res_index, &atom_index, &coordinates, &dfire2_energy, &mol_length)) {
+    if (PyArg_ParseTuple(args, "OOOOi|d", &res_index, &atom_index, &coordinates, &dfire2_energy, &mol_length, &interface_cutoff)) {
         PyArray_Descr *descr;
 
         // Coordinates to C Array
@@ -46,6 +48,9 @@ static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
         //printf("%d", N);
         energies = (double*)PyArray_DATA(energy_array);
 
+        interface_receptor = malloc(mol_length*sizeof(unsigned int));
+        interface_ligand = malloc(mol_length*sizeof(unsigned int));
+
         // Calculate euclidean distance
         for (i = 0; i < mol_length; i++) {
             for (j = i+1; j < mol_length; j++) {
@@ -54,6 +59,10 @@ static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
                     dist = sqrt(pow((mol_array[i][0] - mol_array[j][0]), 2.0) +
                                 pow((mol_array[i][1] - mol_array[j][1]), 2.0) +
                                 pow((mol_array[i][2] - mol_array[j][2]), 2.0))*2;
+                    if (dist <= interface_cutoff) {
+                        interface_receptor[interface_len] = i;
+                        interface_ligand[interface_len++] = j;
+                    }
                     // Distance to bin
                     b = (int)dist;
                     if (b < 30) {
@@ -74,7 +83,15 @@ static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
         Py_DECREF(energy_array);
         PyArray_Free(coordinates, mol_array);
     }
-    result = PyFloat_FromDouble(energy/100.);
+
+    interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
+    interface_ligand = realloc(interface_ligand, interface_len*sizeof(unsigned int));
+
+    result = PyTuple_New(3);
+    PyTuple_SET_ITEM(result, 0, PyFloat_FromDouble(energy/100.));
+    PyTuple_SET_ITEM(result, 1, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_receptor));
+    PyTuple_SET_ITEM(result, 2, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_ligand));
+
     return result;
 }
 
