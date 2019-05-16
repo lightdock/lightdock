@@ -10,6 +10,7 @@ import os
 from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.scoring.pisa.cython.cpisa import calculate_pisa
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
 class PISAPotential(object):
@@ -148,21 +149,27 @@ class PISAAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this
     PISA scoring function.
     """
-
     def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         pisa_objects = []
         coordinates = []
-        for atom in molecule.atoms:
+        parsed_restraints = {}
+        for atom_index, atom in enumerate(molecule.atoms):
             atom_type = PISAPotential.get_atom_type(atom.name, atom.residue_name)
             if atom_type != -1:
                 atom.pisa_type = atom_type
                 pisa_objects.append(atom)
                 coordinates.append([atom.x, atom.y, atom.z])
+                res_id = "%s.%s.%s" % (atom.chain_id, atom.residue_name, str(atom.residue_number))
+                if restraints and res_id in restraints:
+                    try:
+                        parsed_restraints[res_id].append(atom_index)
+                    except:
+                        parsed_restraints[res_id] = [atom_index]
         try:
-            return DockingModel(pisa_objects, molecule.copy_coordinates(), restraints, n_modes=molecule.n_modes.copy())
+            return DockingModel(pisa_objects, molecule.copy_coordinates(), parsed_restraints, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return DockingModel(pisa_objects, molecule.copy_coordinates(), restraints)
+            return DockingModel(pisa_objects, molecule.copy_coordinates(), parsed_restraints)
 
 
 class PISA(ScoringFunction):
@@ -172,7 +179,13 @@ class PISA(ScoringFunction):
         self.potential = PISAPotential()
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
-        return calculate_pisa(receptor, receptor_coordinates, ligand, ligand_coordinates, self.potential.pisa_energy)
+        energy, interface_receptor, interface_ligand = calculate_pisa(receptor, receptor_coordinates, 
+                                                                      ligand, ligand_coordinates, 
+                                                                      self.potential.pisa_energy,
+                                                                      DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
 
 
 # Needed to dynamically load the scoring functions from command line

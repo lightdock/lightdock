@@ -31,14 +31,19 @@ cpdef get_distance_to_bin(float dist):
         i -= 1
     return i
 
-cpdef calculate_pisa(receptor, receptor_coordinates, ligand, ligand_coordinates, pisa_energy):
+cpdef calculate_pisa(receptor, receptor_coordinates, ligand, ligand_coordinates, pisa_energy, interface_cutoff):
     num_contacts = np.zeros((num_atom_types, num_atom_types, num_bins), dtype=np.float)
     energy = 0.
     dist_matrix = scipy.spatial.distance.cdist(receptor_coordinates, ligand_coordinates)
     atom_indexes = np.where((dist_matrix >= min_distance) & (dist_matrix <= max_distance))
+    interface_receptor = []
+    interface_ligand = []
 
     for i,j in zip(atom_indexes[0], atom_indexes[1]):
         dist = dist_matrix[i][j]
+        if dist <= interface_cutoff:
+            interface_receptor.append(i)
+            interface_ligand.append(j)
         r = get_distance_to_bin(dist)
         itype = receptor.objects[i].pisa_type
         jtype = ligand.objects[j].pisa_type
@@ -66,4 +71,4 @@ cpdef calculate_pisa(receptor, receptor_coordinates, ligand, ligand_coordinates,
             for r in range(num_bins):
                 energy += num_contacts[i][j][r] * pisa_energy[i][j][r]
 
-    return energy * -1.
+    return energy * -1., set(interface_receptor), set(interface_ligand)
