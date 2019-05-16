@@ -15,6 +15,8 @@ from lightdock.util.logger import LoggingManager
 import lightdock.scoring.cpydock.data.amber as amber
 import lightdock.scoring.cpydock.data.vdw as vdw
 import lightdock.scoring.cpydock.data.solvation as solvation
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
+
 
 log = LoggingManager.get_logger('cpydock')
 freesasa.setVerbosity(freesasa.silent)
@@ -132,7 +134,7 @@ class CPyDock(ScoringFunction):
                                                                               receptor.hydrogens, ligand.hydrogens,
                                                                               receptor.sasa, ligand.sasa,
                                                                               receptor.des_energy, ligand.des_energy, 
-                                                                              3.9)
+                                                                              DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
         solv = -1*(solv_rec + solv_lig)
         energy = (elec + parameters.scoring_vdw_weight * vdw + solv)*-1.
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))

@@ -10,6 +10,7 @@ from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.scoring.dfire.cython.cdfire import calculate_dfire
 from lightdock.util.logger import LoggingManager
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
 log = LoggingManager.get_logger('dfire')
@@ -165,13 +166,7 @@ class DFIRE(ScoringFunction):
     def __init__(self, weight=1.0):
         super(DFIRE, self).__init__(weight)
         self.potential = DFIREPotential()
-        try:
-            with open('dfire.cutoff') as cutoff_file:
-                self.cutoff = float(cutoff_file.readline())
-                log.info('DFIRE cutoff is: %3.2f' % self.cutoff)
-        except (IOError, ValueError):
-            log.info('Using default DFIRE cutoff of 3.9')
-            self.cutoff = 3.9
+        self.cutoff = DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, receptor_coordinates, 

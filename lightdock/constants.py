@@ -23,6 +23,7 @@ DEFAULT_LIG_NM_FILE = "lightdock_lig.nm"
 
 # Scoring function constants
 DEFAULT_SCORING_FUNCTION = "fastdfire"  # Lightdock default scoring function if none is specified
+DEFAULT_CONTACT_RESTRAINTS_CUTOFF = 3.9
 
 # Default file extensions
 DEFAULT_REFERENCE_POINTS_EXTENSION = ".vol"
@@ -56,3 +57,4 @@ DEFAULT_LIGHTDOCK_INFO = "lightdock.info"
 
 # Surface density
 MIN_SURFACE_DENSITY = 200.0
+

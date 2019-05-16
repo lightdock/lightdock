@@ -12,6 +12,8 @@ import lightdock.scoring.dna.energy.parameters as parameters
 from lightdock.util.logger import LoggingManager
 import lightdock.scoring.dna.data.amber as amber
 import lightdock.scoring.dna.data.vdw as vdw
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
+
 
 log = LoggingManager.get_logger('cdna')
 
@@ -97,7 +99,7 @@ class CPyDockDNA(ScoringFunction):
                                                                                 receptor.charges, ligand.charges,
                                                                                 receptor.vdw_energy, ligand.vdw_energy,
                                                                                 receptor.vdw_radii, ligand.vdw_radii,
-                                                                                3.9)
+                                                                                DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
         energy = (elec + parameters.scoring_vdw_weight * vdw)*-1.
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
