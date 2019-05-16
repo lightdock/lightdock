@@ -13,6 +13,7 @@ from lightdock.error.lightdock_errors import PotentialsParsingError
 from lightdock.structure.model import DockingModel
 from lightdock.structure.space import SpacePoints
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
 class MJPotential(object):
@@ -68,7 +69,7 @@ class MJ3hAdapter(ModelAdapter):
         not_considered_atoms = ['O', 'C', 'N', 'H']
         residues_to_remove = []
         residues = [residue for chain in molecule.chains for residue in chain.residues]
-
+        parsed_restraints = {}
         for structure in range(molecule.num_structures):
             coordinates = []
             for res_index, residue in enumerate(residues):
@@ -76,15 +77,20 @@ class MJ3hAdapter(ModelAdapter):
                 c_y = 0.0
                 c_z = 0.0
                 count = 0
+                chain_id = ''
                 for atom in residue.atoms:
                     if atom.name not in not_considered_atoms:
                         c_x += molecule.atom_coordinates[structure][atom.index][0]
                         c_y += molecule.atom_coordinates[structure][atom.index][1]
                         c_z += molecule.atom_coordinates[structure][atom.index][2]
                         count += 1
+                        chain_id = atom.chain_id
                 if count:
                     count = float(count)
                     coordinates.append([c_x / count, c_y / count, c_z / count])
+                    res_id = "%s.%s.%s" % (chain_id, residue.name, str(residue.number))
+                    if restraints and res_id in restraints:
+                        parsed_restraints[res_id] = []
                 else:
                     residues_to_remove.append(res_index)
 
@@ -94,7 +100,7 @@ class MJ3hAdapter(ModelAdapter):
 
             list_of_coordinates.append(SpacePoints(coordinates))
 
-        return DockingModel(residues, list_of_coordinates)
+        return DockingModel(residues, list_of_coordinates, parsed_restraints)
 
 
 class MJ3h(ScoringFunction):
@@ -112,12 +118,15 @@ class MJ3h(ScoringFunction):
         self.penalization = penalization
         self.potential = MJPotential()
         self.potentials = self.potential.potentials['MJ3h']
+        self.cutoff = DEFAULT_CONTACT_RESTRAINTS_CUTOFF * DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Calculates the MJ3h potential taking into account the contacts between receptor
         and ligand. Receptor and ligand are DockingModel objects.
         """
         energy = 0.0
+        interface_receptor = []
+        interface_ligand = []
         for index_rec, res1 in enumerate(receptor.objects):
             for index_lig, res2 in enumerate(ligand.objects):
                 [x1, y1, z1] = receptor_coordinates[index_rec]
@@ -133,7 +142,15 @@ class MJ3h(ScoringFunction):
                             energy += self.potentials[i_rec][i_lig]
                         except:
                             pass
-        return energy * -1.
+                    if distance <= self.cutoff:
+                        interface_receptor.append(index_rec)
+                        interface_ligand.append(index_lig)
+        interface_receptor = set(interface_receptor)
+        interface_ligand = set(interface_ligand)
+        energy *= -1.
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
 
 
 # Needed to dynamically load the scoring functions from command line
