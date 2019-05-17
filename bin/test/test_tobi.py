@@ -50,6 +50,44 @@ class TestRegressionTOBIShort(RegressionTest):
                            self.test_path + 'swarm_0/gso_4.out')
 
 
+class TestRegressionTOBIRestraints(RegressionTest):
+    def setup(self):
+        self.path = os.path.dirname(os.path.realpath(__file__))
+        self.test_path = self.path + '/scratch_tobi_restraints/'
+        self.ini_test_path()
+        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + \
+                                '/golden_data/regression_tobi_restraints/'
+        shutil.copy(os.path.join(self.golden_data_path, '2UUY_rec.pdb'), self.test_path)
+        shutil.copy(os.path.join(self.golden_data_path, '2UUY_lig.pdb'), self.test_path)
+        shutil.copy(os.path.join(self.golden_data_path, 'restraints.list'), self.test_path)
+
+    def teardown(self):
+        self.clean_test_path()
+
+    def test_lightdock_1ppe_10_steps_20_glowworms(self):
+        os.chdir(self.test_path)
+        num_swarms = 4
+        num_glowworms = 20
+        steps = 10
+
+        command = "lightdock_setup %s %s %d %d --noh --noxt " \
+                  "-rst %s > test_lightdock.out" % ('2UUY_rec.pdb',
+                                                    '2UUY_lig.pdb',
+                                                    num_swarms,
+                                                    num_glowworms,
+                                                    self.golden_data_path + 'restraints.list')
+        os.system(command)
+        command = "lightdock %s %d -c 1 -s " \
+                  "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',
+                                                  steps)
+        os.system(command)
+
+        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
+                           self.test_path + 'swarm_0/gso_0.out')
+        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_10.out',
+                           self.test_path + 'swarm_0/gso_10.out')
+
+
 class TestRegressionTOBIMoreGlowworms(RegressionTest):
     def setup(self):
         self.path = os.path.dirname(os.path.realpath(__file__))

@@ -13,6 +13,7 @@ from lightdock.error.lightdock_errors import PotentialsParsingError
 from lightdock.structure.model import DockingModel
 from lightdock.structure.space import SpacePoints
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
 class TOBIPotential(object):
@@ -71,7 +72,7 @@ class TOBIAdapter(ModelAdapter):
         residues = [residue for chain in molecule.chains for residue in chain.residues]
         tobi_residues = []
         list_of_coordinates = []
-
+        parsed_restraints = {}
         for structure in range(molecule.num_structures):
             coordinates = []
             for residue in residues:
@@ -82,6 +83,7 @@ class TOBIAdapter(ModelAdapter):
                     cy = 0.0
                     cz = 0.0
                     count = 0
+                    chain_id = ''
                     for atom in residue.atoms:
                         if not atom.is_hydrogen():
                             current_atom = "%s%s" % (residue.name, atom.name)
@@ -101,7 +103,7 @@ class TOBIAdapter(ModelAdapter):
                             if atom.name == 'O':
                                 coordinates.append([ax, ay, az])
                                 tobi_residues.append(21)
-
+                            chain_id = atom.chain_id
                     cx /= float(count)
                     cy /= float(count)
                     cz /= float(count)
@@ -109,13 +111,17 @@ class TOBIAdapter(ModelAdapter):
                     coordinates.append([cx, cy, cz])
                     tobi_residues.append(residue_index)
 
+                    res_id = "%s.%s.%s" % (chain_id, residue.name, str(residue.number))
+                    if restraints and res_id in restraints:
+                        parsed_restraints[res_id] = []
+
                 except ValueError:
                     pass
                 except ZeroDivisionError:
                     continue
             list_of_coordinates.append(SpacePoints(coordinates))
 
-        return DockingModel(tobi_residues, list_of_coordinates)
+        return DockingModel(tobi_residues, list_of_coordinates, parsed_restraints)
 
 
 class TOBI(ScoringFunction):
@@ -126,6 +132,7 @@ class TOBI(ScoringFunction):
         self.penalty = 1.0
         self.function = self._default
         self.potential = TOBIPotential()
+        self.cutoff = DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         return self.function(receptor, receptor_coordinates, ligand, ligand_coordinates)
@@ -135,6 +142,8 @@ class TOBI(ScoringFunction):
 
         dist_matrix = scipy.spatial.distance.cdist(receptor_coordinates, ligand_coordinates)
 
+        interface_receptor = []
+        interface_ligand = []
         for rec_index, rec_tobi in enumerate(receptor.objects):
             for lig_index, lig_tobi in enumerate(ligand.objects):
                 d = dist_matrix[rec_index][lig_index]
@@ -162,7 +171,16 @@ class TOBI(ScoringFunction):
                             else:
                                 if d <= 8.0:
                                     energy += self.potential.tobi_sc_2[rec_tobi][lig_tobi]
-        return energy * -1.
+                if d <= self.cutoff:
+                    interface_receptor.append(rec_index)
+                    interface_ligand.append(lig_index)
+
+        interface_receptor = set(interface_receptor)
+        interface_ligand = set(interface_ligand)
+        energy *= -1.
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
 
     def _vdw_in_search(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Calculates the TOBI potential taking into account the contacts between receptor

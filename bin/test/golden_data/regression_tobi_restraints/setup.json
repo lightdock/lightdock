@@ -1,0 +1,37 @@
+{
+    "anm_seed": 324324, 
+    "ftdock_file": null, 
+    "noh": true, 
+    "anm_rec": 10, 
+    "receptor_restraints": {
+        "active": [
+            "A.TYR.234", 
+            "A.VAL.235", 
+            "A.SER.236", 
+            "A.TRP.237", 
+            "A.ILE.238", 
+            "A.LYS.239"
+        ], 
+        "passive": []
+    }, 
+    "swarms": 1, 
+    "starting_points_seed": 324324, 
+    "receptor_pdb": "2UUY_rec.pdb", 
+    "anm_lig": 10, 
+    "verbose_parser": false, 
+    "noxt": true, 
+    "restraints": "restraints.list", 
+    "use_anm": false, 
+    "glowworms": 20, 
+    "membrane": false, 
+    "ligand_pdb": "2UUY_lig.pdb", 
+    "ligand_restraints": {
+        "active": [
+            "B.GLY.67", 
+            "B.GLU.68", 
+            "B.CYS.69", 
+            "B.ALA.70"
+        ], 
+        "passive": []
+    }
+}
