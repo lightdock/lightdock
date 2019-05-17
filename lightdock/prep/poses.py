@@ -74,7 +74,13 @@ def quaternion_from_vectors(a, b):
 def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
     """Calculates the quaternion required for orienting the ligand towards the restraint"""
     r_ca = rec_residue.get_calpha()
+    # Deal with possible DNA nucleotides
+    if not r_ca:
+        r_ca = rec_residue.get_atom('P')
     l_ca = lig_residue.get_calpha()
+    # Deal with possible DNA nucleotides
+    if not l_ca:
+        l_ca = lig_residue.get_atom('P')
 
     rx = r_ca.x + rt[0]
     ry = r_ca.y + rt[1]
