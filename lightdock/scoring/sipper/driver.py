@@ -12,6 +12,7 @@ from lightdock.structure.model import DockingModel
 from lightdock.scoring.sipper.data.energy import sipper_energy, res_to_index
 import lightdock.scoring.sipper.c.sipper as csipper
 from lightdock.util.logger import LoggingManager
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
 log = LoggingManager.get_logger('sipper')
@@ -43,9 +44,18 @@ class SIPPERAdapter(ModelAdapter):
     def _get_docking_model(self, molecule, restraints):
         atoms = molecule.atoms
         energy = sipper_energy
+        parsed_restraints = {}
         indexes = np.array([res_to_index[residue.name] for residue in molecule.residues])
         coordinates = molecule.copy_coordinates()
         atoms_per_residue = np.array([len(residue.atoms) for residue in molecule.residues])
+
+        for atom_index, atom in enumerate(atoms):
+            res_id = "%s.%s.%s" % (atom.chain_id, atom.residue_name, str(atom.residue_number))
+            if restraints and res_id in restraints:
+                try:
+                    parsed_restraints[res_id].append(atom_index)
+                except:
+                    parsed_restraints[res_id] = [atom_index]
 
         oda_values = SIPPERAdapter._read_oda_values(molecule)
         if oda_values:
@@ -57,10 +67,10 @@ class SIPPERAdapter(ModelAdapter):
         reference_points = ModelAdapter.load_reference_points(molecule)
 
         try:
-            return SIPPERModel(atoms, coordinates, restraints, energy, indexes, atoms_per_residue, oda_values,
+            return SIPPERModel(atoms, coordinates, parsed_restraints, energy, indexes, atoms_per_residue, oda_values,
                                reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return SIPPERModel(atoms, coordinates, restraints, energy, indexes, atoms_per_residue, oda_values,
+            return SIPPERModel(atoms, coordinates, parsed_restraints, energy, indexes, atoms_per_residue, oda_values,
                                reference_points=reference_points)
 
     @staticmethod
