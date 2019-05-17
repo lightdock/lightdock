@@ -20,16 +20,23 @@ static PyObject * calculate_vdw(PyObject *self, PyObject *args) {
     PyArrayObject *rec_vdw, *lig_vdw, *rec_vdw_radii, *lig_vdw_radii = NULL;
     double total_vdw, vdw_energy, vdw_radius, p6, k;
     unsigned int rec_len, lig_len, i, j;
-    double **rec_array, **lig_array, x, y, z, distance2;
+    unsigned int interface_len, intf_array_size, *interface_receptor = NULL, *interface_ligand = NULL;
+    double **rec_array, **lig_array, x, y, z, distance2, interface_cutoff, interface_cutoff2;
     npy_intp dims[2];
     PyArray_Descr *descr;
     double *rec_c_vdw, *lig_c_vdw, *rec_c_vdw_radii, *lig_c_vdw_radii = NULL;
+    PyObject *result = PyTuple_New(3);
 
     total_vdw = 0.0;
+    interface_cutoff = 3.9;
+    interface_len = 0;
+    intf_array_size = 1;
 
-    if (PyArg_ParseTuple(args, "OOOOOO",
+    if (PyArg_ParseTuple(args, "OOOOOO|d",
             &receptor_coordinates, &ligand_coordinates,
             &rec_vdw, &lig_vdw, &rec_vdw_radii, &lig_vdw_radii)) {
+
+        interface_cutoff2 = interface_cutoff*interface_cutoff;
 
         descr = PyArray_DescrFromType(NPY_DOUBLE);
 
@@ -52,6 +59,9 @@ static PyObject * calculate_vdw(PyObject *self, PyObject *args) {
         rec_c_vdw_radii = PyArray_GETPTR1(rec_vdw_radii, 0);
         lig_c_vdw_radii = PyArray_GETPTR1(lig_vdw_radii, 0);
 
+        interface_receptor = malloc(lig_len*sizeof(unsigned int));
+        interface_ligand  = malloc(lig_len*sizeof(unsigned int));
+
         // For all atoms in receptor
         for (i = 0; i < rec_len; i++) {
             // For all atoms in ligand
@@ -71,6 +81,17 @@ static PyObject * calculate_vdw(PyObject *self, PyObject *args) {
                     if (k > VDW_CUTOFF) k = VDW_CUTOFF;
                     total_vdw += k;
                 }
+
+                if (distance2 <= interface_cutoff2) {
+                   interface_receptor[interface_len] = i;
+                   interface_ligand[interface_len++] = j;
+                }
+            }
+
+            if (((interface_len + lig_len - 1)/lig_len + 1) > intf_array_size) {
+                intf_array_size++;
+                interface_receptor = realloc(interface_receptor, intf_array_size*lig_len*sizeof(unsigned int));
+                interface_ligand = realloc(interface_ligand, intf_array_size*lig_len*sizeof(unsigned int));
             }
         }
 
@@ -80,7 +101,15 @@ static PyObject * calculate_vdw(PyObject *self, PyObject *args) {
     }
 
     // Return a tuple with the following values for calculated energies:
-    return PyFloat_FromDouble(total_vdw);
+    interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
+    interface_ligand = realloc(interface_ligand, interface_len*sizeof(unsigned int));
+    dims[0] = interface_len;
+
+    // Return a tuple with the following values for calculated energies:
+    PyTuple_SetItem(result, 0, PyFloat_FromDouble(total_vdw));
+    PyTuple_SetItem(result, 1, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_receptor));
+    PyTuple_SetItem(result, 2, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_ligand));
+    return result;
 }
 
 
