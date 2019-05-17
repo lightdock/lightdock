@@ -363,7 +363,8 @@ New cluster 7
 
 A new file in CSV format is created with the clustering information:
 
-```cat cluster.repr
+```
+cat cluster.repr
 0:2: 9.87810:3:lightdock_3.pdb
 1:1: 9.66368:6:lightdock_6.pdb
 2:1: 7.52192:0:lightdock_0.pdb
