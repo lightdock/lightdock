@@ -132,12 +132,6 @@ For each residue restraint specified for the receptor, only the closest swarms a
 
 Then, the simulation will try to optimize both energy and restraints satisfied taking into account only **active** residues.
 
-The following scoring functions are prepared to be used with residue restraints:
-
-* [DFIRE](../lightdock/scoring/dfire)
-* [FastDFIRE](../lightdock/scoring/fastdfire)
-* [CPyDock](../lightdock/scoring/cpydock)
-
 Once the simulation has ended, the script `lgd_filter_restraints.py` should be used in order to remove predictions which do not satisfy the provided restraints.
 
 **See a complete example of the LightDock protocol (setup with restraints, simulation, clustering and filtering) [here](4G6M.md).**
