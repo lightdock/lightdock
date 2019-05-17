@@ -22,7 +22,7 @@ Default recommended protocol is:
 * **Glowworms**: 300
 * **Steps**: 100
 
-In the [original publication](https://academic.oup.com/bioinformatics/article/34/1/49/4103399) the number of steps was equal to 200, but quality of the results is not affected using 100 steps and it was only for benchmarking that 200 steps were used. 
+In the [original publication](https://academic.oup.com/bioinformatics/article/34/1/49/4103399) the number of steps was equal to 200, but quality of the results is not affected using 100 steps. The reason behind performing 200 steps was for benchmarking the method. 
 
 
 ## 2. Setup
@@ -45,7 +45,7 @@ KeyError: 'LYSH1'
 
 This is caused by DFIRE scoring functions not recognizing `H` (hydrogen) atoms. Remove all hydrogen atoms and any other non-standard residue or `HETATM`.
 
-For removing hydrogens, you can use `reduce` software:
+For removing hydrogens, you can use the flag `--noh` in `lightdock_setup` command or the [Reduce](https://github.com/rlabduke/reduce) software:
 
 ```
 reduce -Trim input.pdb > output.pdb
