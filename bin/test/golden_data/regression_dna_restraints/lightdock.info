@@ -3,7 +3,7 @@
     "anm_rec": 10, 
     "anm_seed": 324324, 
     "configuration_file": null, 
-    "cores": null, 
+    "cores": 1, 
     "ftdock_file": null, 
     "glowworms": 10, 
     "gso_seed": 324324, 

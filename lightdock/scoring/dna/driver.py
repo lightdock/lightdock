@@ -15,14 +15,14 @@ import lightdock.scoring.dna.data.vdw as vdw
 from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
-log = LoggingManager.get_logger('cdna')
+log = LoggingManager.get_logger('dna')
 
 
-class CPyDockDNAModel(DockingModel):
+class DNAModel(DockingModel):
     """Prepares the structure necessary for the scoring function"""
     def __init__(self, objects, coordinates, restraints, charges, vdw_energy, vdw_radii,
                  reference_points=None, n_modes=None):
-        super(CPyDockDNAModel, self).__init__(objects, coordinates, restraints, reference_points)
+        super(DNAModel, self).__init__(objects, coordinates, restraints, reference_points)
         self.charges = charges
         self.vdw_energy = vdw_energy
         self.vdw_radii = vdw_radii
@@ -30,12 +30,12 @@ class CPyDockDNAModel(DockingModel):
 
     def clone(self):
         """Creates a copy of the current model"""
-        return CPyDockDNAModel(self.objects, self.coordinates.copy(), self.restraints, 
+        return DNAModel(self.objects, self.coordinates.copy(), self.restraints, 
                             self.charges, self.vdw_energy, self.vdw_radii,
                             reference_points=self.reference_points.copy())
 
 
-class CPyDockDNAAdapter(ModelAdapter):
+class DNAAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this scoring function."""
 
     to_translate = {'HIS':'HID', 'THY':'DT', 'ADE':'DA', 'CYT':'DC', 'GUA':'DG'}
@@ -53,8 +53,8 @@ class CPyDockDNAAdapter(ModelAdapter):
                     parsed_restraints[res_id] = [atom_index]
             res_name = atom.residue_name
             atom_name = atom.name
-            if res_name in CPyDockDNAAdapter.to_translate:
-                res_name = CPyDockDNAAdapter.to_translate[res_name]
+            if res_name in DNAAdapter.to_translate:
+                res_name = DNAAdapter.to_translate[res_name]
             if atom_name in amber.translate:
                 atom_name = amber.translate[atom.name]
             atom_id = "%s-%s" % (res_name, atom_name)
@@ -73,23 +73,23 @@ class CPyDockDNAAdapter(ModelAdapter):
         reference_points = ModelAdapter.load_reference_points(molecule)
 
         try:
-            return CPyDockDNAModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii,
+            return DNAModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii,
                                     reference_points=reference_points, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return CPyDockDNAModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii,
+            return DNAModel(atoms, coordinates, parsed_restraints, elec_charges, vdw_energies, vdw_radii,
                                     reference_points=reference_points)
 
 
-class CPyDockDNA(ScoringFunction):
+class DNA(ScoringFunction):
     def __init__(self, weight=1.0):
-        super(CPyDockDNA, self).__init__(weight)
+        super(DNA, self).__init__(weight)
         try:
             with open(parameters.vdw_input_file) as vdw_file:
                 self.scoring_vdw_weight = float(vdw_file.readline())
         except (IOError, ValueError) as e:
-            log.warning('Error (%s), using default VDW cutoff' % str(e))
+            log.warning('Error (%s), using default VdW cutoff' % str(e))
             self.scoring_vdw_weight = parameters.scoring_vdw_weight
-        log.info('PyDockDNA VDW cutoff is: %3.2f' % self.scoring_vdw_weight)
+        log.info('DNA VdW cutoff is: %3.2f' % self.scoring_vdw_weight)
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Computes the pyDockDNA scoring energy using receptor and ligand which are
@@ -107,5 +107,5 @@ class CPyDockDNA(ScoringFunction):
 
 
 # Needed to dynamically load the scoring functions from command line
-DefinedScoringFunction = CPyDockDNA
-DefinedModelAdapter = CPyDockDNAAdapter
+DefinedScoringFunction = DNA
+DefinedModelAdapter = DNAAdapter
