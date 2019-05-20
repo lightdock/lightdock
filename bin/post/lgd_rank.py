@@ -55,7 +55,7 @@ if __name__ == "__main__":
                 results = read_lightdock_output(result_file_name)
                 num_swarms_found += 1
                 for result in results:
-                    result.id_cluster = swarm_id
+                    result.id_swarm = swarm_id
                     result.pdb_file = LIGHTDOCK_PDB_FILE % result.id_glowworm
                     try:
                         result.rmsd = rmsds[result.id_cluster][result.id_glowworm]
