@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
-"""Prepares a new simulation starting from a previous one.
+"""Prepares a new simulation (init folder) starting from a previous one.
 
-This is very experimental and may change in the fugure without any warning."""
+It uses the clustering data if exists the filer cluster.repr in the swarm folder.
+
+This is a very experimental feature and may change in the future without any warning.
+
+"""
 
 import os
 import argparse
@@ -23,7 +27,7 @@ log = LoggingManager.get_logger('lgd_prepare_new_simulation')
 
 def parse_command_line():
     parser = argparse.ArgumentParser(prog='lgd_prepare_new_simulation')
-    parser.add_argument("cluster", help="cluster to consider", type=int, metavar="cluster")
+    parser.add_argument("swarm", help="swarm to consider", type=int, metavar="swarm")
     parser.add_argument("steps", help="steps to consider", type=int, metavar="steps")
     parser.add_argument("destination", help="destination folder", metavar="destination")
     parser.add_argument("-nm", "--nm", help="Keep normal modes in starting positions if exist",
@@ -94,23 +98,23 @@ if __name__ == "__main__":
         init_folder = os.path.join(args.destination, DEFAULT_POSITIONS_FOLDER)
         os.mkdir(init_folder)
 
-        total_clusters = 0
+        total_swarms = 0
 
-        cluster_id = args.cluster
-        log.info("cluster %d" % cluster_id)
-        result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), GSO_OUTPUT_FILE % args.steps)
+        swarm_id = args.swarm
+        log.info("swarm %d" % swarm_id)
+        result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), GSO_OUTPUT_FILE % args.steps)
         results = read_lightdock_output(result_file_name)
 
-        cluster_repr_file = os.path.join(DEFAULT_SWARM_FOLDER + str(cluster_id), CLUSTER_REPRESENTATIVES_FILE)
+        cluster_repr_file = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), CLUSTER_REPRESENTATIVES_FILE)
         selected_glowworms = read_cluster_representative_data(cluster_repr_file)
 
         representative_results = []
         for glowworm_id in selected_glowworms:
             representative_results.append(results[glowworm_id])
             # Create centers and initial positions
-            create_positions(init_folder, total_clusters, results[glowworm_id].pose)
-            log.info("%8d - Initial positions for glowworm %d created" % (total_clusters, glowworm_id))
-            total_clusters += 1
+            create_positions(init_folder, total_swarms, results[glowworm_id].pose)
+            log.info("%8d - Initial positions for glowworm %d created" % (total_swarms, glowworm_id))
+            total_swarms += 1
         create_centers_file(init_folder, [result.pose for result in representative_results])
         log.info('Done.')
 
