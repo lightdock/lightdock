@@ -1,0 +1,61 @@
+{
+    "anm_lig": 10, 
+    "anm_rec": 10, 
+    "anm_seed": 324324, 
+    "configuration_file": null, 
+    "cores": 4, 
+    "ftdock_file": null, 
+    "glowworms": 50, 
+    "gso_seed": 324324, 
+    "ligand_pdb": "4IZ7_B_noh.pdb", 
+    "ligand_restraints": {
+        "active": [
+            "B.ASN.14", 
+            "B.ASN.13", 
+            "B.THR.12", 
+            "B.THR.16", 
+            "B.ASP.19", 
+            "B.GLU.18", 
+            "B.ASP.10", 
+            "B.GLN.9", 
+            "B.GLY.42"
+        ], 
+        "passive": []
+    }, 
+    "listscoring": null, 
+    "local_minimization": false, 
+    "membrane": false, 
+    "mpi": false, 
+    "nmodes_step": 0.5, 
+    "noh": true, 
+    "noxt": true, 
+    "profiling": false, 
+    "receptor_pdb": "4IZ7_A_noh.pdb", 
+    "receptor_restraints": {
+        "active": [
+            "A.ILE.198", 
+            "A.GLU.197", 
+            "A.PRO.196", 
+            "A.ARG.194", 
+            "A.SER.202", 
+            "A.LYS.203", 
+            "A.TYR.205", 
+            "A.THR.206", 
+            "A.GLY.204", 
+            "A.PRO.298", 
+            "A.ASN.297", 
+            "A.SER.208"
+        ], 
+        "passive": []
+    }, 
+    "restraints": "restraints.list", 
+    "rotation_step": 0.5, 
+    "scoring_function": "fastdfire", 
+    "setup_file": "setup.json", 
+    "starting_points_seed": 324324, 
+    "steps": 10, 
+    "swarms": 4, 
+    "translation_step": 0.5, 
+    "use_anm": true, 
+    "verbose_parser": false
+}
