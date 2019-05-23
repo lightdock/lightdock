@@ -14,50 +14,10 @@ from lightdock.structure.complex import Complex
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.structure.nm import read_nmodes
 from lightdock.prep.simulation import get_setup_from_file
+from lightdock.util.parser import CommandLineParser, get_lightdock_structures
 
 
 log = LoggingManager.get_logger('generate_conformations')
-
-
-def valid_file(file_name):
-    """Checks if it is a valid file"""
-    if not os.path.exists(file_name):
-        raise argparse.ArgumentTypeError("The file does not exist")
-    return file_name
-
-
-def valid_integer_number(ivalue):
-    """Checks for a valid integer"""
-    try:
-        ivalue = int(ivalue)
-    except:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-    if ivalue <= 0:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-    return ivalue
-
-
-def get_lightdock_structures(input_file):
-    """Get a list of the PDB files in the input_file"""
-    input_file_name, input_file_extension = os.path.splitext(input_file)
-    file_names = []
-    if input_file_extension == DEFAULT_LIST_EXTENSION:
-        with open(input_file) as input_lines:
-            for line in input_lines:
-                file_name = line.rstrip(os.linesep)
-                lightdock_structure = os.path.join(os.path.dirname(file_name),
-                                                   DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
-                if os.path.exists(lightdock_structure):
-                    file_names.append(lightdock_structure)
-    else:
-        file_name = input_file
-        lightdock_structure = os.path.join(os.path.dirname(file_name),
-                                           DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
-        if os.path.exists(lightdock_structure):
-            file_names.append(lightdock_structure)
-        else:
-            raise LightDockError('Structure file %s not found' % lightdock_structure)
-    return file_names
 
 
 def parse_output_file(lightdock_output, num_anm_rec, num_anm_lig):
@@ -97,18 +57,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="conformer_conformations")
     # Receptor
     parser.add_argument("receptor_structures", help="receptor structures: PDB file or list of PDB files",
-                        type=valid_file, metavar="receptor_structure")
+                        type=CommandLineParser.valid_file, metavar="receptor_structure")
     # Ligand
     parser.add_argument("ligand_structures", help="ligand structures: PDB file or list of PDB files",
-                        type=valid_file, metavar="ligand_structure")
+                        type=CommandLineParser.valid_file, metavar="ligand_structure")
     # Lightdock output file
     parser.add_argument("lightdock_output", help="lightdock output file",
-                        type=valid_file, metavar="lightdock_output")
+                        type=CommandLineParser.valid_file, metavar="lightdock_output")
     # Number of glowworms
-    parser.add_argument("glowworms", help="number of glowworms", type=valid_integer_number)
+    parser.add_argument("glowworms", help="number of glowworms", type=CommandLineParser.valid_integer_number)
     # Optional, setup file
     parser.add_argument("--setup", "-setup", "-s", help="Simulation setup file",
-                            dest="setup_file", metavar="setup_file", type=valid_file, default=None)
+                            dest="setup_file", metavar="setup_file", type=CommandLineParser.valid_file, 
+                            default=None)
 
     args = parser.parse_args()
 
