@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Creates a PDB with atom points representing the position of each of the glowworms of a swarm"""
+"""Creates a PDB with atom points representing the position for each of the glowworms of a swarm"""
 
 import argparse
 import os
