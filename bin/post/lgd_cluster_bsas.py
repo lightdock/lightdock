@@ -38,9 +38,13 @@ def get_ca_atoms(ids_list):
             for chain in model:
                 for residue in chain:
                     try:
-                        ca_atoms[struct_id].append(residue['CA'])
+                        res = residue['CA']
                     except:
-                        ca_atoms[struct_id] = [residue['CA']]
+                        res = residue['P']
+                    try:
+                        ca_atoms[struct_id].append(res)
+                    except:
+                        ca_atoms[struct_id] = [res]
     except IOError, e:
         log.error('Error found reading a structure: %s' % str(e))
         log.error('Did you generate the LightDock structures corresponding to this output file?')
