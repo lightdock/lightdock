@@ -114,6 +114,7 @@ static PyObject * cdna_calculate_energy(PyObject *self, PyObject *args) {
                 interface_receptor = realloc(interface_receptor, intf_array_size*lig_len*sizeof(unsigned int));
                 interface_ligand = realloc(interface_ligand, intf_array_size*lig_len*sizeof(unsigned int));
             }
+
         }
         // Convert total electrostatics to Kcal/mol:
         //      - coordinates are in Ang
@@ -123,6 +124,8 @@ static PyObject * cdna_calculate_energy(PyObject *self, PyObject *args) {
         // Free structures
         PyArray_Free(tmp0, rec_array);
         PyArray_Free(tmp1, lig_array);
+        Py_DECREF(tmp0);
+        Py_DECREF(tmp1);
     }
     
     interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
