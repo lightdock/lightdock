@@ -58,8 +58,21 @@ class DNAAdapter(ModelAdapter):
             if atom_name in amber.translate:
                 atom_name = amber.translate[atom.name]
             atom_id = "%s-%s" % (res_name, atom_name)
-            atom.amber_type = amber.amber_types[atom_id]
-            atom.charge = amber.charges[atom_id]
+            try:
+                atom.amber_type = amber.amber_types[atom_id]
+            except Exception, e:
+                # Maybe H N-terminal?
+                if atom_name in ['H1', 'H2', 'H3']:
+                    atom_name = 'H'
+                    atom_id = "%s-%s" % (res_name, atom_name)
+                    atom.amber_type = amber.amber_types[atom_id]
+                else:
+                    raise e
+            try:
+                atom.charge = amber.charges[atom_id]
+            except:
+                # Go for N-terminal
+                atom.charge = amber.nt_charges[atom_id]
             atom.mass = amber.masses[atom.amber_type]
             atom.vdw_energy = vdw.vdw_energy[atom.amber_type]
             atom.vdw_radius = vdw.vdw_radii[atom.amber_type]
