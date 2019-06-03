@@ -1,0 +1,29 @@
+{
+    "anm_seed": 324324, 
+    "ftdock_file": null, 
+    "noh": false, 
+    "anm_rec": 10, 
+    "receptor_restraints": {
+        "active": [
+            "A.TRP.24", 
+            "A.VAL.26", 
+            "A.ARG.42"
+        ], 
+        "passive": []
+    }, 
+    "swarms": 27, 
+    "starting_points_seed": 324324, 
+    "receptor_pdb": "1AZP_A_h.pdb", 
+    "anm_lig": 10, 
+    "verbose_parser": false, 
+    "noxt": false, 
+    "restraints": "restraints.list", 
+    "use_anm": true, 
+    "glowworms": 200, 
+    "membrane": false, 
+    "ligand_pdb": "1AZP_B.pdb", 
+    "ligand_restraints": {
+        "active": [], 
+        "passive": []
+    }
+}
