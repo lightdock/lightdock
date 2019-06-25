@@ -59,6 +59,10 @@ def parse_command_line():
                             dest="cutoff", type=float, default=5.0)
     parser.add_argument("--fnat", "-fnat", "-f", help="Structures with at least this fraction of native contacts",
                             dest="fnat", type=float)
+    parser.add_argument("--rnuc", help="Is receptor molecule a nucleic acid?",
+                            dest="rnuc", action='store_true', default=False)
+    parser.add_argument("--lnuc", help="Is ligand molecule a nucleic acid?",
+                            dest="lnuc", action='store_true', default=False)
 
     return parser.parse_args()
 
@@ -102,8 +106,14 @@ if __name__ == '__main__':
             # Read molecule and split by receptor and ligand
             if score > 0.0:
                 molecule = parsePDB(pdb)
-                receptor = molecule.select('protein and chain {}'.format(args.receptor_chains))
-                ligand = molecule.select('protein and chain {}'.format(args.ligand_chains))
+                if args.rnuc:
+                    receptor = molecule.select('nucleic and chain {}'.format(args.receptor_chains))
+                else:
+                    receptor = molecule.select('protein and chain {}'.format(args.receptor_chains))
+                if args.lnuc:
+                    ligand = molecule.select('nucleic and chain {}'.format(args.ligand_chains))
+                else:
+                    ligand = molecule.select('proteinmand chain {}'.format(args.ligand_chains))
 
                 # Contacts on receptor side
                 protein_contacts = Contacts(receptor)
