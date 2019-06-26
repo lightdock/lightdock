@@ -110,6 +110,8 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
         distances = []
         for i, residue in enumerate(receptor_restraints):
             ca = residue.get_calpha()
+            if not ca:
+                ca = residue.get_atom('P')
             distances.append((i, cdistance(ca.x , ca.y , ca.z ,
                                             center[0], center[1], center[2])))
         distances.sort(key=lambda tup: tup[1])
@@ -153,6 +155,8 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
     for i, residue in enumerate(receptor_restraints):
         distances = {}
         ca = residue.get_calpha()
+        if not ca:
+            ca = residue.get_atom('P')
         for swarm_id, center in enumerate(swarm_centers):
             distances[swarm_id] = cdistance(ca.x + translation[0], ca.y + translation[1], ca.z + translation[2],
                                             center[0], center[1], center[2])
