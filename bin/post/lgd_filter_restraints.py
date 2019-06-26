@@ -113,7 +113,7 @@ if __name__ == '__main__':
                 if args.lnuc:
                     ligand = molecule.select('nucleic and chain {}'.format(args.ligand_chains))
                 else:
-                    ligand = molecule.select('proteinmand chain {}'.format(args.ligand_chains))
+                    ligand = molecule.select('protein and chain {}'.format(args.ligand_chains))
 
                 # Contacts on receptor side
                 protein_contacts = Contacts(receptor)
@@ -152,3 +152,4 @@ if __name__ == '__main__':
             if rank.id_swarm in filter_passed and rank.id_glowworm in filter_passed[rank.id_swarm]:
                 handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_swarm, 
                     rank.id_glowworm, rank.scoring, percentages[(rank.id_swarm, rank.id_glowworm)]) + os.linesep)
+
