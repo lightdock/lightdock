@@ -134,7 +134,7 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
 
             dfire_bin = dist_to_bins[d] - 1;
 
-            array[n] = atoma*167*20 + atomb*20 + dfire_bin;
+            array[n] = atoma*168*20 + atomb*20 + dfire_bin;
         }
 
         dims[0] = indexes_len;

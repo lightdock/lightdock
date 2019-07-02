@@ -9,7 +9,6 @@ import numpy as np
 from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.scoring.fastdfire.c.cdfire import calculate_dfire
-from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
 class DFIREPotential(object):
@@ -36,12 +35,14 @@ class DFIREPotential(object):
                          'VAL': ['N', 'CA', 'C', 'O', 'CB', 'CG1', 'CG2'],
                          'TRP': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE2', 'NE1', 'CE3', 'CZ3', 'CH2',
                                  'CZ2'],
-                         'TYR': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE1', 'CE2', 'CZ', 'OH']
+                         'TYR': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE1', 'CE2', 'CZ', 'OH'],
+                         'MMB': ['BJ']
                          }
 
     # Recognized residues in order in params file
     RES_3 = ['ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY', 'HIS', 'ILE', 'LYS', 'LEU',
-             'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR']
+             'MET', 'ASN', 'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL', 'TRP', 'TYR',
+             'MMB']
 
     # DFIRE only uses 20 distance bins
     dfire_dist_to_bins = [1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19,
@@ -64,11 +65,12 @@ class DFIREPotential(object):
                         'ASPO', 'ASPCB', 'ASPCG', 'ASPOD1', 'ASPOD2', 'HISN', 'HISCA', 'HISC', 'HISO', 'HISCB', 'HISCG',
                         'HISND1', 'HISCD2', 'HISCE1', 'HISNE2', 'ARGN', 'ARGCA', 'ARGC', 'ARGO', 'ARGCB', 'ARGCG',
                         'ARGCD', 'ARGNE', 'ARGCZ', 'ARGNH1', 'ARGNH2', 'LYSN', 'LYSCA', 'LYSC', 'LYSO', 'LYSCB',
-                        'LYSCG', 'LYSCD', 'LYSCE', 'LYSNZ', 'PRON', 'PROCA', 'PROC', 'PROO', 'PROCB', 'PROCG', 'PROCD']
+                        'LYSCG', 'LYSCD', 'LYSCE', 'LYSNZ', 'PRON', 'PROCA', 'PROC', 'PROO', 'PROCB', 'PROCG', 'PROCD', 
+                        'MMBBJ']
 
     # Atom type and residue translation matrix
     atom_res_trans = np.matrix(
-        '74,  75,  76,  77,  78,   0,   0,   0,   0,   0,   0,   0,   0,   0; 0,   1,   2,   3,   4,   5,   0,   0,   0,   0,   0,   0,   0,   0; 122, 123, 124, 125, 126, 127, 128, 129,   0,   0,   0,   0,   0,   0; 113, 114, 115, 116, 117, 118, 119, 120, 121,   0,   0,   0,   0,   0; 14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,   0,   0,   0; 79,  80,  81,  82,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0; 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,   0,   0,   0,   0; 25,  26,  27,  28,  29,  30,  31,  32,   0,   0,   0,   0,   0,   0; 151, 152, 153, 154, 155, 156, 157, 158, 159,   0,   0,   0,   0,   0; 33,  34,  35,  36,  37,  38,  39,  40,   0,   0,   0,   0,   0,   0; 6,   7,   8,   9,  10,  11,  12,  13,   0,   0,   0,   0,   0,   0; 105, 106, 107, 108, 109, 110, 111, 112,   0,   0,   0,   0,   0,   0; 160, 161, 162, 163, 164, 165, 166,   0,   0,   0,   0,   0,   0,   0; 96,  97,  98,  99, 100, 101, 102, 103, 104,   0,   0,   0,   0,   0; 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150,   0,   0,   0; 90,  91,  92,  93,  94,  95,   0,   0,   0,   0,   0,   0,   0,   0; 83,  84,  85,  86,  87,  88,  89,   0,   0,   0,   0,   0,   0,   0; 41,  42,  43,  44,  45,  46,  47,   0,   0,   0,   0,   0,   0,   0; 48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61; 62,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,   0,   0')
+        '74,  75,  76,  77,  78,   0,   0,   0,   0,   0,   0,   0,   0,   0; 0,   1,   2,   3,   4,   5,   0,   0,   0,   0,   0,   0,   0,   0; 122, 123, 124, 125, 126, 127, 128, 129,   0,   0,   0,   0,   0,   0; 113, 114, 115, 116, 117, 118, 119, 120, 121,   0,   0,   0,   0,   0; 14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,   0,   0,   0; 79,  80,  81,  82,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0; 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,   0,   0,   0,   0; 25,  26,  27,  28,  29,  30,  31,  32,   0,   0,   0,   0,   0,   0; 151, 152, 153, 154, 155, 156, 157, 158, 159,   0,   0,   0,   0,   0; 33,  34,  35,  36,  37,  38,  39,  40,   0,   0,   0,   0,   0,   0; 6,   7,   8,   9,  10,  11,  12,  13,   0,   0,   0,   0,   0,   0; 105, 106, 107, 108, 109, 110, 111, 112,   0,   0,   0,   0,   0,   0; 160, 161, 162, 163, 164, 165, 166,   0,   0,   0,   0,   0,   0,   0; 96,  97,  98,  99, 100, 101, 102, 103, 104,   0,   0,   0,   0,   0; 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150,   0,   0,   0; 90,  91,  92,  93,  94,  95,   0,   0,   0,   0,   0,   0,   0,   0; 83,  84,  85,  86,  87,  88,  89,   0,   0,   0,   0,   0,   0,   0; 41,  42,  43,  44,  45,  46,  47,   0,   0,   0,   0,   0,   0,   0; 48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61; 62,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,   0,   0; 167, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0')
 
     def __init__(self):
         data_path = os.path.dirname(os.path.realpath(__file__)) + '/data/'
@@ -77,11 +79,11 @@ class DFIREPotential(object):
 
     def _read_potentials(self, data_file_name):
         """Reads DFIRE data potentials"""
-        dfire_energy = np.empty((167, 167, 20), dtype=np.double)
+        dfire_energy = np.empty((168, 168, 20), dtype=np.double)
         infile = open(data_file_name).readlines()
         count = 0
-        for x in range(167):
-            for y in range(167):
+        for x in range(168):
+            for y in range(168):
                 for z in range(20):
                     dfire_energy[x][y][z] = np.double(infile[count].strip())
                     count += 1
@@ -140,8 +142,7 @@ class DFIRE(ScoringFunction):
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, ligand, 
                                                                        self.potential.dfire_energy, 
-                                                                       receptor_coordinates, ligand_coordinates,
-                                                                       DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
+                                                                       receptor_coordinates, ligand_coordinates)
         # Code to consider contacts in the interface
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
