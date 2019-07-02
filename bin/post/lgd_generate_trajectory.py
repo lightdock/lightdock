@@ -51,6 +51,8 @@ def parse_output_file(lightdock_output, glowworm_id, num_anm_rec, num_anm_lig):
                     coord = line[1:last].split(',')
                     translation = [float(coord[0]), float(coord[1]), float(coord[2])]
                     rotation = Quaternion(float(coord[3]), float(coord[4]), float(coord[5]), float(coord[6]))
+                    rec_extent = None
+                    lig_extent = None
                     if len(coord) > 7:
                         rec_extent = np.array([float(x) for x in coord[7:7+num_anm_rec]])
                         lig_extent = np.array([float(x) for x in coord[-num_anm_lig:]])
