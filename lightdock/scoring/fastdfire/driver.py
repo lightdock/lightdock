@@ -9,6 +9,7 @@ import numpy as np
 from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.scoring.fastdfire.c.cdfire import calculate_dfire
+from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
 class DFIREPotential(object):
@@ -142,7 +143,8 @@ class DFIRE(ScoringFunction):
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, ligand, 
                                                                        self.potential.dfire_energy, 
-                                                                       receptor_coordinates, ligand_coordinates)
+                                                                       receptor_coordinates, ligand_coordinates,
+                                                                       DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
         # Code to consider contacts in the interface
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
