@@ -112,6 +112,7 @@ class DFIREAdapter(ModelAdapter):
         parsed_restraints = {}
         dfire_objects = []
         atom_index = 0
+        membrane = {}
         for chain in molecule.chains:
             for residue in chain.residues:
                 res_id = "%s.%s.%s" % (chain.cid, residue.name, str(residue.number))
@@ -121,6 +122,11 @@ class DFIREAdapter(ModelAdapter):
                     in_restraint = True
                 for rec_atom in residue.atoms:
                     rec_atom_type = rec_atom.residue_name + rec_atom.name
+                    if rec_atom_type == 'MMBBJ':
+                        try:
+                            membrane[res_id].append(atom_index)
+                        except KeyError:
+                            membrane[res_id] = [atom_index]
                     rnuma = r3_to_numerical[rec_atom.residue_name]
                     anuma = atomnumber[rec_atom_type]
                     atoma = DFIREPotential.atom_res_trans[rnuma, anuma]
@@ -129,26 +135,37 @@ class DFIREAdapter(ModelAdapter):
                         parsed_restraints[res_id].append(atom_index)
                     atom_index += 1
         try:
-            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints, n_modes=molecule.n_modes.copy())
+            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints, membrane, n_modes=molecule.n_modes.copy())
         except AttributeError:
-            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints)
+            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints, membrane)
 
 
 class DFIRE(ScoringFunction):
     """Implements DFIRE potential"""
     def __init__(self, weight=1.0):
         super(DFIRE, self).__init__(weight)
-        self.potential = DFIREPotential()
+        self.potential = DFIREPotential()   
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         energy, interface_receptor, interface_ligand = calculate_dfire(receptor, ligand, 
                                                                        self.potential.dfire_energy, 
                                                                        receptor_coordinates, ligand_coordinates,
                                                                        DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
+        interface_receptor = set(interface_receptor)
+        interface_ligand = set(interface_ligand)
+
         # Code to consider contacts in the interface
-        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
-        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
-        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
+
+        # Calculate membrane interaction
+        # TODO: refactor restraints_satisfied
+        membrane_intersection = ScoringFunction.restraints_satisfied(receptor.membrane, interface_receptor)
+        membrane_penalty = 0.
+        if membrane_intersection > 0.:
+            membrane_penalty = 999.0 * membrane_intersection
+            print membrane_penalty
+        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy - membrane_penalty
 
 # Needed to dynamically load the scoring functions from command line
 DefinedScoringFunction = DFIRE
