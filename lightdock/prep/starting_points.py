@@ -26,7 +26,7 @@ def points_on_sphere(number_of_points):
     return points
 
 
-def calculate_surface_points(receptor, ligand, num_points, distance_step=0.5):
+def calculate_surface_points(receptor, ligand, num_points, distance_step=0.5, is_membrane=False):
     """Calculates the position of num_points on the surface of the given protein.
     
     Uses a ray-tracing approach starting from the disposition of the points on the sphere 
@@ -38,7 +38,9 @@ def calculate_surface_points(receptor, ligand, num_points, distance_step=0.5):
     sphere_points = points_on_sphere(num_points)
     center_of_mass = receptor.center_of_mass()
     
-    distances_matrix_rec = spatial.distance.pdist(receptor.representative())
+    receptor_atom_coordinates = receptor.representative(is_membrane)
+
+    distances_matrix_rec = spatial.distance.pdist(receptor_atom_coordinates)
     receptor_max_diameter = np.max(distances_matrix_rec)
     distances_matrix_lig = spatial.distance.pdist(ligand.representative())
     ligand_max_diameter = np.max(distances_matrix_lig)
@@ -69,13 +71,14 @@ def calculate_surface_points(receptor, ligand, num_points, distance_step=0.5):
         for i, point in enumerate(points):
             if i not in marked:
                 for atom in receptor.atoms:
-                    if distance2(receptor.representative()[atom.index][0],
-                                 receptor.representative()[atom.index][1],
-                                 receptor.representative()[atom.index][2],
-                                 point[0], point[1], point[2]) <= surface_distance:
-                        marked.append(i)
-                        surface_points.append(point)
-                        break
+                    if atom.residue_name != 'MMB':
+                        if distance2(receptor_atom_coordinates[atom.index][0],
+                                     receptor_atom_coordinates[atom.index][1],
+                                     receptor_atom_coordinates[atom.index][2],
+                                     point[0], point[1], point[2]) <= surface_distance:
+                            marked.append(i)
+                            surface_points.append(point)
+                            break
                 point[0] += rays[i][0] * distance_step
                 point[1] += rays[i][1] * distance_step
                 point[2] += rays[i][2] * distance_step

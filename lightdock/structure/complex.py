@@ -131,5 +131,13 @@ class Complex(object):
     def __len__(self):
         return self.atom_coordinates.shape[0]
 
-    def representative(self):
-        return self.atom_coordinates[self.representative_id]
+    def representative(self, is_membrane=False):
+        coordinates = self.atom_coordinates[self.representative_id]
+        if is_membrane:
+            transmembrane = []
+            for atom_id, atom in enumerate(self.atoms):
+                if atom.residue_name != 'MMB':
+                    transmembrane.append(coordinates[atom_id])
+            return transmembrane
+        else:
+            return coordinates

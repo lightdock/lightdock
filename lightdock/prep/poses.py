@@ -149,7 +149,7 @@ def create_file_from_poses(pos_file_name, poses):
 
 
 def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, translation, 
-                     is_membrane=False, swarms_per_restraint=10):
+                     swarms_per_restraint=10):
     
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
@@ -169,18 +169,47 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
                 swarms_considered += 1
             if swarms_considered == swarms_per_restraint:
                 break
-    closer_swarms = list(set(closer_swarms))
-    if is_membrane:
-        # Requieres the receptor to be aligned in the Z axis with the membrane
-        min_z = min([residue.get_calpha().z for residue in receptor_restraints]) + translation[2]
-        compatible = []
-        for swarm_id, center in enumerate(swarm_centers):
-            if swarm_id in closer_swarms:
-                if center[2] >= min_z:
-                    compatible.append(swarm_id)
-        return compatible
-    else:
-        return closer_swarms
+
+    closer_swarm_ids = list(set(closer_swarms))
+    new_swarm_centers = [swarm_centers[i] for i in closer_swarm_ids]
+    return new_swarm_centers
+
+
+def estimate_membrane(z_coordinates, cutoff=10.0):
+    """Given a 1D array with Z-axis coordinates, estimates the number of groups, which
+    will correspond to the number of membrane layers."""
+    sorted_data = sorted(z_coordinates)
+    data_length = len(sorted_data)
+    diffs = [abs(sorted_data[i]-sorted_data[i-1]) for i in range(1, data_length)]
+    points = [i+1 for i, x in enumerate(diffs) if x > cutoff]
+    if not points:
+        return [sorted_data]
+    indices = [0] + points + [data_length]
+    layers = [sorted_data[v:indices[k+1]] for k, v in enumerate(indices[:-1])]
+    return layers
+
+
+def upper_layer(layers):
+    """Calculates which is the upper membrane layer"""
+    avgs = [np.mean(layer) for layer in layers]
+    upper = layers[np.argmax(avgs)]
+    return upper
+
+
+def apply_membrane(swarm_centers, membrane_beads, translation):
+    """Applies membrane restraints to the given swarm centers
+    
+    Requires membrane beads to be orthogal to Z-axis.
+    """
+    bead_z_coordinates = [residue.get_atom('BJ').z for residue in membrane_beads]
+    layers = estimate_membrane(bead_z_coordinates)
+    layer = upper_layer(layers)
+    min_z = max(layer) + translation[2]
+    compatible = []
+    for swarm_id, center in enumerate(swarm_centers):
+        if center[2] >= min_z:
+            compatible.append(center)
+    return compatible
 
 
 def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
@@ -202,14 +231,18 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
     
     # Calculate swarm centers
     swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor, 
-                                                                                   ligand, 
-                                                                                   num_clusters,
-                                                                                   distance_step=1.0)
+                                                                                 ligand, 
+                                                                                 num_clusters,
+                                                                                 distance_step=1.0,
+                                                                                 is_membrane=is_membrane)
     # Filter cluster centers far from the restraints
     if receptor_restraints:
-        filtered_swarms = apply_restraints(swarm_centers, receptor_restraints, ligand_diameter / 2., 
-                                           rec_translation, is_membrane=is_membrane)
-        swarm_centers = [swarm_centers[i] for i in filtered_swarms]
+        swarm_centers = apply_restraints(swarm_centers, receptor_restraints, 
+                                         ligand_diameter / 2., rec_translation)
+
+    if is_membrane:
+        membrane_beads = [residue for residue in receptor.residues if residue.name == 'MMB']
+        swarm_centers = apply_membrane(swarm_centers, membrane_beads, rec_translation)
 
     pdb_file_name = os.path.join(dest_folder, CLUSTERS_CENTERS_FILE)
     create_pdb_from_points(pdb_file_name, swarm_centers)
