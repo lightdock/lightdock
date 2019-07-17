@@ -40,7 +40,11 @@ def get_ca_atoms(ids_list):
                     try:
                         res = residue['CA']
                     except:
+                        pass
+                    try:
                         res = residue['P']
+                    except:
+                        pass
                     try:
                         ca_atoms[struct_id].append(res)
                     except:
