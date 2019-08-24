@@ -150,13 +150,15 @@ def create_file_from_poses(pos_file_name, poses):
 
 def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, translation, 
                      swarms_per_restraint=10):
-    
+    """Filter out swarm centers which are not close to the given restraints"""
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
         distances = {}
+        # We will use CA in case of protein, P in case of DNA
         ca = residue.get_calpha()
         if not ca:
             ca = residue.get_atom('P')
+        # Calculate the euclidean distance between swarm center and given atom/bead
         for swarm_id, center in enumerate(swarm_centers):
             distances[swarm_id] = cdistance(ca.x + translation[0], ca.y + translation[1], ca.z + translation[2],
                                             center[0], center[1], center[2])
@@ -170,13 +172,16 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
             if swarms_considered == swarms_per_restraint:
                 break
 
+    # Unique swarm ids
     closer_swarm_ids = list(set(closer_swarms))
+
+    # Final filtered list of swarms
     new_swarm_centers = [swarm_centers[i] for i in closer_swarm_ids]
     return new_swarm_centers
 
 
 def estimate_membrane(z_coordinates, cutoff=10.0):
-    """Given a 1D array with Z-axis coordinates, estimates the number of groups, which
+    """Given a 1D array with Z-axis coordinates, estimate the number of groups, which
     will correspond to the number of membrane layers."""
     sorted_data = sorted(z_coordinates)
     data_length = len(sorted_data)
@@ -235,11 +240,12 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
                                                                                  num_clusters,
                                                                                  distance_step=1.0,
                                                                                  is_membrane=is_membrane)
-    # Filter cluster centers far from the restraints
+    # Filter swarms far from the restraints
     if receptor_restraints:
         swarm_centers = apply_restraints(swarm_centers, receptor_restraints, 
                                          ligand_diameter / 2., rec_translation)
 
+    # Filter out swarms which are not compatible with the explicit membrane
     if is_membrane:
         membrane_beads = [residue for residue in receptor.residues if residue.name == 'MMB']
         swarm_centers = apply_membrane(swarm_centers, membrane_beads, rec_translation)
@@ -287,16 +293,16 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
             positions_files.append(pos_file_name)
             create_bild_file(bild_file_name, poses)
     else:
-        for cluster_id, cluster_center in enumerate(swarm_centers):
-            poses = populate_poses(num_glowworms, cluster_center, radius, rng, rec_translation, lig_translation,
+        for swarm_id, swarm_center in enumerate(swarm_centers):
+            poses = populate_poses(num_glowworms, swarm_center, radius, rng, rec_translation, lig_translation,
                                     rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints)
             # Save poses as pdb file
-            pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, cluster_id))
+            pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, swarm_id))
             create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])
 
             # Save poses as initial_positions file
-            pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, cluster_id))
-            bild_file_name = os.path.join(dest_folder, '%s_%s.bild' % (DEFAULT_BILD_STARTING_PREFIX, cluster_id))
+            pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, swarm_id))
+            bild_file_name = os.path.join(dest_folder, '%s_%s.bild' % (DEFAULT_BILD_STARTING_PREFIX, swarm_id))
             create_file_from_poses(pos_file_name, poses[:num_glowworms])
             positions_files.append(pos_file_name)
             create_bild_file(bild_file_name, poses)
