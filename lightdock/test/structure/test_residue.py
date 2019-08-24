@@ -64,6 +64,13 @@ class TestResidue:
         assert 'CB' == residue.sidechain[0].name
         assert 4 == len(residue.backbone)
 
+    def test_dummy_residue(self):
+        dummy = Residue.dummy(1.0, 2.0, 3.0)
+
+        assert 1 == len(dummy.atoms)
+        assert 'CA' == dummy.atoms[0].name
+        assert "  CA   1.000   2.000   3.000" == str(dummy.atoms[0])
+
 
 class TestAminoAcid:
     

@@ -1,6 +1,7 @@
 """Module to package a complex residue representation and operations"""
 
 from lightdock.error.lightdock_errors import ResidueNonStandardError, SideChainError, BackboneError
+from lightdock.structure.atom import Atom
 
 
 backbone = ["N", "CA", "C", "O"]
@@ -113,6 +114,11 @@ class Residue(object):
     def mutate_side_chain(self, rotamer):
         """Moves this residue's side chain using the rotamer angles"""
         pass
+
+    @staticmethod
+    def dummy(x=0., y=0., z=0.):
+        atom = Atom(atom_name='CA', residue_name='DUM', x=x, y=y, z=z)
+        return Residue(residue_name='DUM', residue_number=0, atoms=[atom])
 
     def __str__ (self):
         if len(self.atoms):
