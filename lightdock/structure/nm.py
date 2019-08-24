@@ -9,7 +9,7 @@ from lightdock.error.lightdock_errors import NormalModesCalculationError
 from lightdock.util.logger import LoggingManager
 
 # Disable ProDy output
-confProDy(verbosity='info')
+confProDy(verbosity='none')
 
 log = LoggingManager.get_logger('ANM')
 
