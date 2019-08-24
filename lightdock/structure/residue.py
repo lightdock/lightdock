@@ -40,6 +40,8 @@ class Residue(object):
                       'SER': 'S', 'THR': 'T', 'TRP': 'W', 'TYR': 'Y', 'VAL': 'V'}
     
     MODIFIED_TYPES = {'CYX': 'C', 'HIP': 'H', 'HID': 'H', 'HIE': 'H'}
+
+    DUMMY_TYPES = ['MMB', 'DUM']
     
     def __init__(self, residue_name, residue_number, atoms=None, residue_index=0):
         """Creates a new residue"""
@@ -65,6 +67,10 @@ class Residue(object):
         """Checks if residue is standard"""
         return self.name in Residue.STANDARD_TYPES.keys()
 
+    def is_dummy(self):
+        """Checks if residue is a dummy bead"""
+        return self.name in Residue.DUMMY_TYPES
+
     def set_backbone_and_sidechain(self):
         """Classifies the atoms in backbone or side-chain"""
         if self.is_standard():
@@ -75,7 +81,7 @@ class Residue(object):
             self.sidechain = []
 
     def check(self):
-        """Check if the residue has all the backbone and sidechain atoms"""
+        """Check if the residue has all the backbone and sidechain atoms, ignore dummy beads"""
         if self.is_standard():
             backbone_correct = sorted([a.name for a in self.backbone]) == sorted(backbone)
             if not backbone_correct:
@@ -87,7 +93,8 @@ class Residue(object):
             
             return True
         else:
-            raise ResidueNonStandardError("Can not check non-standard residue %s.%s" % (self.name, self.number))
+            if not self.is_dummy():
+                raise ResidueNonStandardError("Can not check non-standard residue %s.%s" % (self.name, self.number))
 
     def __eq__(self, other):
         """Compares two residues for equality."""

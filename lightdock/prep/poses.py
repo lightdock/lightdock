@@ -9,10 +9,12 @@ from lightdock.prep.ftdock import FTDockCoordinatesParser, classify_ftdock_poses
 from lightdock.mathutil.lrandom import MTGenerator, NormalGenerator
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.cython.cutil import distance as cdistance
+from lightdock.mathutil.cython.cutil import norm
 from lightdock.constants import CLUSTERS_CENTERS_FILE,\
     DEFAULT_PDB_STARTING_PREFIX, DEFAULT_STARTING_PREFIX, DEFAULT_BILD_STARTING_PREFIX, DEFAULT_EXTENT_MU, \
     DEFAULT_EXTENT_SIGMA
 from lightdock.prep.geometry import create_bild_file
+from lightdock.structure.residue import Residue
 
 
 def get_random_point_within_sphere(number_generator, radius):
@@ -100,11 +102,12 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
 
 
 def populate_poses(to_generate, center, radius, number_generator, rec_translation, lig_translation,
-                    rng_nm=None, rec_nm=0, lig_nm=0, receptor_restraints=None, ligand_restraints=None):
+                    rng_nm=None, rec_nm=0, lig_nm=0, receptor_restraints=None, ligand_restraints=None,
+                    ligand_diameter=1.):
     """Creates new poses around a given center and a given radius"""
     new_poses = []
 
-    # Calculate closer residue restraints
+    # Calculate closest residue restraints
     closest_residues = []
     if receptor_restraints:
         distances = []
@@ -118,24 +121,47 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
         closest_residues = [x[0] for x in distances[:10]]
 
     for _ in xrange(to_generate):
+        # First calculate a random translation within the swarm sphere
         x, y, z = get_random_point_within_sphere(number_generator, radius)
         tx = center[0] + x
         ty = center[1] + y
         tz = center[2] + z
+
+        # Restraints in both partners
         if receptor_restraints and ligand_restraints:
+            # We select one of the closest residue restraints to point the quaternion
             rec_residue = receptor_restraints[closest_residues[number_generator.randint(0, len(closest_residues)-1)]]
+            # Random restraint on the ligand to use for pre-orientation
             lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
+            # Calculate the quaternion which rotates the ligand to point to the given receptor restraint
             q = get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz,
                                              rec_translation, lig_translation)
+
+        # Only restraints in the ligand partner
+        elif ligand_restraints and not receptor_restraints:
+            # The strategy is similar to previous but for the receptor side we will use a simulated point
+            # over the receptor surface to point out the quaternion
+            coef = norm(center) / ligand_diameter
+            rec_residue = Residue.dummy(center[0]*coef, center[1]*coef, center[2]*coef)
+            lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
+            q = get_quaternion_for_restraint(rec_residue, lig_residue, 0, 0, 0,
+                                             [0,0,0], lig_translation)
+        # No restraints at all
         else:
             q = Quaternion.random(number_generator)
+
+        # Glowworm's optimization vector
         op_vector = [tx, ty, tz, q.w, q.x, q.y, q.z]
+
+        # If ANM is enabled, we need to create random components for the extents
         if rng_nm:
             if rec_nm > 0:
                 op_vector.extend([rng_nm() for _ in xrange(rec_nm)])
             if lig_nm > 0:
                 op_vector.extend([rng_nm() for _ in xrange(lig_nm)])
+
         new_poses.append(op_vector)
+
     return new_poses
 
 
@@ -295,7 +321,7 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
     else:
         for swarm_id, swarm_center in enumerate(swarm_centers):
             poses = populate_poses(num_glowworms, swarm_center, radius, rng, rec_translation, lig_translation,
-                                    rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints)
+                                    rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints, ligand_diameter)
             # Save poses as pdb file
             pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, swarm_id))
             create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])

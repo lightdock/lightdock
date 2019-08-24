@@ -80,10 +80,7 @@ if __name__ == "__main__":
             num_lig_active = len(restraints['ligand']['active'])
             num_lig_passive = len(restraints['ligand']['passive'])
 
-            # Check if restraints have been defined for the ligand, but not to the receptor
-            if not num_rec_active and not num_rec_passive and (num_lig_active or num_lig_passive):
-                raise LightDockError("Restraints defined for ligand, but not receptor. Try switching structures.")
-
+            # Complain if not a single restraint has been defined, but restraints are enabled
             if not num_rec_active and not num_rec_passive and not num_lig_active and not num_lig_passive:
                 raise LightDockError("Restraints file specified, but not a single restraint found")
 
