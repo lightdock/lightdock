@@ -144,7 +144,8 @@ def load_starting_positions(swarms, glowworms, use_anm, anm_rec=DEFAULT_NMODES_R
     starting_points_files = sorted(glob.glob(pattern))
     if len(starting_points_files) != swarms:
         raise LightDockError("The number of initial positions files does not correspond with the number of swarms")
-    for starting_point_file in starting_points_files:
+    for swarm_id in range(len(starting_points_files)):
+        starting_point_file = os.path.join(DEFAULT_POSITIONS_FOLDER, "%s_%d.dat" % (DEFAULT_STARTING_PREFIX, swarm_id))
         if not check_starting_file(starting_point_file, glowworms, use_anm, anm_rec, anm_lig):
             raise LightDockError("Error reading starting coordinates from file %s" % starting_point_file)
     return starting_points_files
