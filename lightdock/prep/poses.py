@@ -142,10 +142,14 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
             # The strategy is similar to previous but for the receptor side we will use a simulated point
             # over the receptor surface to point out the quaternion
             coef = norm(center) / ligand_diameter
-            rec_residue = Residue.dummy(center[0]*coef, center[1]*coef, center[2]*coef)
+            # It is important to keep the coordinates as in the original complex without
+            # moving to the center of coordinates (applying translation)
+            rec_residue = Residue.dummy(center[0]*coef-rec_translation[0], 
+                                        center[1]*coef-rec_translation[1], 
+                                        center[2]*coef-rec_translation[2])
             lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
-            q = get_quaternion_for_restraint(rec_residue, lig_residue, 0, 0, 0,
-                                             [0,0,0], lig_translation)
+            q = get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz,
+                                             rec_translation, lig_translation)
         # No restraints at all
         else:
             q = Quaternion.random(number_generator)
