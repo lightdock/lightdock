@@ -28,4 +28,4 @@ if __name__ == "__main__":
     distances_matrix = spatial.distance.squareform(spatial.distance.pdist(structure.representative()))
     ligand_max_diameter = np.max(distances_matrix)
 
-    print ligand_max_diameter
+    print(ligand_max_diameter)

@@ -49,7 +49,7 @@ class Kraken(object):
         self.tasks = tasks
         self.num_tasks = len(tasks)
         self.tentacles = []
-        tentacle_tasks = [tasks[i::self.num_processes] for i in xrange(self.num_processes)]
+        tentacle_tasks = [tasks[i::self.num_processes] for i in range(self.num_processes)]
         
         for i in range(self.num_processes):
             tentacle = Tentacle(tentacle_tasks[i], profiling)

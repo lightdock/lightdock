@@ -43,4 +43,4 @@ if __name__ == "__main__":
 
     energy = scoring_function(adapter.receptor_model,  adapter.receptor_model.coordinates[0],
                               adapter.ligand_model, adapter.ligand_model.coordinates[0])
-    print args.scoring_function, ': ', energy
+    print(args.scoring_function, ': ', energy)

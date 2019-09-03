@@ -22,7 +22,7 @@ class ScoringFunction(ObjectiveFunction):
         if not restraints:
             return 0.0
         
-        residues = restraints.keys()
+        residues = list(restraints.keys())
         total = len(residues)
         satisfied = 0
         for residue in residues:

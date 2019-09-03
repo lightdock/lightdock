@@ -60,7 +60,7 @@ def set_scoring_function(parser, receptor, ligand):
         else:
             functions = {DEFAULT_SCORING_FUNCTION: '1.0'}
 
-    for scoring_function, weight in functions.iteritems():
+    for scoring_function, weight in functions.items():
         log.info("Loading scoring function...")
         scoring_function_module = "lightdock.scoring.%s.driver" % scoring_function
         module = importlib.import_module(scoring_function_module)
@@ -109,7 +109,7 @@ def run_simulation(parser):
 
         # Read setup and add it to the actual args object
         setup = get_setup_from_file(args.setup_file)
-        for k, v in setup.iteritems():
+        for k, v in setup.items():
             setattr(args, k, v)
 
         info_file = create_simulation_info_file(args)
@@ -160,7 +160,7 @@ def run_simulation(parser):
             pass
         log.info("bye.")
 
-    except OSError, e:
+    except OSError as e:
         log.error("OS error found")
         try:
             kraken.sink()

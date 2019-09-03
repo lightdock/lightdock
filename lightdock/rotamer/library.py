@@ -98,11 +98,11 @@ class InterfaceSurfaceLibrary(RotamerLibrary):
         """Calculates the closest rotamer to the given residue"""
         if not chi_angles['x1']:
             return None, None
-        minim_rmsd = sys.maxint
+        minim_rmsd = sys.maxsize
         minim_rotamer = 0
         for index, rotamer in enumerate(InterfaceSurfaceLibrary.rotamers[residue.name]):
             rmsd = 0.
-            for chi, values in rotamer.iteritems():
+            for chi, values in rotamer.items():
                 rmsd += (values[0] - chi_angles[chi])**2
             rmsd = math.sqrt(rmsd)
             if rmsd < minim_rmsd:

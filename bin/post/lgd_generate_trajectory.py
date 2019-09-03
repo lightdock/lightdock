@@ -97,7 +97,7 @@ if __name__ == "__main__":
     except:
         nmodes_lig = None
 
-    for step in xrange(0, args.steps+1):
+    for step in range(0, args.steps+1):
         try:
             # Parse each stored step file
             file_name = 'gso_%d.out' % step

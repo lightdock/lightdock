@@ -34,11 +34,11 @@ if __name__ == "__main__":
     if len(old_chains) != len(new_chains):
         raise SystemExit("Old and new chains length is different")
 
-    print "Old chains are: %s" % old_chains
-    print "New chains are: %s" % new_chains
+    print("Old chains are: %s" % old_chains)
+    print("New chains are: %s" % new_chains)
 
     backup_file = args.pdb_file + '.orig'
-    print "Saving a backup to %s" % backup_file
+    print("Saving a backup to %s" % backup_file)
     shutil.copyfile(args.pdb_file, backup_file)
 
     translator = {}
@@ -56,4 +56,4 @@ if __name__ == "__main__":
                         output.write(line)
                 except IndexError:
                     pass
-    print "Done."
+    print("Done.")

@@ -71,7 +71,7 @@ if __name__ == "__main__":
     log.info("Ligand: %s" % ligand_file)
     log.info("Steps: %d" % steps)
     log.info("Configuration file: %s" % configuration_file)
-    print
+    print()
 
     # Read structures (already in the center)
     log.info("Reading %s receptor PDB file..." % receptor_file)

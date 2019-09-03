@@ -27,14 +27,14 @@ class Swarm(object):
         selected = []
         positions = {}
         num_glowworms = self.get_size()
-        for i in xrange(num_glowworms):
+        for i in range(num_glowworms):
             glowworm = self.glowworms[i]
             glowworm.search_neighbors(self.glowworms)
             glowworm.compute_probability_moving_toward_neighbor()
             selected.append(glowworm.select_random_neighbor(rnd_generator()))
             positions[i] = [landscape_position.clone() for landscape_position in selected[-1].landscape_positions]
 
-        for i in xrange(num_glowworms):
+        for i in range(num_glowworms):
             glowworm = self.glowworms[i]
             neighbor = selected[i]
             position = positions[i]

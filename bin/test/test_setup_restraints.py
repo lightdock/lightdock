@@ -4,7 +4,7 @@ import shutil
 import os
 import filecmp
 
-from regression import RegressionTest
+from .regression import RegressionTest
 
 
 class TestSetupWithRestraints(RegressionTest):

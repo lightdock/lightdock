@@ -7,7 +7,7 @@ from nose.tools import assert_almost_equals #@UnresolvedImport
 class TestCutil:
 
     def setUp(self):
-        self.values = range(1000)
+        self.values = list(range(1000))
 
     def tearDown(self):
         pass

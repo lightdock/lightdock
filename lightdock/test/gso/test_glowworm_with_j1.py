@@ -183,7 +183,7 @@ class TestGlowwormWithJ1:
         glowworm2.vision_range = 3.0
         glowworm2.max_vision_range = 3.0
         
-        for _ in xrange(23):
+        for _ in range(23):
             glowworm1.neighbors.append(glowworm2)
             
         assert 23 == len(glowworm1.neighbors)

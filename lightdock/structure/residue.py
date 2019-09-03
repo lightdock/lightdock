@@ -65,7 +65,7 @@ class Residue(object):
 
     def is_standard(self):
         """Checks if residue is standard"""
-        return self.name in Residue.STANDARD_TYPES.keys()
+        return self.name in list(Residue.STANDARD_TYPES.keys())
 
     def is_dummy(self):
         """Checks if residue is a dummy bead"""

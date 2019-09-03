@@ -5,7 +5,7 @@ import filecmp
 import sys
 
 from lightdock.util.logger import Logger
-from StringIO import StringIO
+from io import StringIO
 
 
 class TestLogger:

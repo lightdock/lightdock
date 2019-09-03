@@ -63,7 +63,7 @@ if __name__ == "__main__":
         molecule = Complex.from_structures(structures)
         try:
             ellipsoid = MinimumVolumeEllipsoid(molecule.atom_coordinates[0].coordinates)
-        except MinimumVolumeEllipsoidError, e:
+        except MinimumVolumeEllipsoidError as e:
             log.error("Impossible to calculate minimum volume ellipsoid. Reason: %s" % str(e))
             raise SystemExit("%s finished with error" % script_name)
 

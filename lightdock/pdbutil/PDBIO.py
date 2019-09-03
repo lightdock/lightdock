@@ -78,7 +78,7 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
     
     TODO: Check if chain have been already created and insert it into the first one
     """
-    lines = file(input_file_name).readlines()
+    lines = open(input_file_name).readlines()
     atoms = []
     residues = []
     chains = []
@@ -100,9 +100,9 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
                 try:
                     atom = read_atom_line(line, line_type, atoms_to_ignore)
                     atoms.append(atom)
-                except PDBParsingWarning, warning:
+                except PDBParsingWarning as warning:
                     if verbose:
-                        print warning
+                        print(warning)
                     continue
 
                 if last_chain_id != atom.chain_id:
@@ -122,7 +122,7 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
         residue.set_backbone_and_sidechain()
         try:
             residue.check()
-        except Exception, e:
+        except Exception as e:
             log.warning("Possible problem: %s" % str(e))
 
     return atoms, residues, chains
@@ -161,7 +161,7 @@ def write_atom_line(atom, atom_coordinates, output):
 
 def write_pdb_to_file(molecule, output_file_name, atom_coordinates=None, structure_id=0):
     """Writes a Complex structure to a file in PDB format."""
-    output_file = file(output_file_name, "a")
+    output_file = open(output_file_name, "a")
     for atom in molecule.atoms:
         if atom_coordinates is not None:
             write_atom_line(atom, atom_coordinates, output_file)

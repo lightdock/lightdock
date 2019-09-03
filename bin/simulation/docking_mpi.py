@@ -59,7 +59,7 @@ def set_scoring_function(parser, receptor, ligand, minion_id):
         else:
             functions = {DEFAULT_SCORING_FUNCTION: '1.0'}
 
-    for scoring_function, weight in functions.iteritems():
+    for scoring_function, weight in functions.items():
         log.info("[Minion %d] Loading scoring function..." % minion_id)
         scoring_function_module = "lightdock.scoring.%s.driver" % scoring_function
         module = importlib.import_module(scoring_function_module)
@@ -96,7 +96,7 @@ def run_simulation(parser):
 
         # Read setup and add it to the actual args object
         setup = get_setup_from_file(args.setup_file)
-        for k, v in setup.iteritems():
+        for k, v in setup.items():
             setattr(args, k, v)
 
         minion_id = comm.rank
@@ -135,13 +135,13 @@ def run_simulation(parser):
         comm.Barrier()
 
         num_workers = comm.size
-        for worker_id in xrange(num_workers):
+        for worker_id in range(num_workers):
             if worker_id == minion_id:
                 starting_points_files = glob.glob('init/initial_positions*.dat')
                 scoring_functions, adapters = set_scoring_function(parser, receptor, ligand, minion_id)
-                for id_swarm in xrange(parser.args.swarms):
+                for id_swarm in range(parser.args.swarms):
                     if worker_id == (id_swarm % num_workers):
-                        print 'GSO cluster %d - Minion %d' % (id_swarm, minion_id)
+                        print('GSO cluster %d - Minion %d' % (id_swarm, minion_id))
                         gso = set_gso(parser.args.glowworms, adapters, scoring_functions,
                                       starting_points_files[id_swarm],
                                       parser.args.gso_seed, parser.args.translation_step,

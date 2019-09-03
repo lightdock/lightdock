@@ -1,4 +1,5 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define PyInt_AsUnsignedLongMask PyLong_AsUnsignedLongMask
 #include <Python.h>
 #include "structmember.h"
 #include "numpy/arrayobject.h"
@@ -188,9 +189,16 @@ static PyMethodDef module_methods[] = {
  * Initialization function
  *
  **/
-PyMODINIT_FUNC initcdfire(void) {
+static struct PyModuleDef cdfire =
+{
+    PyModuleDef_HEAD_INIT,
+    "cdfire",
+    "",
+    -1,
+    module_methods
+};
 
-    Py_InitModule3("cdfire", module_methods, "cdfire object");
+PyMODINIT_FUNC PyInit_cdfire(void) {
     import_array();
+    return PyModule_Create(&cdfire);
 }
-

@@ -52,7 +52,7 @@ class MJPotential(object):
                         current_potential = line[1:]
                         potentials[current_potential] = []
 
-        except Exception, e:
+        except Exception as e:
             raise PotentialsParsingError('Error parsing %s file. Details: %s' % (data_file_name, str(e)))
 
         return potentials

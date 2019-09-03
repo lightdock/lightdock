@@ -120,7 +120,7 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
         distances.sort(key=lambda tup: tup[1])
         closest_residues = [x[0] for x in distances[:10]]
 
-    for _ in xrange(to_generate):
+    for _ in range(to_generate):
         # First calculate a random translation within the swarm sphere
         x, y, z = get_random_point_within_sphere(number_generator, radius)
         tx = center[0] + x
@@ -160,9 +160,9 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
         # If ANM is enabled, we need to create random components for the extents
         if rng_nm:
             if rec_nm > 0:
-                op_vector.extend([rng_nm() for _ in xrange(rec_nm)])
+                op_vector.extend([rng_nm() for _ in range(rec_nm)])
             if lig_nm > 0:
-                op_vector.extend([rng_nm() for _ in xrange(lig_nm)])
+                op_vector.extend([rng_nm() for _ in range(lig_nm)])
 
         new_poses.append(op_vector)
 
@@ -192,7 +192,7 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
         for swarm_id, center in enumerate(swarm_centers):
             distances[swarm_id] = cdistance(ca.x + translation[0], ca.y + translation[1], ca.z + translation[2],
                                             center[0], center[1], center[2])
-        sorted_distances = sorted(distances.items(), key=operator.itemgetter(1))
+        sorted_distances = sorted(list(distances.items()), key=operator.itemgetter(1))
         swarms_considered = 0
         for swarm in sorted_distances:
             swarm_id, distance = swarm[0], swarm[1]
@@ -295,7 +295,7 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
         poses = FTDockCoordinatesParser.get_list_of_poses(ftdock_file, ligand_center)
         clusters = classify_ftdock_poses(poses, swarm_centers, radius)
 
-        for cluster_id, ftdock_poses in clusters.iteritems():
+        for cluster_id, ftdock_poses in clusters.items():
             # Translate FTDock poses into lightdock poses
             poses = []
             for pose in ftdock_poses:

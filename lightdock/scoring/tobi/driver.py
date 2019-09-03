@@ -56,7 +56,7 @@ class TOBIPotential(object):
                 for y in range(22):
                     potentials[x][y] = float(data[x + 1].strip().split()[y + 1])
 
-        except Exception, e:
+        except Exception as e:
             raise PotentialsParsingError('Error parsing %s file. Details: %s' % (data_file_name, str(e)))
 
         return potentials

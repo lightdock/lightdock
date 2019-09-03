@@ -69,7 +69,7 @@ class Logger(object):
     def _write_to_std_out(self, message, level):
         """Outputs log info to the standard output"""
         out_message = "[%s] %s: %s" % (self._tag, level, message)
-        print out_message
+        print(out_message)
             
     def __del__(self):
         """Frees file descriptor"""

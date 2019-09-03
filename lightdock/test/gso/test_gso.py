@@ -33,7 +33,7 @@ class TestGSOBuilderInJ1:
             pass
     
     def found_peaks(self, peak_coordinates, dimension, glowworms, minimum_matches=3, tolerance=0.05):
-        peaks_found = [False for _ in xrange(len(peak_coordinates))]
+        peaks_found = [False for _ in range(len(peak_coordinates))]
         for i_peak, peak in enumerate(peak_coordinates):
             for glowworm in glowworms:
                 coordinates = glowworm.landscape_positions[0].coordinates

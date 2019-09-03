@@ -47,7 +47,7 @@ def calculate_nmodes(pdb_file_name, n_modes, molecule):
         for i in range(calculated_n_modes):
             nm = molecule_anm_ext.getEigvecs()[:, i].reshape((num_atoms_prody, 3))
             modes.append(nm)
-    except (ValueError, IndexError), e:
+    except (ValueError, IndexError) as e:
         log.info("Number of atoms of the ANM model: %s" % str(molecule_anm_ext.numAtoms()))
         log.info("Number of nodes in the model: %s" % str((molecule_anm_ext.getEigvecs()).shape))
         raise NormalModesCalculationError("Number of atoms and ANM model differ. Please, check there are no missing "

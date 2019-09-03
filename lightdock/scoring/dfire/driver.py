@@ -93,7 +93,7 @@ class DFIREPotential(object):
                     dfire_energy[x][y].append([])
                     for b in range(len(DFIREPotential.atoms_in_residues[DFIREPotential.RES_3[a]])):
                         dfire_energy[x][y][a].append([])
-                        for _ in xrange(20):
+                        for _ in range(20):
                             dfire_energy[x][y][a][b].append(99999.9)
 
         infile = open(data_file_name).readlines()

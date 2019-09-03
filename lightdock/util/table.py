@@ -74,8 +74,8 @@ class Table(object):
     def show(self, extra_info=True):
         """Show a Table"""
         if extra_info:
-            print "Table: %sx%s" % (self.__numCols, self.__numRows)
-        print self.__str__()
+            print("Table: %sx%s" % (self.__numCols, self.__numRows))
+        print(self.__str__())
 
     def _to_string(self):
         """Show a Table instance"""
@@ -111,7 +111,7 @@ class Table(object):
             f = open(table_file)
             tab = f.readlines()
             f.close()
-        except IOError, e:
+        except IOError as e:
             raise TableError(str(e))
 
         if tab[0].split()[0] == '#>T':  # for icm table format
@@ -180,7 +180,7 @@ class Table(object):
 
             f.close()
 
-        except Exception, e:
+        except Exception as e:
             raise TableError(str(e))
 
     def sort(self, column_to_sort, reverse=False):
@@ -188,7 +188,7 @@ class Table(object):
         if type(column_to_sort) is not str or column_to_sort not in self.__header:
             raise TableError("Column does not exist: %s" % column_to_sort)
 
-        indices = range(self.__numRows)
+        indices = list(range(self.__numRows))
         indices.sort(key=self.__content[column_to_sort].__getitem__, reverse=reverse)
 
         new_content = dict([(i, list()) for i in self.__header])
@@ -207,7 +207,7 @@ class Table(object):
                 if key not in self.__header:
                     raise TableError('Column name not found: %s' % key)
                 content.append(self.__content[key])
-        except Exception, e:
+        except Exception as e:
             raise TableError(str(e))
 
         return Table(content, col_names)
@@ -221,7 +221,7 @@ class Table(object):
         try:
             for key in self.__header:
                 content.append(self.__content[key][row_from:row_to + 1])
-        except Exception, e:
+        except Exception as e:
             raise TableError(str(e))
 
         return Table(content, self.__header)

@@ -27,7 +27,7 @@ fi
 if [ "$LIB_TEST" = true ] ; then
     cinfo "******* Library tests *******"
     cd lightdock
-    nosetests-2.7
+    nosetests-3.7
     echo ""
     cd ..
 fi
@@ -35,7 +35,7 @@ fi
 if [ "$REG_TEST" = true ] ; then
     cinfo "******* Regression tests *******"
     cd bin
-    nosetests-2.7
+    nosetests-3.7
     cd ..
     cinfo "Done."
 fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+
 
 from multiprocessing import Process, cpu_count
 import argparse
@@ -53,7 +53,7 @@ class Ant_Thony(object):
         self.tasks = tasks
         self.num_tasks = len(tasks)
         self.workers = []
-        workers_tasks = [tasks[i::self.num_processes] for i in xrange(self.num_processes)]
+        workers_tasks = [tasks[i::self.num_processes] for i in range(self.num_processes)]
         
         for i in range(self.num_processes):
             worker = Ant(workers_tasks[i])

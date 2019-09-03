@@ -122,5 +122,5 @@ if __name__ == "__main__":
         log.info("Caught interrupt...")
         log.info("bye.")
 
-    except SystemExit, e:
+    except SystemExit as e:
         log.error(str(e))

@@ -9,7 +9,7 @@ from lightdock.rotamer.library import InterfaceSurfaceLibrary
 
 
 def usage():
-    print "Usage: %s receptor.pdb ligand.pdb" % sys.argv[0]
+    print("Usage: %s receptor.pdb ligand.pdb" % sys.argv[0])
 
 
 if __name__ == "__main__":
@@ -29,57 +29,57 @@ if __name__ == "__main__":
                                                                                                          max_cutoff=5.)
     rotamer_library = InterfaceSurfaceLibrary()
 
-    print "%d receptor interface residues" % len(receptor_residue_indexes)
+    print("%d receptor interface residues" % len(receptor_residue_indexes))
     receptor_residues = []
     for residue_index in receptor_residue_indexes:
         residue = receptor.residues[residue_index]
         chi_angles = calculate_chi_angles(residue)
-        for chi, angle in chi_angles.iteritems():
+        for chi, angle in chi_angles.items():
             try:
                 chi_angles[chi] = math.degrees(angle)
             except TypeError:
                 pass
         index_rotamer, rotamer = rotamer_library.get_closest_rotamer(residue, chi_angles)
         if chi_angles['x1']:
-            print residue.name, chi_angles, rotamer
+            print(residue.name, chi_angles, rotamer)
         receptor_residues.append(residue)
 
         # Code to move side-chain to closest rotamer and check if the angles correspond
         residue.mutate_side_chain(rotamer)
         chi_angles = calculate_chi_angles(residue)
-        for chi, angle in chi_angles.iteritems():
+        for chi, angle in chi_angles.items():
             try:
                 chi_angles[chi] = math.degrees(angle)
             except TypeError:
                 pass
-        print chi_angles
-        print
+        print(chi_angles)
+        print()
 
-    print "%d ligand interface residues" % len(ligand_residue_indexes)
+    print("%d ligand interface residues" % len(ligand_residue_indexes))
     ligand_residues = []
     for residue_index in ligand_residue_indexes:
         residue = ligand.residues[residue_index]
         chi_angles = calculate_chi_angles(residue)
-        for chi, angle in chi_angles.iteritems():
+        for chi, angle in chi_angles.items():
             try:
                 chi_angles[chi] = math.degrees(angle)
             except TypeError:
                 pass
         index_rotamer, rotamer = rotamer_library.get_closest_rotamer(residue, chi_angles)
         if chi_angles['x1']:
-            print residue.name, chi_angles, rotamer
+            print(residue.name, chi_angles, rotamer)
         ligand_residues.append(residue)
 
         # Code to move side-chain to closest rotamer and check if the angles correspond
         residue.mutate_side_chain(rotamer)
         chi_angles = calculate_chi_angles(residue)
-        for chi, angle in chi_angles.iteritems():
+        for chi, angle in chi_angles.items():
             try:
                 chi_angles[chi] = math.degrees(angle)
             except TypeError:
                 pass
-        print chi_angles
-        print
+        print(chi_angles)
+        print()
     
     # Calculate steric energy
     energy = 0
@@ -90,4 +90,4 @@ if __name__ == "__main__":
             for atom1 in residue1.sidechain:
                 for atom2 in residue2.sidechain:
                     energy += steric_energy(dist_matrix[atom1.index][atom2.index], atom1.element, atom2.element)
-    print energy
+    print(energy)

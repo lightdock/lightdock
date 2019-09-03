@@ -28,12 +28,12 @@ class GSO(object):
         if save_intermediary:
                 self.swarm.save(0, saving_path)
 
-        for step in xrange(1, simulation_steps + 1):
+        for step in range(1, simulation_steps + 1):
             if verbose:
                 if cluster_id is not None:
-                    print "[%d] step %d" % (cluster_id, step)
+                    print("[%d] step %d" % (cluster_id, step))
                 else:
-                    print "step %d" % step
+                    print("step %d" % step)
             # Evaluate energy and update luciferin accordingly:
             self.swarm.update_luciferin()
             # Perform local minimization of the best

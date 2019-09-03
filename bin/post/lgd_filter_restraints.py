@@ -2,7 +2,7 @@
 
 """Filter LightDock final swarm results depending on the percentage of restraints satisfied"""
 
-from __future__ import print_function
+
 import sys
 import os
 import argparse
@@ -141,7 +141,7 @@ if __name__ == '__main__':
                             filter_passed[swarm_id] = [glowworm_id]
                 print("{:40s}  {:5.3f}".format(pdb, perc))
 
-        except Exception, e:
+        except Exception as e:
             log.error('Filtering has failed for structure {}. Please see error:'.format(pdb))
             log.error(str(e))
 

@@ -120,7 +120,7 @@ class CoordinatesFileReader(object):
                 else:
                     raise Exception("dimension %d does not correspond with values in line %s" % (self.dimension,
                                                                                                  line))
-        except Exception, e:
+        except Exception as e:
             raise GSOCoordinatesError("Error reading coordinates from file: %s" % str(e))
         
         return coordinates

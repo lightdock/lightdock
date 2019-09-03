@@ -129,7 +129,7 @@ class ListScoringAction(argparse.Action):
         from lightdock import scoring
         scoring_path = os.path.dirname(scoring.__file__)
         scoring_functions = [ name for name in os.listdir(scoring_path) if os.path.isdir(os.path.join(scoring_path, name)) ]
-        print 'Available scoring functions are: ', ', '.join(scoring_functions)
+        print('Available scoring functions are: ', ', '.join(scoring_functions))
         raise SystemExit
 
 

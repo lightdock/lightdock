@@ -83,7 +83,7 @@ class Quaternion:
         z = (self.w * other.z + self.x * other.y - self.y * other.x + self.z * other.w)
         return Quaternion(w, x, y, z)
 
-    def __div__(self, scalar):
+    def __truediv__(self, scalar):
         """
         Calculates division of quaternion by scalar
         """

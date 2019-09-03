@@ -48,5 +48,5 @@ if __name__ == "__main__":
     if density_area > MIN_SURFACE_DENSITY:
         log.warning("Surface density is below recommended, please increase the number of points on the surface.")
 
-    print ';'.join([str(x) for x in [radius1, radius2, density_area]])
+    print(';'.join([str(x) for x in [radius1, radius2, density_area]]))
 

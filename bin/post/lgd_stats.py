@@ -24,12 +24,12 @@ def parse_command_line():
         usage()
     try:
         num_steps = int(sys.argv[1])
-    except Exception, e:
+    except Exception as e:
         log.error(str(e))
         
     try:
         num_glowworms = int(sys.argv[2])
-    except Exception, e:
+    except Exception as e:
         log.error(str(e))
     
     return num_steps, num_glowworms
@@ -65,10 +65,10 @@ def plot_stats(num_glowworms, num_steps, values, file_name, x_label='', y_label=
     ax.set_xlabel(x_label,fontsize=12)
     ax.set_ylabel(y_label,fontsize=12)
     
-    for i_glowworm in xrange(num_glowworms):
-        ax.plot(xrange(1,num_steps+1), values[i_glowworm]);
+    for i_glowworm in range(num_glowworms):
+        ax.plot(range(1,num_steps+1), values[i_glowworm]);
     canvas.print_figure(file_name,gdpi=500)
-    print "Generated %s plot." % file_name
+    print("Generated %s plot." % file_name)
 
 
 if __name__ == "__main__":
@@ -85,11 +85,11 @@ if __name__ == "__main__":
     vision_range_file = open(vision_range_file_name, 'w')
     
     # Matrices to store values per glowworm/row
-    energies = [[] for i in xrange(num_glowworms)]
-    neighbors = [[] for i in xrange(num_glowworms)]
-    vision_range = [[] for i in xrange(num_glowworms)]
+    energies = [[] for i in range(num_glowworms)]
+    neighbors = [[] for i in range(num_glowworms)]
+    vision_range = [[] for i in range(num_glowworms)]
     
-    for step in xrange(1, num_steps+1):
+    for step in range(1, num_steps+1):
         # Parse each stored step file
         file_name = 'gso_%d.out' % step 
         glowworm_stats = parse_file(file_name)

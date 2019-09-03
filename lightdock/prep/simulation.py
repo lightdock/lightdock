@@ -211,8 +211,8 @@ def get_default_box(use_anm, anm_rec, anm_lig):
                   Boundary(-MAX_ROTATION, MAX_ROTATION),
                   Boundary(-MAX_ROTATION, MAX_ROTATION)]
     if use_anm:
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(anm_rec)])
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in xrange(anm_lig)])
+        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in range(anm_rec)])
+        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in range(anm_lig)])
 
     return BoundingBox(boundaries)
 

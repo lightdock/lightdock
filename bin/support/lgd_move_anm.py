@@ -9,7 +9,7 @@ from lightdock.structure.complex import Complex
 
 
 def usage():
-    print "Usage: %s PDB_file n_modes factor" % sys.argv[0]
+    print("Usage: %s PDB_file n_modes factor" % sys.argv[0])
 
 
 if __name__ == "__main__":
@@ -28,12 +28,12 @@ if __name__ == "__main__":
     protein_anm = ANM('protein ca')
     protein_anm.buildHessian(ca_atoms)
     protein_anm.calcModes(n_modes=n_modes)
-    print 'Normal modes calculated'
+    print('Normal modes calculated')
 
     atoms, residues, chains = parse_complex_from_file(pdb_structure)
     lightdock_structures = [{'atoms': atoms, 'residues': residues, 'chains': chains, 'file_name': pdb_structure}]
     lightdock_structure = Complex.from_structures(lightdock_structures)
-    print 'Structure read by lightdock'
+    print('Structure read by lightdock')
 
     num_atoms_prody = len(protein.protein)
     num_atoms_lightdock = len(atoms)
@@ -55,5 +55,5 @@ if __name__ == "__main__":
     output_file = 'anm_' + pdb_structure
     write_pdb_to_file(lightdock_structure, output_file, lightdock_structure[0])
 
-    print 'Structure written to %s' % output_file
-    print 'Done.'
+    print('Structure written to %s' % output_file)
+    print('Done.')

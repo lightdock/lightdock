@@ -51,7 +51,7 @@ class TestPredictor:
         for residue in protein.residues:
             if residue.name == 'ARG' and residue.number == 1:
                 chi_angles = calculate_chi_angles(residue)
-                for key, value in chi_angles.iteritems():
+                for key, value in chi_angles.items():
                     if value:
                         if key == 'x1':
                             # angle #0:1@n,ca,cb,cg
@@ -68,14 +68,14 @@ class TestPredictor:
             if residue.name == 'VAL' and residue.number == 2:
                 # angle #0:2@n,ca,cb,cg1
                 chi_angles = calculate_chi_angles(residue)
-                for key, value in chi_angles.iteritems():
+                for key, value in chi_angles.items():
                     if value:
                         if key == 'x1':
                             # angle #0:1@n,ca,cb,cg
                             assert_almost_equals(-173.629, round(math.degrees(value), 3))
             if residue.name == 'CYS' and residue.number == 28:
                 chi_angles = calculate_chi_angles(residue)
-                for key, value in chi_angles.iteritems():
+                for key, value in chi_angles.items():
                     if value:
                         if key == 'x1':
                             assert_almost_equals(-60.2554, round(math.degrees(value), 4))

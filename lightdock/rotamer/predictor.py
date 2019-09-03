@@ -40,7 +40,7 @@ def calculate_chi_angles(residue):
     """Calculate the chi angles for a given residue"""
     angles = chi_atoms[residue.name]
     chi = {"x1": None, "x2": None, "x3": None, "x4": None}
-    for x in angles.keys():
+    for x in list(angles.keys()):
         xa1 = residue.get_atom(angles[x][0])
         xa2 = residue.get_atom(angles[x][1])
         xa3 = residue.get_atom(angles[x][2])

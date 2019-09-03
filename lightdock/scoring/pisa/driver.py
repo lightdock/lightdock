@@ -28,9 +28,9 @@ class PISAPotential(object):
     @staticmethod
     def _read_parameters(data_file_name):
         """Reads PISA beans"""
-        params_atom_potentials = [[[0 for k in xrange(PISAPotential.num_bins)]
-                                   for j in xrange(PISAPotential.num_atom_types)]
-                                  for i in xrange(PISAPotential.num_atom_types)]
+        params_atom_potentials = [[[0 for k in range(PISAPotential.num_bins)]
+                                   for j in range(PISAPotential.num_atom_types)]
+                                  for i in range(PISAPotential.num_atom_types)]
         params_file = open(data_file_name)
         lines = params_file.readlines()
         params_file.close()

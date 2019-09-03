@@ -38,7 +38,7 @@ class Atom(object):
                 if not element in Atom.RECOGNIZED_ELEMENTS:
                     raise AtomError("Not recognized element '%s' for atom %s." % (element, self.name))
                 self.element = element
-            except AtomError, e:
+            except AtomError as e:
                 self._assign_element()
         else: 
             self._assign_element()

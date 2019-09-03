@@ -3,7 +3,7 @@
 import shutil
 import os
 import filecmp
-from regression import RegressionTest
+from .regression import RegressionTest
 
 
 class TestRegressionDFIREShort(RegressionTest):
@@ -56,7 +56,7 @@ class TestRegressionDFIRELong(RegressionTest):
         self.clean_test_path()
 
     def test_lightdock_1ppe_10_steps_100_glowworms(self):
-        if os.environ.has_key('LIGHTDOCK_LONG_TEST') and os.environ['LIGHTDOCK_LONG_TEST'] == 'true':
+        if 'LIGHTDOCK_LONG_TEST' in os.environ and os.environ['LIGHTDOCK_LONG_TEST'] == 'true':
             os.chdir(self.test_path)
             num_swarms = 5
             num_glowworms = 50

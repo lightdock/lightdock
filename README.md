@@ -32,7 +32,7 @@ Jorge Roel-Touris, Alexandre M.J.J. Bonvin, Brian Jiménez-García<br>
 ### 3.1. Dependencies
 LightDock has the following dependencies:
 
-* **Python 2.7.x**
+* **Python 3.7.x**
 * Nose (<http://nose.readthedocs.io/en/latest/>)
 * NumPy (<http://www.numpy.org/>)
 * Scipy (<http://www.scipy.org/>)
@@ -46,39 +46,32 @@ LightDock has the following dependencies:
 NumPy, Scipy, Cython, Biopython, Nose and MPI4py libraries are usually available as packages in most of GNU/Linux distributions. For example, to install them in Ubuntu execute:
 
 ```bash
-sudo apt-get update && apt-get install python-numpy python-scipy cython python-biopython python-nose python-nose2 python-mpi4py
+sudo apt-get update && apt-get install python3-numpy python3-scipy cython3 python3-biopython python3-nose python3-nose2 python3-mpi4py
 ```
 
-**Make sure all libraries are from the Python 2.7.x series.**
+**Make sure all libraries are from the Python 3.7.x series.**
 
 #### 3.1.2. Installing ProDy
 To install ProDy library, the simplest way is to use pip (you can use sudo to install it system-wide):
 
 ```bash
-pip install -U ProDy
+pip3 install -U ProDy
 ```
 
 You may also need to install `pyparsing` dependency:
 
 ```bash
-pip install pyparsing
+pip3 install pyparsing
 ```
 
 More instructions on how to install it can be found in the official documentation (<http://prody.csb.pitt.edu/downloads/>).
 
 
 #### 3.1.3. Installing FreeSASA (optional)
-In case of using `cpydock` scoring function or to execute the tests, **Freesasa** library has to be installed and compiled with the python-binding options. Tested version in 
-LightDock is 1.1 (<https://github.com/mittinatten/freesasa/tree/1.1>). To install freesasa 1.1, please follow these instructions (change `path/to/install`):
+In case of using `cpydock` scoring function or to execute the tests, **Freesasa** library has to be installed:
 
 ```bash
-git clone https://github.com/mittinatten/freesasa.git
-cd freesasa
-git checkout tags/1.1
-autoreconf -i
-./configure --enable-python-bindings --prefix=path/to/install
-make
-make install
+pip3 install freesasa
 ```
 
 For more recent versions of freesasa, please check the instructions for installing it on its Github (<https://github.com/mittinatten/freesasa>). 
@@ -88,6 +81,7 @@ The fastest way to install LightDock is to use `git` to clone the repository fro
 
 ```bash
 git clone https://github.com/brianjimenez/lightdock.git
+git checkout python3
 ```
 
 A directory called `lightdock` is now available. This is the path necessary for setting the enviroment variable `LIGHTDOCK_HOME` in your bash. Change your `~/.bashrc` accordingly (add the following lines to your `~/.bashrc`):

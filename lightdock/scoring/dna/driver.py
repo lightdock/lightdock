@@ -60,7 +60,7 @@ class DNAAdapter(ModelAdapter):
             atom_id = "%s-%s" % (res_name, atom_name)
             try:
                 atom.amber_type = amber.amber_types[atom_id]
-            except Exception, e:
+            except Exception as e:
                 # Maybe H N-terminal?
                 if atom_name in ['H1', 'H2', 'H3']:
                     atom_name = 'H'

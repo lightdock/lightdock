@@ -1,4 +1,5 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define PyInt_AsUnsignedLongMask PyLong_AsUnsignedLongMask
 #include <Python.h>
 #include "structmember.h"
 #include "numpy/arrayobject.h"
@@ -157,7 +158,17 @@ static PyMethodDef module_methods[] = {
  * Initialization function
  *
  **/
-PyMODINIT_FUNC initcdna(void) {
+static struct PyModuleDef cdna =
+{
+    PyModuleDef_HEAD_INIT,
+    "cdna",
+    "",
+    -1,
+    module_methods
+};
+
+PyMODINIT_FUNC PyInit_cdna(void) {
     import_array();
-    Py_InitModule3("cdna", module_methods, "cdna object");
+    return PyModule_Create(&cdna);
 }
+

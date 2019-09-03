@@ -21,16 +21,16 @@ class PydockData(object):
 
     def show(self, csv=False):
         if csv:
-            print "%d:%d:%d:%5.3f:%5.3f:%5.3f:%d" % (self.top10, self.top100, self.hits, self.min_rmsd_10,
-                                                     self.min_rmsd_100, self.min_rmsd, self.first_nn)
+            print("%d:%d:%d:%5.3f:%5.3f:%5.3f:%d" % (self.top10, self.top100, self.hits, self.min_rmsd_10,
+                                                     self.min_rmsd_100, self.min_rmsd, self.first_nn))
         else:
-            print "PyDock Top10: %d" % self.top10
-            print "PyDock Top100: %d" % self.top100
-            print "PyDock Total Hits: %d" % self.hits
-            print "PyDock Min(RMSD) Top 10: %5.3f" % self.min_rmsd_10
-            print "PyDock Min(RMSD) Top 100: %5.3f" % self.min_rmsd_100
-            print "PyDock Min(RMSD): %5.3f" % self.min_rmsd
-            print "PyDock First Near Native: %d" % self.first_nn
+            print("PyDock Top10: %d" % self.top10)
+            print("PyDock Top100: %d" % self.top100)
+            print("PyDock Total Hits: %d" % self.hits)
+            print("PyDock Min(RMSD) Top 10: %5.3f" % self.min_rmsd_10)
+            print("PyDock Min(RMSD) Top 100: %5.3f" % self.min_rmsd_100)
+            print("PyDock Min(RMSD): %5.3f" % self.min_rmsd)
+            print("PyDock First Near Native: %d" % self.first_nn)
 
 
 class LightdockData(object):
@@ -52,7 +52,7 @@ class LightdockData(object):
 
     def show(self, csv=False):
         if csv:
-            print "%d:%d:%d:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%d:%d" % (self.top10, self.top100,
+            print("%d:%d:%d:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%5.3f:%d:%d" % (self.top10, self.top100,
                                                                                       self.hits, self.min_rmsd_10,
                                                                                       self.min_rmsd_100, self.min_rmsd,
                                                                                       self.mean_clashes,
@@ -60,21 +60,21 @@ class LightdockData(object):
                                                                                       self.max_clashes,
                                                                                       self.mean_scoring_10,
                                                                                       self.mean_scoring_100,
-                                                                                      self.solutions, self.first_nn)
+                                                                                      self.solutions, self.first_nn))
         else:
-            print "Lightdock Top 10: %d" % self.top10
-            print "Lightdock Top 100: %d" % self.top100
-            print "Lightdock Total Hits: %d" % self.hits
-            print "Lightdock Min(RMSD) Top 10: %5.3f" % self.min_rmsd_10
-            print "Lightdock Min(RMSD) Top 100: %5.3f" % self.min_rmsd_100
-            print "Lightdock Min(RMSD): %5.3f" % self.min_rmsd
-            print "Lightdock Mean Clashes: %5.3f" % self.mean_clashes
-            print "Lightdock Min Clashes: %5.3f" % self.min_clashes
-            print "Lightdock Max Clashes: %5.3f" % self.max_clashes
-            print "Lightdock Mean Scoring Top 10: %5.3f" % self.mean_scoring_10
-            print "Lightdock Mean Scoring Top 100: %5.3f" % self.mean_scoring_100
-            print "Lightdock number of solutions: %d" % self.solutions
-            print "First Near Native position: %d" % self.first_nn
+            print("Lightdock Top 10: %d" % self.top10)
+            print("Lightdock Top 100: %d" % self.top100)
+            print("Lightdock Total Hits: %d" % self.hits)
+            print("Lightdock Min(RMSD) Top 10: %5.3f" % self.min_rmsd_10)
+            print("Lightdock Min(RMSD) Top 100: %5.3f" % self.min_rmsd_100)
+            print("Lightdock Min(RMSD): %5.3f" % self.min_rmsd)
+            print("Lightdock Mean Clashes: %5.3f" % self.mean_clashes)
+            print("Lightdock Min Clashes: %5.3f" % self.min_clashes)
+            print("Lightdock Max Clashes: %5.3f" % self.max_clashes)
+            print("Lightdock Mean Scoring Top 10: %5.3f" % self.mean_scoring_10)
+            print("Lightdock Mean Scoring Top 100: %5.3f" % self.mean_scoring_100)
+            print("Lightdock number of solutions: %d" % self.solutions)
+            print("First Near Native position: %d" % self.first_nn)
 
 
 def parse_arguments():

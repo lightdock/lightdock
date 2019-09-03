@@ -20,7 +20,7 @@ class MinimumVolumeEllipsoid(object):
         self._precision = precision
         try:
             self._get_min_vol_ellipsoid()
-        except Exception, e:
+        except Exception as e:
             raise MinimumVolumeEllipsoidError("Can not build minimum volume ellipsoid. Reason: %s" % str(e))
 
     def _get_min_vol_ellipsoid(self):
