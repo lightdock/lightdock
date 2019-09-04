@@ -1,35 +1,35 @@
 {
-    "anm_seed": 324324, 
-    "ftdock_file": null, 
-    "noh": false, 
-    "anm_rec": 10, 
-    "receptor_restraints": {
-        "active": [
-            "A.CYS.191", 
-            "A.SER.195"
-        ], 
-        "passive": [
-            "A.PHE.41"
-        ]
-    }, 
-    "swarms": 2, 
-    "starting_points_seed": 324324, 
-    "receptor_pdb": "2UUY_rec.pdb", 
-    "anm_lig": 10, 
-    "verbose_parser": false, 
-    "noxt": true, 
-    "restraints": "restraints.list", 
-    "use_anm": true, 
-    "glowworms": 10, 
-    "membrane": false, 
-    "ligand_pdb": "2UUY_lig.pdb", 
+    "anm_lig": 10,
+    "anm_rec": 10,
+    "anm_seed": 324324,
+    "ftdock_file": null,
+    "glowworms": 10,
+    "ligand_pdb": "2UUY_lig.pdb",
     "ligand_restraints": {
         "active": [
             "B.LEU.37"
-        ], 
+        ],
         "passive": [
-            "B.LYS.39", 
+            "B.LYS.39",
             "B.CYS.38"
         ]
-    }
+    },
+    "membrane": false,
+    "noh": false,
+    "noxt": true,
+    "receptor_pdb": "2UUY_rec.pdb",
+    "receptor_restraints": {
+        "active": [
+            "A.CYS.191",
+            "A.SER.195"
+        ],
+        "passive": [
+            "A.PHE.41"
+        ]
+    },
+    "restraints": "restraints.list",
+    "starting_points_seed": 324324,
+    "swarms": 2,
+    "use_anm": true,
+    "verbose_parser": false
 }
