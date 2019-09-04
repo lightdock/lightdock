@@ -166,7 +166,7 @@ def prepare_results_environment(swarms=10):
 def create_setup_file(args):
     """Dumps the args object into a setup file in JSON format"""
     with open(DEFAULT_SETUP_FILE, 'w') as fp:
-        json.dump(vars(args), fp, indent=4)
+        json.dump(vars(args), fp, sort_keys=True, indent=4)
 
 
 def get_setup_from_file(file_name):
