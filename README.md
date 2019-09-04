@@ -1,12 +1,4 @@
-![LightDock](docs/media/lightdock_banner.png "LightDock")
-
-#### Table of Contents
-
-- [1. Introduction](#1-introduction)
-- [2. Reference](#2-reference)
-- [3. Installation](#3-installation)
-- [4. Documentation](#4-documentation)
-- [5. Get Help](#5-get-help)
+# LightDock
 
 ## 1. Introduction
 LightDock is a protein-protein, protein-peptide and protein-DNA docking framework based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm.
