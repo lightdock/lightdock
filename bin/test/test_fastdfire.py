@@ -26,13 +26,13 @@ class TestRegressionFastDFIREShort(RegressionTest):
         num_glowworms = 25
         steps = 10
 
-        command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
+        command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                         '2UUY_lig.pdb',
                                                                         num_swarms,
                                                                         num_glowworms
                                                                         )
         os.system(command)
-        command = "lightdock %s %d -c 1 -f %s -s " \
+        command = "lightdock3.py %s %d -c 1 -f %s -s " \
                   "fastdfire >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                        steps,
                                                        self.golden_data_path + 'glowworm.conf')
@@ -63,13 +63,13 @@ class TestRegressionFastDFIRELong(RegressionTest):
             num_glowworms = 50
             steps = 10
 
-            command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb',
+            command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb',
                                                                             '1PPE_lig.pdb',
                                                                             num_swarms,
                                                                             num_glowworms
                                                                             )
             os.system(command)
-            command = "lightdock %s %d -c 1 -f %s -s " \
+            command = "lightdock3.py %s %d -c 1 -f %s -s " \
                       "fastdfire >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                            steps,
                                                            self.golden_data_path + 'glowworm.conf')
@@ -125,14 +125,14 @@ class TestRegressionFastDFIRERestraints(RegressionTest):
         num_glowworms = 25
         steps = 20
 
-        command = "lightdock_setup %s %s %d %d -rst %s > test_lightdock.out" % ('2UUY_rec.pdb',
+        command = "lightdock3_setup.py %s %s %d %d -rst %s > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                                 '2UUY_lig.pdb',
                                                                                 num_swarms,
                                                                                 num_glowworms,
                                                                                 'restraints.list'
                                                                                 )
         os.system(command)
-        command = "lightdock %s %d -c 1 -s " \
+        command = "lightdock3.py %s %d -c 1 -s " \
                   "fastdfire >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                        steps)
         os.system(command)

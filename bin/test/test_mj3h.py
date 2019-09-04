@@ -26,13 +26,13 @@ class TestRegressionMJ3HShort(RegressionTest):
         num_glowworms = 25
         steps = 10
 
-        command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
+        command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                         '2UUY_lig.pdb',
                                                                         num_swarms,
                                                                         num_glowworms
                                                                         )
         os.system(command)
-        command = "lightdock %s %d -c 1 -f %s -s " \
+        command = "lightdock3.py %s %d -c 1 -f %s -s " \
                   "mj3h >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                   steps,
                                                   self.golden_data_path + 'glowworm.conf')
@@ -70,13 +70,13 @@ class TestRegressionMJ3HLong(RegressionTest):
             num_glowworms = 50
             steps = 20
             
-            command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
+            command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                             '2UUY_lig.pdb',
                                                                             num_swarms,
                                                                             num_glowworms
                                                                             )
             os.system(command)
-            command = "lightdock %s %d -c 1 -f %s -s " \
+            command = "lightdock3.py %s %d -c 1 -f %s -s " \
                       "mj3h >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                       steps,
                                                       self.golden_data_path + 'glowworm.conf')

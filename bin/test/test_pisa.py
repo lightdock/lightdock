@@ -25,13 +25,13 @@ class TestRegressionPISAShort(RegressionTest):
         num_glowworms = 5
         steps = 5
         
-        command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
+        command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                         '2UUY_lig.pdb',
                                                                         num_swarms,
                                                                         num_glowworms
                                                                         )
         os.system(command)
-        command = "lightdock %s %d -c 1 -f %s -s " \
+        command = "lightdock3.py %s %d -c 1 -f %s -s " \
                   "pisa >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                   steps,
                                                   self.golden_data_path + 'glowworm.conf')
@@ -70,13 +70,13 @@ class TestRegressionPISALong(RegressionTest):
             num_glowworms = 50
             steps = 10
             
-            command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
+            command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                             '2UUY_lig.pdb',
                                                                             num_swarms,
                                                                             num_glowworms
                                                                             )
             os.system(command)
-            command = "lightdock %s %d -c 1 -f %s -s " \
+            command = "lightdock3.py %s %d -c 1 -f %s -s " \
                       "pisa >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                       steps,
                                                       self.golden_data_path + 'glowworm.conf')
@@ -114,14 +114,14 @@ class TestRegressionPISARestraints(RegressionTest):
         num_glowworms = 5
         steps = 10
         
-        command = "lightdock_setup %s %s %d %d -rst %s --noh > test_lightdock.out" % ('2UUY_rec.pdb',
+        command = "lightdock3_setup.py %s %s %d %d -rst %s --noh > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                                       '2UUY_lig.pdb',
                                                                                       num_swarms,
                                                                                       num_glowworms,
                                                                                       'restraints.list'
                                                                                       )
         os.system(command)
-        command = "lightdock %s %d -c 1 -s " \
+        command = "lightdock3.py %s %d -c 1 -s " \
                   "pisa >> test_lightdock.out" % (self.test_path + 'setup.json', 
                                                   steps)
         os.system(command)

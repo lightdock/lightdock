@@ -26,7 +26,7 @@ class TestSetupWithoutRestraints(RegressionTest):
         num_swarms = 5
         num_glowworms = 10
 
-        command = "lightdock_setup %s %s %d %d --noxt -anm > test_lightdock.out" % ('2UUY_rec.pdb',
+        command = "lightdock3_setup.py %s %s %d %d --noxt -anm > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                                     '2UUY_lig.pdb',
                                                                                     num_swarms,
                                                                                     num_glowworms,

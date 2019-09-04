@@ -19,10 +19,10 @@ if __name__ == "__main__":
         parser = CommandLineParser()
         mpi_support = parser.args.mpi
         if mpi_support:
-            from docking_mpi import run_simulation as mpi_simulation
+            from simulation.docking_mpi import run_simulation as mpi_simulation
             mpi_simulation(parser)
         else:
-            from docking_multiprocessing import run_simulation as multiprocessing_simulation
+            from simulation.docking_multiprocessing import run_simulation as multiprocessing_simulation
             multiprocessing_simulation(parser)
 
     except Exception as e:

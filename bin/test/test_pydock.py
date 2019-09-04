@@ -29,13 +29,13 @@ class TestRegressionPyDockShort(RegressionTest):
         num_glowworms = 5
         steps = 1
 
-        command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
+        command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
                                                                         '1PPE_lig.pdb.H',
                                                                         num_swarms,
                                                                         num_glowworms
                                                                         )
         os.system(command)
-        command = "lightdock %s %d -c 1 -s " \
+        command = "lightdock3.py %s %d -c 1 -s " \
                   "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                      steps)
         os.system(command)
@@ -69,13 +69,13 @@ class TestRegressionPyDockLong(RegressionTest):
             num_glowworms = 10
             steps = 10
             
-            command = "lightdock_setup %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
+            command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
                                                                             '1PPE_lig.pdb.H',
                                                                             num_swarms,
                                                                             num_glowworms
                                                                             )
             os.system(command)
-            command = "lightdock %s %d -c 1 -s " \
+            command = "lightdock3.py %s %d -c 1 -s " \
                       "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                          steps)
             os.system(command)
@@ -106,14 +106,14 @@ class TestRegressionPyDockRestraints(RegressionTest):
         num_glowworms = 25
         steps = 20
 
-        command = "lightdock_setup %s %s %d %d -rst %s > test_lightdock.out" % ('2UUY_rec.pdb',
+        command = "lightdock3_setup.py %s %s %d %d -rst %s > test_lightdock.out" % ('2UUY_rec.pdb',
                                                                                 '2UUY_lig.pdb',
                                                                                 num_swarms,
                                                                                 num_glowworms,
                                                                                 self.golden_data_path + 'restraints.list'
                                                                                 )
         os.system(command)
-        command = "lightdock %s %d -c 1 -s " \
+        command = "lightdock3.py %s %d -c 1 -s " \
                   "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                      steps)
         os.system(command)

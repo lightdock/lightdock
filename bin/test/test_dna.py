@@ -27,13 +27,13 @@ class TestRegressionDNAShort(RegressionTest):
         num_glowworms = 20
         steps = 10
 
-        command = "lightdock_setup %s %s %d %d -anm > test_lightdock.out" % ('1DIZ_rec.pdb.H',
+        command = "lightdock3_setup.py %s %s %d %d -anm > test_lightdock.out" % ('1DIZ_rec.pdb.H',
                                                                              '1DIZ_lig.pdb.H',
                                                                              num_swarms,
                                                                              num_glowworms
                                                                              )
         os.system(command)
-        command = "lightdock %s %d -c 1 -s " \
+        command = "lightdock3.py %s %d -c 1 -s " \
                   "dna >> test_lightdock.out" % (self.test_path + 'setup.json', steps)
         os.system(command)
 
@@ -63,14 +63,14 @@ class TestRegressionDNARestraintsOnlyReceptor(RegressionTest):
         num_glowworms = 10
         steps = 5
 
-        command = "lightdock_setup %s %s %d %d -rst %s > test_lightdock.out" % ('1DIZ_rec.pdb.H',
+        command = "lightdock3_setup.py %s %s %d %d -rst %s > test_lightdock.out" % ('1DIZ_rec.pdb.H',
                                                                                 '1DIZ_lig.pdb.H',
                                                                                 num_swarms,
                                                                                 num_glowworms,
                                                                                 self.golden_data_path + 'restraints.list'
                                                                                 )
         os.system(command)
-        command = "lightdock %s %d -c 1 -s " \
+        command = "lightdock3.py %s %d -c 1 -s " \
                   "dna >> test_lightdock.out" % (self.test_path + 'setup.json', steps)
         os.system(command)
 

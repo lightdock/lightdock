@@ -26,7 +26,7 @@ class TestSetupWithMembrane(RegressionTest):
         num_swarms = 50
         num_glowworms = 10
 
-        command = "lightdock_setup %s %s %d %d --noh --noxt -membrane > test_lightdock.out" % ('receptor_membrane.pdb',
+        command = "lightdock3_setup.py %s %s %d %d --noh --noxt -membrane > test_lightdock.out" % ('receptor_membrane.pdb',
                                                                                                'ligand.pdb',
                                                                                                num_swarms,
                                                                                                num_glowworms
@@ -61,7 +61,7 @@ class TestSetupWithMembraneAndRestraints(RegressionTest):
         num_swarms = 50
         num_glowworms = 10
 
-        command = "lightdock_setup %s %s %d %d --noh --noxt -membrane -rst %s > test_lightdock.out" % ('receptor_membrane.pdb',
+        command = "lightdock3_setup.py %s %s %d %d --noh --noxt -membrane -rst %s > test_lightdock.out" % ('receptor_membrane.pdb',
                                                                                                        'ligand.pdb',
                                                                                                        num_swarms,
                                                                                                        num_glowworms,

@@ -25,14 +25,14 @@ class TestRegressionTOBIShort(RegressionTest):
         num_glowworms = 5
         steps = 4
 
-        command = "lightdock_setup %s %s %d %d " \
+        command = "lightdock3_setup.py %s %s %d %d " \
                   "-ft %s > test_lightdock.out" % ('1PPE_rec.pdb',
                                                    '1PPE_lig.pdb',
                                                    num_swarms,
                                                    num_glowworms,
                                                    self.golden_data_path + '1PPE.ftdock')
         os.system(command)
-        command = "lightdock %s %d -c 1 -f %s -s " \
+        command = "lightdock3.py %s %d -c 1 -f %s -s " \
                   "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                   steps,
                                                   self.golden_data_path + 'glowworm.conf')
@@ -70,14 +70,14 @@ class TestRegressionTOBIRestraints(RegressionTest):
         num_glowworms = 20
         steps = 10
 
-        command = "lightdock_setup %s %s %d %d --noh --noxt " \
+        command = "lightdock3_setup.py %s %s %d %d --noh --noxt " \
                   "-rst %s > test_lightdock.out" % ('2UUY_rec.pdb',
                                                     '2UUY_lig.pdb',
                                                     num_swarms,
                                                     num_glowworms,
                                                     self.golden_data_path + 'restraints.list')
         os.system(command)
-        command = "lightdock %s %d -c 1 -s " \
+        command = "lightdock3.py %s %d -c 1 -s " \
                   "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                   steps)
         os.system(command)
@@ -108,14 +108,14 @@ class TestRegressionTOBIMoreGlowworms(RegressionTest):
             num_glowworms = 20
             steps = 2
             
-            command = "lightdock_setup %s %s %d %d " \
+            command = "lightdock3_setup.py %s %s %d %d " \
                       "-ft %s > test_lightdock.out" % ('1PPE_rec.pdb',
                                                        '1PPE_lig.pdb',
                                                        num_swarms,
                                                        num_glowworms,
                                                        self.golden_data_path + '1PPE.ftdock')
             os.system(command)
-            command = "lightdock %s %d -c 1 -f %s -s " \
+            command = "lightdock3.py %s %d -c 1 -f %s -s " \
                       "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',
                                                       steps,
                                                       self.golden_data_path + 'glowworm.conf')
