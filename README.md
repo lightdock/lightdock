@@ -37,7 +37,7 @@ Optional dependencies:
 #### 3.1.1. Installing NumPy, Scipy, Cython and Biopython
 
 ```bash
-pip3 install numpy, scipy, cython, biopython
+pip3 install numpy, scipy, cython, biopython, pyparsing, prody
 ```
 
 **Make sure all libraries are from the same Python 3.5+ series.**

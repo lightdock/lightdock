@@ -57,7 +57,7 @@ exts = [Extension(name='lightdock.mathutil.cython.cutil',
 
 setuptools.setup(
     name='lightdock',
-    version='0.1.1',
+    version='0.7.1a1',
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -79,7 +79,14 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Chemistry"
     ],
     python_requires='>=3.5',
-    install_requires=['numpy', 'scipy', 'cython', 'biopython', 'freesasa', 'prody'],
+    install_requires=[
+        'numpy>=1.17.1', 
+        'scipy>=1.3.1', 
+        'cython>=0.29.13', 
+        'biopython>=1.74',
+        'pyparsing>=2.4.2', 
+        'prody>=1.10.10'
+    ],
     scripts=[
         'bin/ant_thony.py','bin/lgd_add_chain.py','bin/lgd_calculate_diameter.py',
         'bin/lgd_calculate_reference_points.py','bin/lgd_calculate_scoring.py',
