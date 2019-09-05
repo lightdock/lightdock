@@ -1,4 +1,5 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define PyInt_AsUnsignedLongMask PyLong_AsUnsignedLongMask
 #include <Python.h>
 #include "structmember.h"
 #include "numpy/arrayobject.h"
@@ -129,9 +130,17 @@ static PyMethodDef module_methods[] = {
  * Initialization function
  *
  **/
-PyMODINIT_FUNC initcvdw(void) {
+static struct PyModuleDef cvdw =
+{
+    PyModuleDef_HEAD_INIT,
+    "cvdw",
+    "",
+    -1,
+    module_methods
+};
 
-    Py_InitModule3("cvdw", module_methods, "cvdw object");
+PyMODINIT_FUNC PyInit_cvdw(void) {
     import_array();
+    return PyModule_Create(&cvdw);
 }
 

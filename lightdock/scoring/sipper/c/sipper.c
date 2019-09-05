@@ -1,4 +1,5 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define PyInt_AsUnsignedLongMask PyLong_AsUnsignedLongMask
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include "structmember.h"
@@ -143,9 +144,17 @@ static PyMethodDef module_methods[] = {
  * Initialization function
  *
  **/
-PyMODINIT_FUNC initsipper(void) {
+static struct PyModuleDef sipper =
+{
+    PyModuleDef_HEAD_INIT,
+    "sipper",
+    "",
+    -1,
+    module_methods
+};
 
-    Py_InitModule3("sipper", module_methods, "sipper object");
+PyMODINIT_FUNC PyInit_sipper(void) {
     import_array();
+    return PyModule_Create(&sipper);
 }
 

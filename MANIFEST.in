@@ -1,0 +1,8 @@
+include lightdock/etc/glowworm.conf
+include lightdock/scoring/tobi/data/*.dat
+include lightdock/scoring/dfire/data/DCparams
+include lightdock/scoring/fastdfire/data/DCparams
+include lightdock/scoring/pisa/data/pisa.params
+include lightdock/scoring/dfire2/data/dfire2_energies.npy
+include lightdock/scoring/dfire2/data/dfire_pair.lib
+include lightdock/scoring/mj3h/data/MJ_potentials.dat
