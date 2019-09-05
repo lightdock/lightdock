@@ -57,7 +57,7 @@ exts = [Extension(name='lightdock.mathutil.cython.cutil',
 
 setuptools.setup(
     name='lightdock',
-    version='0.1',
+    version='0.1.1',
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -65,12 +65,32 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Intended Audience :: Education",
+        "Intended Audience :: Science/Research",
+        "License :: Free For Educational Use",
         "Programming Language :: Python :: 3",
-        "Operating System :: OS Independent",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: POSIX",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Scientific/Engineering :: Bio-Informatics",
+        "Topic :: Scientific/Engineering :: Chemistry"
     ],
     python_requires='>=3.5',
     install_requires=['numpy', 'scipy', 'cython', 'biopython', 'freesasa', 'prody'],
-    scripts=['bin/ant_thony.py','bin/lgd_add_chain.py','bin/lgd_calculate_diameter.py','bin/lgd_calculate_reference_points.py','bin/lgd_calculate_scoring.py','bin/lgd_calculate_surface_density.py','bin/lgd_cluster_bsas.py','bin/lgd_filter_membrane.py','bin/lgd_filter_restraints.py','bin/lgd_generate_conformations.py','bin/lgd_generate_glowworm_positions.py','bin/lgd_generate_trajectory.py','bin/lgd_gso_to_csv.py','bin/lgd_move_anm.py','bin/lgd_prepare_new_simulation.py','bin/lgd_quaternion_to_euler.py','bin/lgd_rank.py','bin/lgd_stats.py','bin/lgd_success_rate.py','bin/lgd_top.py','bin/lightdock3.py','bin/lightdock3_setup.py'],
+    scripts=[
+        'bin/ant_thony.py','bin/lgd_add_chain.py','bin/lgd_calculate_diameter.py',
+        'bin/lgd_calculate_reference_points.py','bin/lgd_calculate_scoring.py',
+        'bin/lgd_calculate_surface_density.py','bin/lgd_cluster_bsas.py',
+        'bin/lgd_filter_membrane.py','bin/lgd_filter_restraints.py',
+        'bin/lgd_generate_conformations.py','bin/lgd_generate_glowworm_positions.py',
+        'bin/lgd_generate_trajectory.py','bin/lgd_gso_to_csv.py','bin/lgd_move_anm.py',
+        'bin/lgd_prepare_new_simulation.py','bin/lgd_quaternion_to_euler.py',
+        'bin/lgd_rank.py','bin/lgd_stats.py','bin/lgd_success_rate.py','bin/lgd_top.py',
+        'bin/lightdock3.py','bin/lightdock3_setup.py'
+    ],
     ext_modules=exts,
     zip_safe=False
 )
