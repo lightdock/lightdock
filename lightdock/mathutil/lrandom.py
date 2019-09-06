@@ -25,7 +25,7 @@ class MTGenerator(RandomNumberGenerator):
         return self.random.uniform(lower_limit, upper_limit)
 
     def randint(self, lower_limit=0, upper_limit=9):
-        return self.random.randint(lower_limit, upper_limit)
+        return int(self() * (upper_limit + 1)) + lower_limit
 
 
 class RandomNumberGeneratorFromFile(RandomNumberGenerator):
