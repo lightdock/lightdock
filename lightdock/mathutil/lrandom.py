@@ -18,7 +18,8 @@ class MTGenerator(RandomNumberGenerator):
     """
     def __init__(self, seed):
         self.seed = seed
-        self.random = random.Random(seed)
+        self.random = random.Random()
+        self.random.seed(self.seed, version=1)
         
     def __call__(self, lower_limit=0., upper_limit=1.):
         return self.random.uniform(lower_limit, upper_limit)
