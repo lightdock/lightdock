@@ -203,7 +203,7 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
                 break
 
     # Unique swarm ids
-    closer_swarm_ids = list(set(closer_swarms))
+    closer_swarm_ids = sorted(list(set(closer_swarms)))
 
     # Final filtered list of swarms
     new_swarm_centers = [swarm_centers[i] for i in closer_swarm_ids]
