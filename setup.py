@@ -85,7 +85,8 @@ setuptools.setup(
         'cython>=0.29.13', 
         'biopython>=1.74',
         'pyparsing>=2.4.2',
-        'prody>=1.10.10'
+        'prody>=1.10.10',
+        'freesasa>=2.0.3'
     ],
     scripts=[
         'bin/ant_thony.py','bin/lgd_add_chain.py','bin/lgd_calculate_diameter.py',
