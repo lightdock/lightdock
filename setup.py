@@ -87,7 +87,7 @@ setuptools.setup(
         'biopython>=1.74',
         'pyparsing>=2.4.2',
         'prody>=1.10.10',
-        'freesasa>=2.0.3'
+        'freesasa>=2.0.3',
     ],
     scripts=[
         'bin/ant_thony.py','bin/lgd_add_chain.py','bin/lgd_calculate_diameter.py',
@@ -100,6 +100,8 @@ setuptools.setup(
         'bin/lgd_rank.py','bin/lgd_stats.py','bin/lgd_success_rate.py','bin/lgd_top.py',
         'bin/lightdock3.py','bin/lightdock3_setup.py'
     ],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
     ext_modules=exts,
     zip_safe=False
 )
