@@ -1,9 +1,7 @@
-.. image:: https://img.shields.io/pypi/v/lightdock.svg
-   :target: https://pypi.org/project/lightdock/
-
-.. image:: https://img.shields.io/github/commit-activity/m/lightdock/lightdock.svg
-   :target: https://github.com/lightdock/lightdock/commits/master
-   
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![PyPi version](https://img.shields.io/pypi/v/lightdock.svg)](https://pypi.org/project/lightdock/)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/lightdock/lightdock.svg)](https://github.com/lightdock/lightdock/commits/master)
+ 
 # LightDock
 
 ## 1. Synopsis
