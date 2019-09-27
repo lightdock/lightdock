@@ -1,3 +1,4 @@
+include LICENSE
 include lightdock/etc/glowworm.conf
 include lightdock/scoring/tobi/data/*.dat
 include lightdock/scoring/dfire/data/DCparams
