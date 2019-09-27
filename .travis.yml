@@ -4,6 +4,7 @@ python:
 before_install:
   - pip install nose
 install:
-  - pip install .
+  - python setup.py build
+  - python setup.py install
 script:
   - nosetests

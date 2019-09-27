@@ -64,6 +64,7 @@ setuptools.setup(
     url="https://lightdock.org/",
     packages=setuptools.find_packages(),
     include_package_data=True,
+    license='GPLv3 License',
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
