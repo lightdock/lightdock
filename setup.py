@@ -1,6 +1,20 @@
 import setuptools
 from distutils.core import setup, Extension
+from setuptools.command.test import test as TestCommand
 import numpy
+
+
+# Inspired by the example at https://pytest.org/latest/goodpractises.html
+class NoseTestCommand(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import nose
+        nose.run_exit(argv=['nosetests'])
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -100,8 +114,10 @@ setuptools.setup(
         'bin/lgd_rank.py','bin/lgd_stats.py','bin/lgd_success_rate.py','bin/lgd_top.py',
         'bin/lightdock3.py','bin/lightdock3_setup.py'
     ],
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    setup_requires=[
+        'nose'
+    ],
+    cmdclass={'test': NoseTestCommand},
     ext_modules=exts,
     zip_safe=False
 )
