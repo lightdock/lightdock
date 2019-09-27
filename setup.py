@@ -84,6 +84,7 @@ setuptools.setup(
         'scipy>=1.3.1', 
         'cython>=0.29.13', 
         'biopython>=1.74',
+        'pyparsing>=2.4.2',
         'prody>=1.10.10'
     ],
     scripts=[
