@@ -7,3 +7,14 @@ include lightdock/scoring/pisa/data/pisa.params
 include lightdock/scoring/dfire2/data/dfire2_energies.npy
 include lightdock/scoring/dfire2/data/dfire_pair.lib
 include lightdock/scoring/mj3h/data/MJ_potentials.dat
+recursive-include lightdock/test/prep/golden_data *
+recursive-include lightdock/test/gso/searchspace/golden_data *
+recursive-include lightdock/test/gso/golden_data *
+recursive-include lightdock/test/util/golden_data *
+recursive-include lightdock/test/bin/post/golden_data *
+recursive-include lightdock/test/bin/golden_data *
+recursive-include lightdock/test/rotamer/golden_data *
+recursive-include lightdock/test/pdbutil/golden_data *
+recursive-include lightdock/test/scoring/golden_data *
+recursive-include lightdock/test/structure/golden_data *
+recursive-include lightdock/test/mathutil/golden_data *
