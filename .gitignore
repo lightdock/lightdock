@@ -61,9 +61,6 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-# Cython temporary C files
-**/cython/*.c
-
 # PyCharm
 .idea/*
 
