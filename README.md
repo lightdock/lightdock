@@ -1,5 +1,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![PyPi version](https://img.shields.io/pypi/v/lightdock.svg)](https://pypi.org/project/lightdock/)
+[![Build Status](https://travis-ci.com/lightdock/lightdock.svg?branch=master)](https://travis-ci.com/lightdock/lightdock)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/lightdock/lightdock.svg)](https://github.com/lightdock/lightdock/commits/master)
  
 # LightDock
@@ -30,16 +31,17 @@ LightDock has the following dependencies:
 * Cython (<http://cython.org/>)
 * BioPython (<http://biopython.org>)
 * ProDy (<http://prody.csb.pitt.edu/>)
+* Freesasa (<http://freesasa.github.io/>)
 
 Optional dependencies are:
 
 * MPI4py (if you plan to use MPI support which is experimental at the moment, <http://pythonhosted.org/mpi4py/>)
-* Freesasa (only if `cpydock` scoring function is used, <http://freesasa.github.io/>)
+
 
 #### 3.1.1. Installing NumPy, Scipy, Cython, Biopython and ProDy
 
 ```bash
-pip3 install numpy, scipy, cython, biopython, prody
+pip3 install numpy, scipy, cython, biopython, pyparsing, prody
 ```
 
 | WARNING: Issues installing ProDy in macOS have been reported. In case you are not able to install ProDy using `pip`, you may try to install it from the latest version in GitHub. Please see instructions [here](https://github.com/prody/ProDy/issues/864). |
