@@ -71,7 +71,7 @@ exts = [Extension(name='lightdock.mathutil.cython.cutil',
 
 setuptools.setup(
     name='lightdock',
-    version='0.7.1a1',
+    version='0.8.0a1',
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -80,7 +80,7 @@ setuptools.setup(
     include_package_data=True,
     license='GPLv3 License',
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 3 - Alpha",
         "Environment :: Console",
         "Intended Audience :: Education",
         "Intended Audience :: Science/Research",
