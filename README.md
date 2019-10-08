@@ -1,6 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![PyPi version](https://img.shields.io/pypi/v/lightdock.svg)](https://pypi.org/project/lightdock/)
 [![Build Status](https://travis-ci.com/lightdock/lightdock.svg?branch=master)](https://travis-ci.com/lightdock/lightdock)
+[![Code Coverage](https://codecov.io/gh/lightdock/lightdock/branch/master/graph/badge.svg)](https://codecov.io/gh/lightdock/lightdock)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/lightdock/lightdock.svg)](https://github.com/lightdock/lightdock/commits/master)
  
 # LightDock
