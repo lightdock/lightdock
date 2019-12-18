@@ -180,7 +180,7 @@ class TOBI(ScoringFunction):
         energy *= -1.
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
-        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        return (energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy) * self.weight
 
     def _vdw_in_search(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Calculates the TOBI potential taking into account the contacts between receptor

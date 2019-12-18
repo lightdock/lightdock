@@ -139,7 +139,7 @@ class CPyDock(ScoringFunction):
         energy = (elec + parameters.scoring_vdw_weight * vdw + solv)*-1.
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
-        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        return (energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy) * self.weight
 
 
 # Needed to dynamically load the scoring functions from command line

@@ -81,10 +81,10 @@ class VdW(ScoringFunction):
                                                                               receptor.vdw_energy, ligand.vdw_energy, 
                                                                               receptor.vdw_radii, ligand.vdw_radii,
                                                                               DEFAULT_CONTACT_RESTRAINTS_CUTOFF)
-        energy = vdw_energy * -1.0 * self.weight
+        energy = vdw_energy * -1.0
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, set(interface_receptor))
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, set(interface_ligand))
-        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        return (energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy) * self.weight
 
 
 # Needed to dynamically load the scoring functions from command line

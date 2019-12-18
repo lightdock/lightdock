@@ -105,12 +105,18 @@ class SIPPER(ScoringFunction):
         """Computes the pyDock scoring energy using receptor and ligand which are
         instances of DockingModel
         """
-        energy = csipper.calculate_sipper(receptor_coordinates, ligand_coordinates, self.energy,
-                                          receptor.indexes, ligand.indexes,
-                                          receptor.atoms_per_residue, ligand.atoms_per_residue,
-                                          len(receptor.atoms_per_residue), len(ligand.atoms_per_residue),
-                                          receptor.oda, ligand.oda)
-        return energy * self.weight
+        energy, interface_receptor, interface_ligand = csipper.calculate_sipper(receptor_coordinates, 
+                                                                                ligand_coordinates, 
+                                                                                self.energy,
+                                                                                receptor.indexes, ligand.indexes,
+                                                                                receptor.atoms_per_residue, 
+                                                                                ligand.atoms_per_residue,
+                                                                                len(receptor.atoms_per_residue), 
+                                                                                len(ligand.atoms_per_residue),
+                                                                                receptor.oda, ligand.oda)
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
+        return (energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy) * self.weight
 
 
 # Needed to dynamically load the scoring functions from command line

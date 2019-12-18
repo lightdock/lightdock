@@ -164,7 +164,7 @@ class DFIRE(ScoringFunction):
         membrane_penalty = 0.
         if membrane_intersection > 0.:
             membrane_penalty = 999.0 * membrane_intersection
-        return energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy - membrane_penalty
+        return (energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy - membrane_penalty) * self.weight
 
 
 # Needed to dynamically load the scoring functions from command line
