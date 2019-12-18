@@ -2,7 +2,6 @@
 
 """Cluster LightDock final swarm results using BSAS algorithm"""
 
-import sys
 import argparse
 import Bio.PDB
 from lightdock.util.analysis import read_lightdock_output
@@ -39,15 +38,15 @@ def get_ca_atoms(ids_list):
                 for residue in chain:
                     try:
                         res = residue['CA']
-                    except:
+                    except KeyError:
                         pass
                     try:
                         res = residue['P']
-                    except:
+                    except KeyError:
                         pass
                     try:
                         ca_atoms[struct_id].append(res)
-                    except:
+                    except KeyError:
                         ca_atoms[struct_id] = [res]
     except IOError as e:
         log.error('Error found reading a structure: %s' % str(e))
@@ -62,8 +61,8 @@ def clusterize(sorted_ids):
     super_imposer = Bio.PDB.Superimposer()
 
     clusters_found = 0
-    clusters = {clusters_found : [sorted_ids[0]]}
-    
+    clusters = {clusters_found: [sorted_ids[0]]}
+
     # Read all structures CA's
     ca_atoms = get_ca_atoms(sorted_ids)
 
@@ -81,13 +80,13 @@ def clusterize(sorted_ids):
                 log.info("Glowworm %d goes into cluster %d" % (j, cluster_id))
                 in_cluster = True
                 break
-        
+
         if not in_cluster:
             clusters_found += 1
             clusters[clusters_found] = [j]
             log.info("New cluster %d" % clusters_found)
     return clusters
-    
+
 
 def write_cluster_info(clusters, gso_data):
     """Writes the clustering result"""
@@ -95,11 +94,11 @@ def write_cluster_info(clusters, gso_data):
         for id_cluster, ids in clusters.items():
             output.write("%d:%d:%8.5f:%d:%s\n" % (id_cluster, len(ids), gso_data[ids[0]].scoring,
                                                   ids[0], 'lightdock_%d.pdb' % ids[0]))
-        log.info("Cluster result written to %s file" % CLUSTER_REPRESENTATIVES_FILE)        
+        log.info("Cluster result written to %s file" % CLUSTER_REPRESENTATIVES_FILE)
 
 
 if __name__ == '__main__':
- 
+
     try:
         # Parse command line
         args = parse_command_line()
@@ -111,7 +110,7 @@ if __name__ == '__main__':
         sorted_data = sorted(gso_data, key=lambda k: k.scoring, reverse=True)
 
         # Get the Glowworm ids sorted by their scoring
-        sorted_ids = [g.id_glowworm for g in sorted_data] 
+        sorted_ids = [g.id_glowworm for g in sorted_data]
 
         # Calculate the different clusters
         clusters = clusterize(sorted_ids)
