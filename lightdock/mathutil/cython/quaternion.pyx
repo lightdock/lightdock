@@ -1,7 +1,6 @@
-"""Quaternion class to represent a quaternion type"""
-
 #cython: boundscheck=False
 #cython: wraparound=False
+#cython: language_level=3
 
 from lightdock.mathutil.cython.cutil import float_equals as cfloat_equals
 from math import sqrt, acos, sin, cos, pi
