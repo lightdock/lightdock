@@ -70,7 +70,7 @@ class SetupCommandLineParser(object):
             raise argparse.ArgumentTypeError("%s is an invalid value" % float_value)
         return float_value
 
-    def __init__(self):
+    def __init__(self, input_args=None):
         parser = argparse.ArgumentParser(prog="lightdock_setup")
         
         # Receptor
@@ -121,7 +121,10 @@ class SetupCommandLineParser(object):
         parser.add_argument("-membrane", "--membrane", help="Enables the extra filter for membrane restraints", 
                             dest="membrane", action='store_true', default=False)
 
-        self.args = parser.parse_args()
+        if input_args:
+            self.args = parser.parse_args(input_args)
+        else:
+            self.args = parser.parse_args()
 
 
 class ListScoringAction(argparse.Action):

@@ -3,12 +3,14 @@
 import os
 import shutil
 import filecmp
+from glob import glob
 from nose.tools import assert_almost_equal, raises
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.prep.simulation import parse_restraints_file, get_restraints, get_default_box,\
-    get_setup_from_file, create_setup_file
+    get_setup_from_file, create_setup_file, prepare_results_environment
 from lightdock.structure.complex import Complex
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
+from lightdock.util.parser import SetupCommandLineParser
 
 
 class TestParsingRestraintsFile:
@@ -152,3 +154,35 @@ class TestSimulation:
         }
 
         assert read == expected
+
+    def test_create_setup_file(self):
+        shutil.copyfile(os.path.join(self.golden_data_path, '2UUY_rec.pdb'), 
+                        os.path.join(self.test_path, '2UUY_rec.pdb'))
+        shutil.copyfile(os.path.join(self.golden_data_path, '2UUY_lig.pdb'), 
+                        os.path.join(self.test_path, '2UUY_lig.pdb'))
+        os.chdir(self.test_path)
+        parser = SetupCommandLineParser(['2UUY_rec.pdb', '2UUY_lig.pdb', '5', '10', '-anm', '--noxt'])
+
+        create_setup_file(parser.args)
+
+        assert filecmp.cmp(os.path.join(self.test_path, 'setup.json'), 
+                           os.path.join(self.golden_data_path, 'setup.json'))
+
+    def test_prepare_results_environment(self):
+        os.chdir(self.test_path)
+
+        prepare_results_environment(20)
+
+        directories = glob(os.path.join(self.test_path, 'swarm_*/'))
+
+        assert len(directories) == 20
+
+    @raises(LightDockError)
+    def test_prepare_results_environment_with_existing_data(self):
+        os.chdir(self.test_path)
+
+        prepare_results_environment(20)
+
+        prepare_results_environment()
+
+        assert False
