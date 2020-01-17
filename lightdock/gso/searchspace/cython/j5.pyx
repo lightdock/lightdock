@@ -1,7 +1,8 @@
-"""J5: plateaus function"""
-
 #cython: boundscheck=False
 #cython: wraparound=False
+#cython: language_level=3
+
+"""J5: plateaus function"""
 
 from libc.math cimport cos
 

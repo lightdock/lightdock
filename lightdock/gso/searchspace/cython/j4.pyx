@@ -1,7 +1,8 @@
-"""J4: staircase function"""
-
 #cython: boundscheck=False
 #cython: wraparound=False
+#cython: language_level=3
+
+"""J4: staircase function"""
 
 from libc.math cimport ceil
 

@@ -1,7 +1,8 @@
-"""J2: Rastrigin's function"""
-
 #cython: boundscheck=False
 #cython: wraparound=False
+#cython: language_level=3
+
+"""J2: Rastrigin's function"""
 
 from libc.math cimport cos, M_PI
 

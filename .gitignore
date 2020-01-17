@@ -66,6 +66,7 @@ target/
 
 # Lightdock specific
 sandbox/
+pack.sh
 
 # Mac OS
 .DS_Store

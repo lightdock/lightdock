@@ -1,7 +1,8 @@
-"""J1: peaks function"""
-
 #cython: boundscheck=False
 #cython: wraparound=False
+#cython: language_level=3
+
+"""J1: peaks function"""
 
 from libc.math cimport sqrt, exp, pow
 

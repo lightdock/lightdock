@@ -9,7 +9,7 @@
 #else
 #define CYTHON_ABI "0_29_13"
 #define CYTHON_HEX_VERSION 0x001D0DF0
-#define CYTHON_FUTURE_DIVISION 0
+#define CYTHON_FUTURE_DIVISION 1
 #include <stddef.h>
 #ifndef offsetof
   #define offsetof(type, member) ( (size_t) & ((type*)0) -> member )
@@ -807,7 +807,7 @@ static const char *__pyx_f[] = {
 /*--- Type declarations ---*/
 struct __pyx_opt_args_6cdfire_calculate_dfire;
 
-/* "cdfire.pyx":7
+/* "cdfire.pyx":8
  * import numpy as np
  * 
  * cpdef calculate_dfire(receptor, receptor_coordinates, ligand, ligand_coordinates,             # <<<<<<<<<<<<<<
@@ -1242,7 +1242,7 @@ static PyObject *__pyx_float_neg_1_;
 static PyObject *__pyx_int_1;
 /* Late includes */
 
-/* "cdfire.pyx":7
+/* "cdfire.pyx":8
  * import numpy as np
  * 
  * cpdef calculate_dfire(receptor, receptor_coordinates, ligand, ligand_coordinates,             # <<<<<<<<<<<<<<
@@ -1289,22 +1289,22 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
     }
   }
 
-  /* "cdfire.pyx":9
+  /* "cdfire.pyx":10
  * cpdef calculate_dfire(receptor, receptor_coordinates, ligand, ligand_coordinates,
  *                         dfire_dist_to_bins, dfire_energy, interface_cutoff=3.9):
  *     dist_matrix = scipy.spatial.distance.cdist(receptor_coordinates, ligand_coordinates)             # <<<<<<<<<<<<<<
  *     atom_indexes = np.where(dist_matrix <= 15.)
  *     dist_matrix *= 2.0
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_scipy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_scipy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_spatial); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_spatial); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_distance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_distance); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_cdist); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_cdist); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -1322,7 +1322,7 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_v_receptor_coordinates, __pyx_v_ligand_coordinates};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 2+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 2+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
@@ -1330,13 +1330,13 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[3] = {__pyx_t_2, __pyx_v_receptor_coordinates, __pyx_v_ligand_coordinates};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 2+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_4, 2+__pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_5 = PyTuple_New(2+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 9, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(2+__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 10, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     if (__pyx_t_2) {
       __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_2); __pyx_t_2 = NULL;
@@ -1347,7 +1347,7 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
     __Pyx_INCREF(__pyx_v_ligand_coordinates);
     __Pyx_GIVEREF(__pyx_v_ligand_coordinates);
     PyTuple_SET_ITEM(__pyx_t_5, 1+__pyx_t_4, __pyx_v_ligand_coordinates);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
@@ -1355,19 +1355,19 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   __pyx_v_dist_matrix = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "cdfire.pyx":10
+  /* "cdfire.pyx":11
  *                         dfire_dist_to_bins, dfire_energy, interface_cutoff=3.9):
  *     dist_matrix = scipy.spatial.distance.cdist(receptor_coordinates, ligand_coordinates)
  *     atom_indexes = np.where(dist_matrix <= 15.)             # <<<<<<<<<<<<<<
  *     dist_matrix *= 2.0
  *     dist_matrix -= 1.0
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_where); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_where); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyObject_RichCompare(__pyx_v_dist_matrix, __pyx_float_15_, Py_LE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_3 = PyObject_RichCompare(__pyx_v_dist_matrix, __pyx_float_15_, Py_LE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 11, __pyx_L1_error)
   __pyx_t_2 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
     __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_5);
@@ -1381,37 +1381,37 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_v_atom_indexes = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "cdfire.pyx":11
+  /* "cdfire.pyx":12
  *     dist_matrix = scipy.spatial.distance.cdist(receptor_coordinates, ligand_coordinates)
  *     atom_indexes = np.where(dist_matrix <= 15.)
  *     dist_matrix *= 2.0             # <<<<<<<<<<<<<<
  *     dist_matrix -= 1.0
  *     energy = 0.
  */
-  __pyx_t_1 = PyNumber_InPlaceMultiply(__pyx_v_dist_matrix, __pyx_float_2_0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_InPlaceMultiply(__pyx_v_dist_matrix, __pyx_float_2_0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF_SET(__pyx_v_dist_matrix, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cdfire.pyx":12
+  /* "cdfire.pyx":13
  *     atom_indexes = np.where(dist_matrix <= 15.)
  *     dist_matrix *= 2.0
  *     dist_matrix -= 1.0             # <<<<<<<<<<<<<<
  *     energy = 0.
  *     cdef unsigned int d
  */
-  __pyx_t_1 = __Pyx_PyFloat_SubtractObjC(__pyx_v_dist_matrix, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyFloat_SubtractObjC(__pyx_v_dist_matrix, __pyx_float_1_0, 1.0, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF_SET(__pyx_v_dist_matrix, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cdfire.pyx":13
+  /* "cdfire.pyx":14
  *     dist_matrix *= 2.0
  *     dist_matrix -= 1.0
  *     energy = 0.             # <<<<<<<<<<<<<<
@@ -1421,42 +1421,42 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   __Pyx_INCREF(__pyx_float_0_);
   __pyx_v_energy = __pyx_float_0_;
 
-  /* "cdfire.pyx":15
+  /* "cdfire.pyx":16
  *     energy = 0.
  *     cdef unsigned int d
  *     interface_receptor = []             # <<<<<<<<<<<<<<
  *     interface_ligand = []
  * 
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_interface_receptor = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cdfire.pyx":16
+  /* "cdfire.pyx":17
  *     cdef unsigned int d
  *     interface_receptor = []
  *     interface_ligand = []             # <<<<<<<<<<<<<<
  * 
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_interface_ligand = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cdfire.pyx":18
+  /* "cdfire.pyx":19
  *     interface_ligand = []
  * 
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):             # <<<<<<<<<<<<<<
  *         rec_atom = receptor.objects[i]
  *         lig_atom = ligand.objects[j]
  */
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
@@ -1464,16 +1464,16 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_5);
   __pyx_t_1 = 0;
   __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_zip, __pyx_t_3, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_zip, __pyx_t_3, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (likely(PyList_CheckExact(__pyx_t_5)) || PyTuple_CheckExact(__pyx_t_5)) {
     __pyx_t_3 = __pyx_t_5; __Pyx_INCREF(__pyx_t_3); __pyx_t_6 = 0;
     __pyx_t_7 = NULL;
   } else {
-    __pyx_t_6 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 18, __pyx_L1_error)
+    __pyx_t_6 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 18, __pyx_L1_error)
+    __pyx_t_7 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 19, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   for (;;) {
@@ -1481,17 +1481,17 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
       if (likely(PyList_CheckExact(__pyx_t_3))) {
         if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) __PYX_ERR(0, 18, __pyx_L1_error)
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) __PYX_ERR(0, 19, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
         if (__pyx_t_6 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) __PYX_ERR(0, 18, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_6); __Pyx_INCREF(__pyx_t_5); __pyx_t_6++; if (unlikely(0 < 0)) __PYX_ERR(0, 19, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_3, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
@@ -1501,7 +1501,7 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 18, __pyx_L1_error)
+          else __PYX_ERR(0, 19, __pyx_L1_error)
         }
         break;
       }
@@ -1513,7 +1513,7 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 18, __pyx_L1_error)
+        __PYX_ERR(0, 19, __pyx_L1_error)
       }
       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -1526,15 +1526,15 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
       __Pyx_INCREF(__pyx_t_1);
       __Pyx_INCREF(__pyx_t_2);
       #else
-      __pyx_t_1 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+      __pyx_t_1 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 18, __pyx_L1_error)
+      __pyx_t_2 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       #endif
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_8 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 18, __pyx_L1_error)
+      __pyx_t_8 = PyObject_GetIter(__pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 19, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __pyx_t_9 = Py_TYPE(__pyx_t_8)->tp_iternext;
@@ -1542,7 +1542,7 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
       __Pyx_GOTREF(__pyx_t_1);
       index = 1; __pyx_t_2 = __pyx_t_9(__pyx_t_8); if (unlikely(!__pyx_t_2)) goto __pyx_L5_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_2);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_9(__pyx_t_8), 2) < 0) __PYX_ERR(0, 18, __pyx_L1_error)
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_9(__pyx_t_8), 2) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
       __pyx_t_9 = NULL;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       goto __pyx_L6_unpacking_done;
@@ -1550,7 +1550,7 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       __pyx_t_9 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 18, __pyx_L1_error)
+      __PYX_ERR(0, 19, __pyx_L1_error)
       __pyx_L6_unpacking_done:;
     }
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
@@ -1558,134 +1558,134 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
     __Pyx_XDECREF_SET(__pyx_v_j, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "cdfire.pyx":19
+    /* "cdfire.pyx":20
  * 
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):
  *         rec_atom = receptor.objects[i]             # <<<<<<<<<<<<<<
  *         lig_atom = ligand.objects[j]
  *         rnuma = rec_atom.dfire_residue_index
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_receptor, __pyx_n_s_objects); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_receptor, __pyx_n_s_objects); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 20, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_i); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_i); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_XDECREF_SET(__pyx_v_rec_atom, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "cdfire.pyx":20
+    /* "cdfire.pyx":21
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):
  *         rec_atom = receptor.objects[i]
  *         lig_atom = ligand.objects[j]             # <<<<<<<<<<<<<<
  *         rnuma = rec_atom.dfire_residue_index
  *         anuma = rec_atom.atom_index
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_ligand, __pyx_n_s_objects); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_ligand, __pyx_n_s_objects); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_j); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 20, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_j); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 21, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_XDECREF_SET(__pyx_v_lig_atom, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "cdfire.pyx":21
+    /* "cdfire.pyx":22
  *         rec_atom = receptor.objects[i]
  *         lig_atom = ligand.objects[j]
  *         rnuma = rec_atom.dfire_residue_index             # <<<<<<<<<<<<<<
  *         anuma = rec_atom.atom_index
  *         rnumb = lig_atom.dfire_residue_index
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_rec_atom, __pyx_n_s_dfire_residue_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_rec_atom, __pyx_n_s_dfire_residue_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_XDECREF_SET(__pyx_v_rnuma, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "cdfire.pyx":22
+    /* "cdfire.pyx":23
  *         lig_atom = ligand.objects[j]
  *         rnuma = rec_atom.dfire_residue_index
  *         anuma = rec_atom.atom_index             # <<<<<<<<<<<<<<
  *         rnumb = lig_atom.dfire_residue_index
  *         anumb = lig_atom.atom_index
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_rec_atom, __pyx_n_s_atom_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_rec_atom, __pyx_n_s_atom_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_XDECREF_SET(__pyx_v_anuma, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "cdfire.pyx":23
+    /* "cdfire.pyx":24
  *         rnuma = rec_atom.dfire_residue_index
  *         anuma = rec_atom.atom_index
  *         rnumb = lig_atom.dfire_residue_index             # <<<<<<<<<<<<<<
  *         anumb = lig_atom.atom_index
  *         # convert numpy.float64 to int
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_lig_atom, __pyx_n_s_dfire_residue_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_lig_atom, __pyx_n_s_dfire_residue_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 24, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_XDECREF_SET(__pyx_v_rnumb, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "cdfire.pyx":24
+    /* "cdfire.pyx":25
  *         anuma = rec_atom.atom_index
  *         rnumb = lig_atom.dfire_residue_index
  *         anumb = lig_atom.atom_index             # <<<<<<<<<<<<<<
  *         # convert numpy.float64 to int
  *         d = dist_matrix[i][j]
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_lig_atom, __pyx_n_s_atom_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_lig_atom, __pyx_n_s_atom_index); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 25, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_XDECREF_SET(__pyx_v_anumb, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "cdfire.pyx":26
+    /* "cdfire.pyx":27
  *         anumb = lig_atom.atom_index
  *         # convert numpy.float64 to int
  *         d = dist_matrix[i][j]             # <<<<<<<<<<<<<<
  *         if d <= interface_cutoff:
  *             interface_receptor.append(i)
  */
-    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_dist_matrix, __pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_dist_matrix, __pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 27, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 27, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_10 = __Pyx_PyInt_As_unsigned_int(__pyx_t_2); if (unlikely((__pyx_t_10 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 26, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_As_unsigned_int(__pyx_t_2); if (unlikely((__pyx_t_10 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_d = __pyx_t_10;
 
-    /* "cdfire.pyx":27
+    /* "cdfire.pyx":28
  *         # convert numpy.float64 to int
  *         d = dist_matrix[i][j]
  *         if d <= interface_cutoff:             # <<<<<<<<<<<<<<
  *             interface_receptor.append(i)
  *             interface_ligand.append(j)
  */
-    __pyx_t_2 = __Pyx_PyInt_From_unsigned_int(__pyx_v_d); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 27, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_unsigned_int(__pyx_v_d); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = PyObject_RichCompare(__pyx_t_2, __pyx_v_interface_cutoff, Py_LE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 27, __pyx_L1_error)
+    __pyx_t_5 = PyObject_RichCompare(__pyx_t_2, __pyx_v_interface_cutoff, Py_LE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 28, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_11 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_11 < 0)) __PYX_ERR(0, 27, __pyx_L1_error)
+    __pyx_t_11 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_11 < 0)) __PYX_ERR(0, 28, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     if (__pyx_t_11) {
 
-      /* "cdfire.pyx":28
+      /* "cdfire.pyx":29
  *         d = dist_matrix[i][j]
  *         if d <= interface_cutoff:
  *             interface_receptor.append(i)             # <<<<<<<<<<<<<<
  *             interface_ligand.append(j)
  *         dfire_bin = dfire_dist_to_bins[d]-1
  */
-      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_interface_receptor, __pyx_v_i); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 28, __pyx_L1_error)
+      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_interface_receptor, __pyx_v_i); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 29, __pyx_L1_error)
 
-      /* "cdfire.pyx":29
+      /* "cdfire.pyx":30
  *         if d <= interface_cutoff:
  *             interface_receptor.append(i)
  *             interface_ligand.append(j)             # <<<<<<<<<<<<<<
  *         dfire_bin = dfire_dist_to_bins[d]-1
  *         energy += dfire_energy[rnuma][anuma][rnumb][anumb][dfire_bin]
  */
-      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_interface_ligand, __pyx_v_j); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 29, __pyx_L1_error)
+      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_interface_ligand, __pyx_v_j); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 30, __pyx_L1_error)
 
-      /* "cdfire.pyx":27
+      /* "cdfire.pyx":28
  *         # convert numpy.float64 to int
  *         d = dist_matrix[i][j]
  *         if d <= interface_cutoff:             # <<<<<<<<<<<<<<
@@ -1694,49 +1694,49 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
  */
     }
 
-    /* "cdfire.pyx":30
+    /* "cdfire.pyx":31
  *             interface_receptor.append(i)
  *             interface_ligand.append(j)
  *         dfire_bin = dfire_dist_to_bins[d]-1             # <<<<<<<<<<<<<<
  *         energy += dfire_energy[rnuma][anuma][rnumb][anumb][dfire_bin]
  * 
  */
-    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_dfire_dist_to_bins, __pyx_v_d, unsigned int, 0, __Pyx_PyInt_From_unsigned_int, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_dfire_dist_to_bins, __pyx_v_d, unsigned int, 0, __Pyx_PyInt_From_unsigned_int, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 31, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_5, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_5, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_XDECREF_SET(__pyx_v_dfire_bin, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "cdfire.pyx":31
+    /* "cdfire.pyx":32
  *             interface_ligand.append(j)
  *         dfire_bin = dfire_dist_to_bins[d]-1
  *         energy += dfire_energy[rnuma][anuma][rnumb][anumb][dfire_bin]             # <<<<<<<<<<<<<<
  * 
  *     # Convert and change energy sign
  */
-    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_v_dfire_energy, __pyx_v_rnuma); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_v_dfire_energy, __pyx_v_rnuma); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_anuma); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_anuma); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 32, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_rnumb); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_rnumb); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_anumb); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_anumb); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 32, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_dfire_bin); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_5, __pyx_v_dfire_bin); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_energy, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_energy, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 32, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF_SET(__pyx_v_energy, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "cdfire.pyx":18
+    /* "cdfire.pyx":19
  *     interface_ligand = []
  * 
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):             # <<<<<<<<<<<<<<
@@ -1746,25 +1746,25 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "cdfire.pyx":34
+  /* "cdfire.pyx":35
  * 
  *     # Convert and change energy sign
  *     return (energy * 0.0157 - 4.7) * -1., set(interface_receptor), set(interface_ligand)             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = PyNumber_Multiply(__pyx_v_energy, __pyx_float_0_0157); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_3 = PyNumber_Multiply(__pyx_v_energy, __pyx_float_0_0157); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyFloat_SubtractObjC(__pyx_t_3, __pyx_float_4_7, 4.7, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyFloat_SubtractObjC(__pyx_t_3, __pyx_float_4_7, 4.7, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyNumber_Multiply(__pyx_t_5, __pyx_float_neg_1_); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_3 = PyNumber_Multiply(__pyx_t_5, __pyx_float_neg_1_); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = PySet_New(__pyx_v_interface_receptor); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_5 = PySet_New(__pyx_v_interface_receptor); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_2 = PySet_New(__pyx_v_interface_ligand); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_2 = PySet_New(__pyx_v_interface_ligand); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
@@ -1779,7 +1779,7 @@ static PyObject *__pyx_f_6cdfire_calculate_dfire(PyObject *__pyx_v_receptor, PyO
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cdfire.pyx":7
+  /* "cdfire.pyx":8
  * import numpy as np
  * 
  * cpdef calculate_dfire(receptor, receptor_coordinates, ligand, ligand_coordinates,             # <<<<<<<<<<<<<<
@@ -1863,31 +1863,31 @@ static PyObject *__pyx_pw_6cdfire_1calculate_dfire(PyObject *__pyx_self, PyObjec
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_receptor_coordinates)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 1); __PYX_ERR(0, 7, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 1); __PYX_ERR(0, 8, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ligand)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 2); __PYX_ERR(0, 7, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 2); __PYX_ERR(0, 8, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ligand_coordinates)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 3); __PYX_ERR(0, 7, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 3); __PYX_ERR(0, 8, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_dfire_dist_to_bins)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 4); __PYX_ERR(0, 7, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 4); __PYX_ERR(0, 8, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_dfire_energy)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 5); __PYX_ERR(0, 7, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, 5); __PYX_ERR(0, 8, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
@@ -1897,7 +1897,7 @@ static PyObject *__pyx_pw_6cdfire_1calculate_dfire(PyObject *__pyx_self, PyObjec
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calculate_dfire") < 0)) __PYX_ERR(0, 7, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calculate_dfire") < 0)) __PYX_ERR(0, 8, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -1923,7 +1923,7 @@ static PyObject *__pyx_pw_6cdfire_1calculate_dfire(PyObject *__pyx_self, PyObjec
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 7, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("calculate_dfire", 0, 6, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 8, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cdfire.calculate_dfire", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1945,7 +1945,7 @@ static PyObject *__pyx_pf_6cdfire_calculate_dfire(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.interface_cutoff = __pyx_v_interface_cutoff;
-  __pyx_t_1 = __pyx_f_6cdfire_calculate_dfire(__pyx_v_receptor, __pyx_v_receptor_coordinates, __pyx_v_ligand, __pyx_v_ligand_coordinates, __pyx_v_dfire_dist_to_bins, __pyx_v_dfire_energy, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_6cdfire_calculate_dfire(__pyx_v_receptor, __pyx_v_receptor_coordinates, __pyx_v_ligand, __pyx_v_ligand_coordinates, __pyx_v_dfire_dist_to_bins, __pyx_v_dfire_energy, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2036,7 +2036,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_zip = __Pyx_GetBuiltinName(__pyx_n_s_zip); if (!__pyx_builtin_zip) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_builtin_zip = __Pyx_GetBuiltinName(__pyx_n_s_zip); if (!__pyx_builtin_zip) __PYX_ERR(0, 19, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2326,34 +2326,34 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "cdfire.pyx":4
- * #cython: wraparound=False
+  /* "cdfire.pyx":5
+ * #cython: language_level=3
  * 
  * import scipy.spatial             # <<<<<<<<<<<<<<
  * import numpy as np
  * 
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_scipy_spatial, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_scipy_spatial, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_scipy, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_scipy, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cdfire.pyx":5
+  /* "cdfire.pyx":6
  * 
  * import scipy.spatial
  * import numpy as np             # <<<<<<<<<<<<<<
  * 
  * cpdef calculate_dfire(receptor, receptor_coordinates, ligand, ligand_coordinates,
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "cdfire.pyx":1
  * #cython: boundscheck=False             # <<<<<<<<<<<<<<
  * #cython: wraparound=False
- * 
+ * #cython: language_level=3
  */
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);

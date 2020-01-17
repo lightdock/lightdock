@@ -1,5 +1,6 @@
 #cython: boundscheck=False
 #cython: wraparound=False
+#cython: language_level=3
 
 import scipy.spatial
 import numpy as np

@@ -1,3 +1,5 @@
+#cython: language_level=3
+
 import scipy.spatial
 cimport numpy as np
 from libc.math cimport sqrt
