@@ -4,22 +4,17 @@ import os
 from lightdock.mathutil.cython.quaternion import Quaternion
 
 
-def _sphere(center, radius):
+def sphere(center, radius):
     """Sphere primitive"""
     return ".sphere %f %f %f %f" % (center[0], center[1], center[2], radius)
 
 
-def _dot(center):
-    """Dot primitive"""
-    return ".dot %f %f %f" % (center[0], center[1], center[2])
-
-
-def _axis(pose, length=2):
+def axis(pose, length=2):
     """Axis primitive"""
     q = Quaternion(pose[3], pose[4], pose[5], pose[6])
 
     bild = ".color cornflower blue" + os.linesep
-    bild += _sphere(pose, 0.3) + os.linesep
+    bild += sphere(pose, 0.3) + os.linesep
 
     bild += ".color 1 0 0" + os.linesep
     c = [length, 0, 0]
@@ -46,5 +41,5 @@ def create_bild_file(file_name, poses):
     output.write(".transparency 0.7" + os.linesep)
     output.write(".transparency 0.0" + os.linesep)
     for pose in poses:
-        output.write(_axis(pose) + os.linesep)
+        output.write(axis(pose) + os.linesep)
     output.close()
