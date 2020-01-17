@@ -7,7 +7,8 @@ from glob import glob
 from nose.tools import assert_almost_equal, raises
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.prep.simulation import parse_restraints_file, get_restraints, get_default_box,\
-    get_setup_from_file, create_setup_file, prepare_results_environment
+    get_setup_from_file, create_setup_file, prepare_results_environment, get_pdb_files, \
+    read_input_structure
 from lightdock.structure.complex import Complex
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.util.parser import SetupCommandLineParser
@@ -186,3 +187,27 @@ class TestSimulation:
         prepare_results_environment()
 
         assert False
+
+    def test_get_pdb_files(self):
+        os.chdir(self.golden_data_path)
+        file_names = get_pdb_files(os.path.join(self.golden_data_path, 'pdb_files.list'))
+
+        expected = ['2UUY_rec.pdb', '2UUY_lig.pdb']
+
+        assert file_names == expected
+
+    def test_read_input_structure(self):
+        os.chdir(self.golden_data_path)
+
+        structure = read_input_structure('2UUY_lig.pdb', ignore_oxt=True, 
+                                         ignore_hydrogens=False, verbose_parser=False)
+
+        assert len(structure.atoms) == 415
+
+    def test_read_multiple_input_structure(self):
+        os.chdir(self.golden_data_path)
+
+        structure = read_input_structure('pdb_files.list', ignore_oxt=True, 
+                                         ignore_hydrogens=False, verbose_parser=False)
+
+        assert structure.num_structures == 2
