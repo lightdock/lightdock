@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Calculates the new PDB structure of an input PDB structure using ANM"""
 

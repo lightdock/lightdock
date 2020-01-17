@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Generates the top N structures in PDB format given a ranking file"""
 

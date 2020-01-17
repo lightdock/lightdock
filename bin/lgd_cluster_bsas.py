@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Cluster LightDock final swarm results using BSAS algorithm"""
 

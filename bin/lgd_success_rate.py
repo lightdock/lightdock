@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Calculates the success rate (Top 10 and Top100 of NN) for PyDock or LightDock results"""
 

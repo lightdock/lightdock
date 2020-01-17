@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Prepares a new simulation (init folder) starting from a previous one.
 

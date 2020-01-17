@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Creates a PDB with atom points representing the position for each of the glowworms of a swarm"""
 

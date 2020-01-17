@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Calculates the scoring function value for a pair of receptor and ligand PDB structures"""
 

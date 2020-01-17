@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
 
 
 from multiprocessing import Process, cpu_count
