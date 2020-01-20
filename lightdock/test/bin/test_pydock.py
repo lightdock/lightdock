@@ -23,7 +23,7 @@ class TestRegressionPyDockShort(RegressionTest):
     def teardown(self):
         self.clean_test_path()
 
-    def test_lightdock_1ppe_1_step_5_glowworms_1_cluster(self):
+    def test_lightdock_1ppe_1_step_5_glowworms_1_swarm(self):
         os.chdir(self.test_path)
         num_swarms = 1
         num_glowworms = 5
@@ -62,7 +62,7 @@ class TestRegressionPyDockLong(RegressionTest):
     def teardown(self):
         self.clean_test_path()
 
-    def test_lightdock_1ppe_10_steps_10_glowworms_1_cluster(self):
+    def test_lightdock_1ppe_10_steps_10_glowworms_1_swarm(self):
         if 'LIGHTDOCK_LONG_TEST' in os.environ and os.environ['LIGHTDOCK_LONG_TEST'] == 'true':
             os.chdir(self.test_path)
             num_swarms = 1

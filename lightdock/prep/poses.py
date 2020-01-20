@@ -15,6 +15,7 @@ from lightdock.constants import CLUSTERS_CENTERS_FILE,\
     DEFAULT_EXTENT_SIGMA
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
+from lightdock.error.lightdock_errors import LightDockWarning
 
 
 def get_random_point_within_sphere(number_generator, radius):
@@ -29,48 +30,37 @@ def get_random_point_within_sphere(number_generator, radius):
 
 
 def normalize_vector(v):
+    """Normalizes a given vector"""
     norm = np.linalg.norm(v)
     if norm < 0.00001: 
        return v
     return v / norm
 
 
-def orthogonal(v):
-    """Returns the orthogonal vector to v"""
-    x = abs(v[0])
-    y = abs(v[1])
-    z = abs(v[2])
-    if x < y:
-        if x < z:
-            other = np.array([1.0, 0.0, 0.0])
-        else:
-            other = np.array([0.0, 0.0, 1.0])
-    else:
-        if y < z:
-            other = np.array([0.0, 1.0, 0.0])
-        else:
-            other = np.array([0.0, 0.0, 1.0])
-    return np.cross(v, other)
-
-
 def quaternion_from_vectors(a, b):
-    """Calculate quaternion between two vectors a and b."""
-    a = normalize_vector(a)
-    b = normalize_vector(b)
-    # Check for scenario where vectors are in the same direction
-    if np.allclose(a, -b):
-        o = orthogonal(a)
-        return Quaternion(w=0., x=o[0], y=o[1], z=o[2])
-    c = np.cross(a, b)
-    d = np.dot(a, b)
-    s = np.sqrt( (1+abs(d))*2 )
-    invs = 1. / s
-    x = c[0] * invs
-    y = c[1] * invs
-    z = c[2] * invs
-    w = s * 0.5
+    """Calculate quaternion between two vectors a and b. 
 
-    return Quaternion(w=w, x=x, y=y, z=z).normalize()
+    Code source: http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
+    """
+    u = normalize_vector(a)
+    v = normalize_vector(b)
+    norm_u_norm_v = np.sqrt( np.dot(u, u) * np.dot(v, v))
+    real_part = norm_u_norm_v + np.dot(u, v)
+
+    if real_part < 1.e-6 * norm_u_norm_v:
+        # If u and v are exactly opposite, rotate 180 degrees
+        # around an arbitrary orthogonal axis. Axis normalisation
+        # can happen later, when we normalise the quaternion.
+        real_part = 0.0
+        if abs(u[0]) > abs(u[2]):
+            w = [-u[1], u[0], 0.]
+        else:
+            w = [0., -u[2], u[1]]
+    else:
+        # Otherwise, build quaternion the standard way
+        w = np.cross(u, v)
+
+    return Quaternion(real_part, w[0], w[1], w[2]).normalize()
 
 
 def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
@@ -142,11 +132,14 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
             # The strategy is similar to previous but for the receptor side we will use a simulated point
             # over the receptor surface to point out the quaternion
             coef = norm(center) / ligand_diameter
+            if coef > 1.0:
+                raise LightDockWarning('Found wrong coefficient on calculating poses with restraints')
             # It is important to keep the coordinates as in the original complex without
             # moving to the center of coordinates (applying translation)
-            rec_residue = Residue.dummy(center[0]*coef-rec_translation[0], 
-                                        center[1]*coef-rec_translation[1], 
-                                        center[2]*coef-rec_translation[2])
+            rec_residue = Residue.dummy(center[0]*coef - rec_translation[0], 
+                                        center[1]*coef - rec_translation[1], 
+                                        center[2]*coef - rec_translation[2])
+
             lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
             q = get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz,
                                              rec_translation, lig_translation)

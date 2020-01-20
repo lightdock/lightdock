@@ -119,7 +119,7 @@ class TestRegressionFastDFIRERestraints(RegressionTest):
     def teardown(self):
         self.clean_test_path()
 
-    def test_lightdock_2uuy_20_steps_25_glowworms_1_cluster(self):
+    def test_lightdock_2uuy_20_steps_25_glowworms_1_swarm(self):
         os.chdir(self.test_path)
         num_swarms = 4
         num_glowworms = 25
