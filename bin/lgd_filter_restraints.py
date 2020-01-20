@@ -99,8 +99,8 @@ if __name__ == '__main__':
             contacts_ligand = set()
 
             pdb = pdb_file[0]
-            swarm_id = int(re.findall(r'swarm_\d+', pdb)[0].split('_')[-1])
-            glowworm_id = int(re.findall(r'lightdock_\d+', pdb)[0].split('_')[-1])
+            swarm_id = int(re.findall(r'swarm_\d+', pdb)[-1].split('_')[-1])
+            glowworm_id = int(re.findall(r'lightdock_\d+', pdb)[-1].split('_')[-1])
             score = float(pdb_file[-1])
 
             # Read molecule and split by receptor and ligand
