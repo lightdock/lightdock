@@ -5,9 +5,11 @@ import shutil
 import filecmp
 import numpy as np
 from nose.tools import assert_almost_equal
-from lightdock.prep.poses import normalize_vector, quaternion_from_vectors, get_quaternion_for_restraint
+from lightdock.prep.poses import normalize_vector, quaternion_from_vectors, get_quaternion_for_restraint, \
+        get_random_point_within_sphere, estimate_membrane, upper_layer
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.structure.residue import Residue
+from lightdock.mathutil.lrandom import MTGenerator
 
 
 class TestPoses:
@@ -170,3 +172,47 @@ class TestPoses:
         e = Quaternion(0.07088902, 0., 0., -0.99748421)
 
         assert e == q
+
+    def test_get_random_point_within_sphere(self):
+        seed = 1984
+        rng = MTGenerator(seed)
+        to_generate = 10
+        radius = 10.0
+
+        points = [get_random_point_within_sphere(rng, radius) for _ in range(to_generate)]
+
+        # Check all generated points are within a sphere of a given radius and
+        # centered at the origin
+        for p in points:
+            assert p[0] <= radius and p[0] >= -radius
+            assert p[1] <= radius and p[1] >= -radius
+            assert p[2] <= radius and p[2] >= -radius
+
+    def test_estimate_membrane(self):
+        seed = 1984
+        np.random.seed(seed)
+        z_coordinates_two_layers = np.random.rand(10, 3) * 30
+        z_coordinates_two_layers[::2][:,2] *= -1
+
+        layers = estimate_membrane(z_coordinates_two_layers[:,2], 15.)
+
+        assert len(layers) == 2
+
+        z_coordinates_one_layer = np.random.rand(10, 3) * 30
+
+        layers = estimate_membrane(z_coordinates_one_layer[:,2])
+
+        assert len(layers) == 1
+
+    def test_upper_layer(self):
+        seed = 1984
+        np.random.seed(seed)
+        z_coordinates_two_layers = np.random.rand(10, 3) * 30
+        z_coordinates_two_layers[::2][:,2] *= -1
+        expected = np.array([14.865534412778462, 19.42594208380253, 21.84073297851065, 23.828220097290853, 23.927022857098866])
+        
+        layers = estimate_membrane(z_coordinates_two_layers[:,2], 15.)
+
+        upper = upper_layer(layers)
+        
+        assert np.allclose(upper, expected)

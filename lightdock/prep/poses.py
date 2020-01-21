@@ -205,7 +205,10 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
 
 def estimate_membrane(z_coordinates, cutoff=10.0):
     """Given a 1D array with Z-axis coordinates, estimate the number of groups, which
-    will correspond to the number of membrane layers."""
+    will correspond to the number of membrane layers.
+
+    cutoff refers to the separation expected at least between layers.
+    """
     sorted_data = sorted(z_coordinates)
     data_length = len(sorted_data)
     diffs = [abs(sorted_data[i]-sorted_data[i-1]) for i in range(1, data_length)]
