@@ -6,10 +6,10 @@ import filecmp
 import numpy as np
 from nose.tools import assert_almost_equal
 from lightdock.prep.poses import normalize_vector, quaternion_from_vectors, get_quaternion_for_restraint, \
-        get_random_point_within_sphere, estimate_membrane, upper_layer
+        get_random_point_within_sphere, estimate_membrane, upper_layer, populate_poses
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.structure.residue import Residue
-from lightdock.mathutil.lrandom import MTGenerator
+from lightdock.mathutil.lrandom import MTGenerator, NMExtentGenerator
 
 
 class TestPoses:
@@ -216,3 +216,83 @@ class TestPoses:
         upper = upper_layer(layers)
         
         assert np.allclose(upper, expected)
+
+
+    def test_populate_poses(self):
+        to_generate = 3
+        center = [0., 0., 0.]
+        radius = 10.
+        seed = 1984
+        number_generator = MTGenerator(seed)
+        # No needed if no restraints are provided
+        rec_translation = [0., 0., 0.]
+        lig_translation = [-15.0, -15.0, -15.0]
+        
+        poses = populate_poses(to_generate, center, radius, number_generator, rec_translation, lig_translation)
+
+        expected = [[-2.7294328828938386, -0.11588636361606675, -3.2077982565639607, -0.6725323168859286, 0.5755106199757826, -0.37756439233549577, 0.27190612107759393], 
+                    [-2.2842918231021314, -5.118850363927159, 3.2622525507180566, -0.6132005094145724, 0.757439137867041, -0.0367297456106423, -0.22118321244687617], 
+                    [2.906625032282104, -3.6251691461446978, -6.096162381118752, -0.8727759595729266, -0.22555077047578467, -0.2572320124803007, 0.3481675833340481]]
+
+        # We generate 3 poses
+        assert len(poses) == 3
+        # We generate poses without ANM
+        assert len(poses[0]) == 7
+        # We generate the expected poses
+        assert np.allclose(expected, poses) 
+
+    def test_populate_poses_both_restraints(self):
+        to_generate = 3
+        center = [15., 15., 15.]
+        radius = 10.
+        seed = 1984
+        number_generator = MTGenerator(seed)
+        # No needed if no restraints are provided
+        rec_translation = [0., 0., 0.]
+        lig_translation = [-15.0, -15.0, -15.0]
+        # Restraints
+        receptor_restraints = [Residue.dummy(1.0, 1.0, 1.0)]
+        ligand_restraints = [Residue.dummy(16.0, 16.0, 16.0)]
+        ligand_diameter = 10.
+
+        poses = populate_poses(to_generate, center, radius, number_generator, rec_translation, lig_translation,
+                               receptor_restraints=receptor_restraints, ligand_restraints=ligand_restraints,
+                               ligand_diameter=ligand_diameter)
+
+        expected = [[12.270567117106161, 14.884113636383933, 11.792201743436038, 0.05643308208136652, 0.7572287178886188, -0.11715469622945059, -0.6400740216591683], 
+                    [21.986658842426436, 12.715708176897868, 9.881149636072841, 0.17754420770338322, 0.179865123253213, -0.7681474466249519, 0.5882823233717389], 
+                    [22.833743558777538, 15.523806353077699, 17.906625032282104, 0.0847943426151146, -0.2599970108635702, -0.5376137514110186, 0.7976107622745888]]
+
+        # We generate 3 poses
+        assert len(poses) == 3
+        # We generate poses with ANM
+        assert len(poses[0]) == 7
+        # We generate the expected poses
+        assert np.allclose(expected, poses)
+
+    def test_populate_poses_restraints_only_receptor(self):
+        to_generate = 3
+        center = [15., 15., 15.]
+        radius = 10.
+        seed = 1984
+        number_generator = MTGenerator(seed)
+        # No needed if no restraints are provided
+        rec_translation = [0., 0., 0.]
+        lig_translation = [-15.0, -15.0, -15.0]
+        # Restraints
+        receptor_restraints = [Residue.dummy(1.0, 1.0, 1.0)]
+        ligand_diameter = 10.
+
+        poses = populate_poses(to_generate, center, radius, number_generator, rec_translation, lig_translation,
+                               receptor_restraints=receptor_restraints, ligand_diameter=ligand_diameter)
+
+        expected = [[12.270567117106161, 14.884113636383933, 11.792201743436038, -0.6725323168859286, 0.5755106199757826, -0.37756439233549577, 0.27190612107759393], 
+                    [12.715708176897868, 9.881149636072841, 18.262252550718056, -0.6132005094145724, 0.757439137867041, -0.0367297456106423, -0.22118321244687617], 
+                    [17.906625032282104, 11.374830853855302, 8.903837618881248, -0.8727759595729266, -0.22555077047578467, -0.2572320124803007, 0.3481675833340481]]
+
+        # We generate 3 poses
+        assert len(poses) == 3
+        # We generate poses with ANM
+        assert len(poses[0]) == 7
+        # We generate the expected poses
+        assert np.allclose(expected, poses)
