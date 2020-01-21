@@ -248,9 +248,8 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
                             rec_translation, lig_translation,
                             dest_folder, ftdock_file='', nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
                             is_membrane=False):
-    """Calculates the starting points for each of the glowworms using the center of swarms
-    and FTDock poses.
-    """
+    """Calculates the starting points for each of the glowworms using the center of swarms"""
+    
     # Random number generator for poses
     rng = MTGenerator(seed)
 

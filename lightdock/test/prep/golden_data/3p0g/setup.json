@@ -1,0 +1,27 @@
+{
+    "anm_lig": 10,
+    "anm_rec": 10,
+    "anm_seed": 324324,
+    "ftdock_file": null,
+    "glowworms": 10,
+    "ligand_pdb": "ligand.pdb",
+    "ligand_restraints": {
+        "active": [],
+        "passive": [
+            "B.ILE.31"
+        ]
+    },
+    "membrane": true,
+    "noh": true,
+    "noxt": true,
+    "receptor_pdb": "receptor_membrane.pdb",
+    "receptor_restraints": {
+        "active": [],
+        "passive": []
+    },
+    "restraints": "restraints.list",
+    "starting_points_seed": 324324,
+    "swarms": 2,
+    "use_anm": false,
+    "verbose_parser": false
+}

@@ -6,10 +6,13 @@ import filecmp
 import numpy as np
 from nose.tools import assert_almost_equal
 from lightdock.prep.poses import normalize_vector, quaternion_from_vectors, get_quaternion_for_restraint, \
-        get_random_point_within_sphere, estimate_membrane, upper_layer, populate_poses
+        get_random_point_within_sphere, estimate_membrane, upper_layer, populate_poses, calculate_initial_poses
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.structure.residue import Residue
 from lightdock.mathutil.lrandom import MTGenerator, NMExtentGenerator
+from lightdock.pdbutil.PDBIO import parse_complex_from_file
+from lightdock.structure.complex import Complex
+from lightdock.prep.simulation import parse_restraints_file, get_restraints
 
 
 class TestPoses:
@@ -296,3 +299,59 @@ class TestPoses:
         assert len(poses[0]) == 7
         # We generate the expected poses
         assert np.allclose(expected, poses)
+
+    def test_populate_poses_restraints_only_ligand(self):
+        to_generate = 3
+        center = [15., 15., 15.]
+        radius = 10.
+        seed = 1984
+        number_generator = MTGenerator(seed)
+        # No needed if no restraints are provided
+        rec_translation = [0., 0., 0.]
+        lig_translation = [-15.0, -15.0, -15.0]
+        # Restraints
+        ligand_restraints = [Residue.dummy(16.0, 16.0, 16.0)]
+        ligand_diameter = 30.
+
+        poses = populate_poses(to_generate, center, radius, number_generator, rec_translation, lig_translation,
+                               ligand_restraints=ligand_restraints, ligand_diameter=ligand_diameter)
+
+        expected = [[12.270567117106161, 14.884113636383933, 11.792201743436038, 0.7092076459798842, 0.5346980891115, -0.08272585379354264, -0.4519722353179574],
+                    [22.833743558777538, 15.523806353077699, 17.906625032282104, 0.24053986913227657, -0.25327548418133206, -0.5237151871050496, 0.7769906712863817],
+                    [8.903837618881248, 8.747779486586737, 19.195006601282643, 0.7560980480558669, -0.46621474071247004, 0.45925053854810693, 0.00696420216436307]]
+
+        # We generate 3 poses
+        assert len(poses) == 3
+        # We generate poses with ANM
+        assert len(poses[0]) == 7
+        # We generate the expected poses
+        assert np.allclose(expected, poses)
+
+    def test_calculate_initial_poses(self):
+
+        atoms, residues, chains = parse_complex_from_file(os.path.join(self.golden_data_path, 
+                                                                       '3p0g', 'receptor_membrane.pdb'))
+        receptor = Complex(chains)
+        atoms, residues, chains = parse_complex_from_file(os.path.join(self.golden_data_path, 
+                                                                       '3p0g', 'ligand.pdb'))
+        ligand = Complex(chains)
+        
+        rec_translation = receptor.move_to_origin()
+        lig_translation = ligand.move_to_origin()
+
+        num_swarms = 10
+        num_glowworms = 10
+        seed = 324324
+        restraints = parse_restraints_file(os.path.join(self.golden_data_path, '3p0g', 'restraints.list'))
+        receptor_restraints = get_restraints(receptor, restraints['receptor'])
+        ligand_restraints = get_restraints(ligand, restraints['ligand'])
+        rec_restraints = receptor_restraints['active'] + receptor_restraints['passive']
+        lig_restraints = ligand_restraints['active'] + ligand_restraints['passive']
+
+        positions_files = calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
+                                                  seed, rec_restraints, lig_restraints,
+                                                  rec_translation, lig_translation,
+                                                  dest_folder=self.test_path, is_membrane=True)
+
+        assert filecmp.cmp(positions_files[0], os.path.join(self.golden_data_path, '3p0g', 'init', 'initial_positions_0.dat'))
+        assert filecmp.cmp(positions_files[1], os.path.join(self.golden_data_path, '3p0g', 'init', 'initial_positions_1.dat'))
