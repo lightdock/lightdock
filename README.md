@@ -4,12 +4,14 @@
 [![Code Coverage](https://codecov.io/gh/lightdock/lightdock/branch/master/graph/badge.svg)](https://codecov.io/gh/lightdock/lightdock)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/lightdock/lightdock.svg)](https://github.com/lightdock/lightdock/commits/master)
  
-# LightDock
+<p align="center">
+    <img src="https://lightdock.org/assets/images/lightdock_logo.png">
+</p>
 
 ## 1. Synopsis
-LightDock is a protein-protein, protein-peptide and protein-DNA docking framework based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm.
+**LightDock** is a protein-protein, protein-peptide and protein-DNA docking framework based on the [Glowworm Swarm Optimization](https://link.springer.com/article/10.1007/s11721-008-0021-5) (GSO) algorithm.
 
-The LightDock framework is highly versatile, with many options that can be further developed and optimized by the users: it can accept any user-defined scoring function, can use local gradient-free minimization, the simulation can be restrained from the beginning to focus on user-assigned interacting regions, **it supports residue restraints in both receptor and ligand partners** and it has support for the use of pre-calculated conformers for both receptor and ligand.
+The LightDock framework is highly versatile, with many options that can be further developed and optimized by the users: it can accept any user-defined scoring function, can use local gradient-free minimization, the simulation can be restrained from the beginning to focus on user-assigned interacting regions, **it supports residue restraints in both receptor and ligand partners**.
 
 ## 2. Reference
 LightDock protocol and the updates to make use of residue restraints have been published in [Oxford Bioinformatics](https://academic.oup.com/bioinformatics) journal. Please cite these references if you use LightDock in your research:
@@ -57,7 +59,7 @@ pip3 install lightdock
 ```
 
 ### 3.3. Alternative installations
-Please visit the [repository documentation on GitHub](https://github.com/brianjimenez/lightdock/tree/master) for alternative installation.
+Please visit the old Python-2.7 [repository documentation on GitHub](https://github.com/lightdock/lightdock-python2.7/tree/master) for alternative installation.
 
 
 ## 4. Documentation
