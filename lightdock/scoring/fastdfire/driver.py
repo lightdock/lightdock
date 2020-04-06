@@ -10,6 +10,7 @@ from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.scoring.fastdfire.c.cdfire import calculate_dfire
 from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
+from lightdock.error.lightdock_errors import NotSupportedInScoringError
 
 
 class DFIREPotential(object):
@@ -123,17 +124,22 @@ class DFIREAdapter(ModelAdapter):
                 for rec_atom in residue.atoms:
                     rec_atom_type = rec_atom.residue_name + rec_atom.name
                     if rec_atom_type == 'MMBBJ':
+                        # Membrane beads MMB.BJ
                         try:
                             membrane[res_id].append(atom_index)
                         except KeyError:
                             membrane[res_id] = [atom_index]
-                    rnuma = r3_to_numerical[rec_atom.residue_name]
-                    anuma = atomnumber[rec_atom_type]
-                    atoma = DFIREPotential.atom_res_trans[rnuma, anuma]
-                    dfire_objects.append(atoma)
-                    if in_restraint:
-                        parsed_restraints[res_id].append(atom_index)
-                    atom_index += 1
+                    try:
+                        rnuma = r3_to_numerical[rec_atom.residue_name]
+                        anuma = atomnumber[rec_atom_type]
+                        atoma = DFIREPotential.atom_res_trans[rnuma, anuma]
+                        dfire_objects.append(atoma)
+                        if in_restraint:
+                            parsed_restraints[res_id].append(atom_index)
+                        atom_index += 1
+                    except KeyError:
+                        raise NotSupportedInScoringError('Residue {} or atom {} not supported. '.format(res_id, rec_atom.name) + 
+                            'DFIRE only supports standard aminoacids without hydrogens.')
         try:
             return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints, membrane, n_modes=molecule.n_modes.copy())
         except AttributeError:

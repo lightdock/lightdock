@@ -34,6 +34,13 @@ class TestResidue:
         
         assert residue1.is_standard()
         assert not residue2.is_standard()
+
+    def test_is_nucleic(self):
+        residue1 = Residue('DT', 1)
+        residue2 = Residue('I', 2)
+        
+        assert residue1.is_nucleic()
+        assert residue2.is_nucleic()
     
     def test_to_string(self):
         atoms = [Atom(1, 'CA', '', 'A', 'ALA'), Atom(2, 'N', '', 'A', 'ALA')] 

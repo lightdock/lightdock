@@ -16,6 +16,7 @@ import lightdock.scoring.cpydock.data.amber as amber
 import lightdock.scoring.cpydock.data.vdw as vdw
 import lightdock.scoring.cpydock.data.solvation as solvation
 from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
+from lightdock.error.lightdock_errors import NotSupportedInScoringError
 
 
 log = LoggingManager.get_logger('cpydock')
@@ -60,18 +61,22 @@ class CPyDockAdapter(ModelAdapter):
                     parsed_restraints[res_id].append(atom_index)
                 except:
                     parsed_restraints[res_id] = [atom_index]
-            res_name = atom.residue_name
-            atom_name = atom.name
-            if res_name == "HIS":
-                res_name = 'HID'
-            if atom_name in amber.translate:
-                atom_name = amber.translate[atom.name]
-            atom_id = "%s-%s" % (res_name, atom_name)
-            atom.amber_type = amber.amber_types[atom_id]
-            atom.charge = amber.charges[atom_id]
-            atom.mass = amber.masses[atom.amber_type]
-            atom.vdw_energy = vdw.vdw_energy[atom.amber_type]
-            atom.vdw_radius = vdw.vdw_radii[atom.amber_type]
+            try:
+                res_name = atom.residue_name
+                atom_name = atom.name
+                if res_name == "HIS":
+                    res_name = 'HID'
+                if atom_name in amber.translate:
+                    atom_name = amber.translate[atom.name]
+                atom_id = "%s-%s" % (res_name, atom_name)
+                atom.amber_type = amber.amber_types[atom_id]
+                atom.charge = amber.charges[atom_id]
+                atom.mass = amber.masses[atom.amber_type]
+                atom.vdw_energy = vdw.vdw_energy[atom.amber_type]
+                atom.vdw_radius = vdw.vdw_radii[atom.amber_type]
+            except KeyError:
+                raise NotSupportedInScoringError('Residue {} or atom {} not supported. '.format(res_id, atom_name) +
+                    'PyDock only supports AMBER94 types.')
 
         # Prepare common model information
         elec_charges = np.array([atom.charge for atom in atoms])

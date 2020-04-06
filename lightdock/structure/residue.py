@@ -39,6 +39,9 @@ class Residue(object):
                       'LEU': 'L', 'LYS': 'K', 'MET': 'M', 'PHE': 'F', 'PRO': 'P',
                       'SER': 'S', 'THR': 'T', 'TRP': 'W', 'TYR': 'Y', 'VAL': 'V'}
     
+    DNA_STANDARD_TYPES = ['DA', 'DC', 'DI', 'DG', 'DT']
+    RNA_STANDARD_TYPES = ['A', 'C', 'G', 'U', 'I']
+
     MODIFIED_TYPES = {'CYX': 'C', 'HIP': 'H', 'HID': 'H', 'HIE': 'H'}
 
     DUMMY_TYPES = ['MMB', 'DUM']
@@ -67,6 +70,10 @@ class Residue(object):
         """Checks if residue is standard"""
         return self.name in list(Residue.STANDARD_TYPES.keys())
 
+    def is_nucleic(self):
+        """Check if residue is Deoxyribonucleotide or Ribonucleotide"""
+        return self.name in Residue.DNA_STANDARD_TYPES+Residue.RNA_STANDARD_TYPES
+
     def is_dummy(self):
         """Checks if residue is a dummy bead"""
         return self.name in Residue.DUMMY_TYPES
@@ -93,7 +100,7 @@ class Residue(object):
             
             return True
         else:
-            if not self.is_dummy():
+            if not (self.is_dummy() or self.is_nucleic()):
                 raise ResidueNonStandardError("Can not check non-standard residue %s.%s" % (self.name, self.number))
 
     def __eq__(self, other):

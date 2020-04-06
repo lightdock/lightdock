@@ -13,6 +13,7 @@ from lightdock.util.logger import LoggingManager
 import lightdock.scoring.dna.data.amber as amber
 import lightdock.scoring.dna.data.vdw as vdw
 from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
+from lightdock.error.lightdock_errors import NotSupportedInScoringError
 
 
 log = LoggingManager.get_logger('dna')
@@ -51,23 +52,29 @@ class DNAAdapter(ModelAdapter):
                     parsed_restraints[res_id].append(atom_index)
                 except:
                     parsed_restraints[res_id] = [atom_index]
-            res_name = atom.residue_name
-            atom_name = atom.name
-            if res_name in DNAAdapter.to_translate:
-                res_name = DNAAdapter.to_translate[res_name]
-            if atom_name in amber.translate:
-                atom_name = amber.translate[atom.name]
-            atom_id = "%s-%s" % (res_name, atom_name)
             try:
-                atom.amber_type = amber.amber_types[atom_id]
-            except Exception as e:
-                # Maybe H N-terminal?
-                if atom_name in ['H1', 'H2', 'H3']:
-                    atom_name = 'H'
-                    atom_id = "%s-%s" % (res_name, atom_name)
+                res_name = atom.residue_name
+                atom_name = atom.name
+                if res_name in DNAAdapter.to_translate:
+                    res_name = DNAAdapter.to_translate[res_name]
+                if atom_name in amber.translate:
+                    atom_name = amber.translate[atom.name]
+
+                atom_id = "%s-%s" % (res_name, atom_name)
+                try:
                     atom.amber_type = amber.amber_types[atom_id]
-                else:
-                    raise e
+                except Exception as e:
+                    # Maybe H N-terminal?
+                    if atom_name in ['H1', 'H2', 'H3']:
+                        atom_name = 'H'
+                        atom_id = "%s-%s" % (res_name, atom_name)
+                        atom.amber_type = amber.amber_types[atom_id]
+                    else:
+                        raise e
+            except KeyError:
+                raise NotSupportedInScoringError('Residue {} or atom {} not supported. '.format(res_id, atom_name) + 
+                    'DNA scoring only supports AMBER94 types.')
+
             try:
                 atom.charge = amber.charges[atom_id]
             except:

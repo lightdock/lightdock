@@ -18,6 +18,7 @@ from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
 from lightdock.scoring.multiple import ScoringConfiguration
 from lightdock.structure.nm import read_nmodes
+from lightdock.error.lightdock_errors import NotSupportedInScoringError
 
 
 log = LoggingManager.get_logger('lightdock')
@@ -151,6 +152,10 @@ def run_simulation(parser):
         log.info("Monster spotted")
         reports_queue = kraken.release()
         log.info("Finished.")
+
+    except NotSupportedInScoringError as score_error:
+        log.error("Error found in selected scoring function:")
+        log.error(score_error)
 
     except KeyboardInterrupt:
         log.info("Caught interrupt...")
