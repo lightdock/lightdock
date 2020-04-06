@@ -1,5 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![PyPi version](https://img.shields.io/pypi/v/lightdock.svg)](https://pypi.org/project/lightdock/)
+[![PyPi Downloads](https://img.shields.io/pypi/dm/lightdock?label=PyPI%20Downloads)](https://pypistats.org/packages/lightdock)
+[![Supported versions](https://img.shields.io/pypi/pyversions/lightdock.svg)](https://pypi.org/project/lightdock)
 [![Build Status](https://travis-ci.com/lightdock/lightdock.svg?branch=master)](https://travis-ci.com/lightdock/lightdock)
 [![Code Coverage](https://codecov.io/gh/lightdock/lightdock/branch/master/graph/badge.svg)](https://codecov.io/gh/lightdock/lightdock)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/lightdock/lightdock.svg)](https://github.com/lightdock/lightdock/commits/master)
