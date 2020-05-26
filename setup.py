@@ -117,6 +117,7 @@ setuptools.setup(
         'bin/lgd_generate_trajectory.py','bin/lgd_gso_to_csv.py','bin/lgd_move_anm.py',
         'bin/lgd_prepare_new_simulation.py','bin/lgd_quaternion_to_euler.py',
         'bin/lgd_rank.py','bin/lgd_stats.py','bin/lgd_success_rate.py','bin/lgd_top.py',
+        'bin/lgd_rank_swarm.py', 'bin/lgd_copy_structures.py', 'bin/lgd_flatten.py',
         'bin/lightdock3.py','bin/lightdock3_setup.py'
     ],
     setup_requires=[
