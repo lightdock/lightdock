@@ -12,7 +12,7 @@ from lightdock.constants import DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
 from lightdock.structure.nm import read_nmodes
-from lightdock.util.parser import CommandLineParser, get_lightdock_structures
+from lightdock.util.parser import valid_file, valid_integer_number, get_lightdock_structures
 from lightdock.prep.simulation import get_setup_from_file
 
 
@@ -24,19 +24,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="conformer_conformations")
     # Receptor
     parser.add_argument("receptor_structures", help="receptor structures: PDB file or list of PDB files",
-                        type=CommandLineParser.valid_file, metavar="receptor_structure")
+                        type=valid_file, metavar="receptor_structure")
     # Ligand
     parser.add_argument("ligand_structures", help="ligand structures: PDB file or list of PDB files",
-                        type=CommandLineParser.valid_file, metavar="ligand_structure")
+                        type=valid_file, metavar="ligand_structure")
     # Ranking file
     parser.add_argument("lightdock_ranking_file", help="LightDock ranking file",
-                        type=CommandLineParser.valid_file, metavar="lightdock_ranking_file")
+                        type=valid_file, metavar="lightdock_ranking_file")
     # Number of structures to generate
-    parser.add_argument("top", help="number of structures to generate", type=CommandLineParser.valid_integer_number,
+    parser.add_argument("top", help="number of structures to generate", type=valid_integer_number,
                         metavar="top")
     # Optional, setup file
     parser.add_argument("--setup", "-setup", "-s", help="Simulation setup file",
-                            dest="setup_file", metavar="setup_file", type=CommandLineParser.valid_file, 
+                            dest="setup_file", metavar="setup_file", type=valid_file, 
                             default=None)
 
     args = parser.parse_args()

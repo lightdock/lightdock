@@ -14,7 +14,7 @@ from lightdock.structure.complex import Complex
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.structure.nm import read_nmodes
 from lightdock.prep.simulation import get_setup_from_file
-from lightdock.util.parser import CommandLineParser, get_lightdock_structures
+from lightdock.util.parser import valid_file, valid_integer_number, get_lightdock_structures
 
 
 log = LoggingManager.get_logger('generate_conformations')
@@ -57,18 +57,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="conformer_conformations")
     # Receptor
     parser.add_argument("receptor_structures", help="receptor structures: PDB file or list of PDB files",
-                        type=CommandLineParser.valid_file, metavar="receptor_structure")
+                        type=valid_file, metavar="receptor_structure")
     # Ligand
     parser.add_argument("ligand_structures", help="ligand structures: PDB file or list of PDB files",
-                        type=CommandLineParser.valid_file, metavar="ligand_structure")
+                        type=valid_file, metavar="ligand_structure")
     # Lightdock output file
     parser.add_argument("lightdock_output", help="lightdock output file",
-                        type=CommandLineParser.valid_file, metavar="lightdock_output")
+                        type=valid_file, metavar="lightdock_output")
     # Number of glowworms
-    parser.add_argument("glowworms", help="number of glowworms", type=CommandLineParser.valid_integer_number)
+    parser.add_argument("glowworms", help="number of glowworms", type=valid_integer_number)
     # Optional, setup file
     parser.add_argument("--setup", "-setup", "-s", help="Simulation setup file",
-                            dest="setup_file", metavar="setup_file", type=CommandLineParser.valid_file, 
+                            dest="setup_file", metavar="setup_file", type=valid_file, 
                             default=None)
 
     args = parser.parse_args()

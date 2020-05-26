@@ -117,7 +117,7 @@ class SetupCommandLineParser(object):
                             dest="anm_lig", default=DEFAULT_NMODES_LIG)
         # Restraints file
         parser.add_argument("-rst", "--rst", help="Restraints file", 
-                            dest="restraints", type=CommandLineParser.valid_file,
+                            dest="restraints", type=valid_file,
                             metavar="restraints", default=None)
         # Membrane setup
         parser.add_argument("-membrane", "--membrane", help="Enables the extra filter for membrane restraints", 
