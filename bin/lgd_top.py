@@ -91,11 +91,11 @@ if __name__ == "__main__":
             receptor_pose = receptor.atom_coordinates[glowworm.receptor_id].clone()
             ligand_pose = ligand.atom_coordinates[glowworm.ligand_id].clone()
             # Use normal modes if provided:
-            if nmodes_rec.any():
+            if nmodes_rec is not None and nmodes_rec.any():
                 for nm in range(num_anm_rec):
                     rec_extent = np.array([float(x) for x in glowworm.pose[7:7 + num_anm_rec]])
                     receptor_pose.coordinates += nmodes_rec[nm] * rec_extent[nm]
-            if nmodes_lig.any():
+            if nmodes_lig is not None and nmodes_lig.any():
                 for nm in range(num_anm_lig):
                     lig_extent = np.array([float(x) for x in glowworm.pose[-num_anm_lig:]])
                     ligand_pose.coordinates += nmodes_lig[nm] * lig_extent[nm]
