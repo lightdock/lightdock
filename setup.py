@@ -86,6 +86,7 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
         "License :: Free For Educational Use",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -97,12 +98,12 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Chemistry"
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.5',
     install_requires=[
         'numpy>=1.17.1', 
         'scipy>=1.3.1', 
         'cython>=0.29.13', 
-        'biopython>=1.74',
+        'biopython==1.74',
         'pyparsing>=2.4.2',
         'prody>=1.10.11',
         'freesasa>=2.0.3',
