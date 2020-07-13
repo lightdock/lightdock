@@ -49,9 +49,6 @@ Optional dependencies are:
 pip3 install numpy, scipy, cython, biopython, pyparsing, prody
 ```
 
-| WARNING: Issues installing ProDy in macOS have been reported. In case you are not able to install ProDy using `pip`, you may try to install it from the latest version in GitHub. Please see instructions [here](https://github.com/prody/ProDy/issues/864). |
-| --- |
-
 
 ### 3.2. Install LightDock
 The fastest way to install LightDock is to use `pip`:
@@ -60,23 +57,74 @@ The fastest way to install LightDock is to use `pip`:
 pip3 install lightdock
 ```
 
-### 3.3. Alternative installations
-Please visit the old Python-2.7 [repository documentation on GitHub](https://github.com/lightdock/lightdock-python2.7/tree/master) for alternative installation.
+## 4. Development
+For development and extension of the LightDock code, please follow these instructions:
+
+### 4.1. Clone
+Clone this repository:
+
+```bash
+git clone https://github.com/lightdock/lightdock.git
+```
+
+### 4.2. Compile Python C and Cython extensions
+
+Please make sure dependencies are already installed (via pip, package manager, etc.):
+
+* numpy>=1.17.1
+* scipy>=1.3.1
+* cython>=0.29.13
+* biopython>=1.74
+* pyparsing>=2.4.2
+* prody>=1.10.11
+* freesasa>=2.0.3
+
+There is as bash script to compile all the extensions:
+
+```bash
+cd lightdock
+./setup.sh
+```
+
+### 4.3. Add Lightdock to your path
+
+Add the following lines to your `~/.bashrc` file, don't forget to change `/path/to/lightdock`:
+
+```bash
+# LightDock
+export LIGHTDOCK_HOME="/path/to/lightdock"
+export PATH=$PATH:$LIGHTDOCK_HOME/bin
+export PYTHONPATH=$PYTHONPATH:$LIGHTDOCK_HOME
+```
+
+Don't forget to apply the changes:
+
+```bash
+source ~/.bashrc
+```
+
+### 4.4. Testing
+
+You can run LightDock tests:
+
+```bash
+cd lightdock
+nosetests-3.8 
+```
+
+## 5. Documentation
+
+The complete documentation about how to run the LightDock protocol and several tutorials and use cases can be found at [https://lightdock.org/tutorials](https://lightdock.org/tutorials).
 
 
-## 4. Documentation
+## 6. Get Help
 
-The complete documentation about how to run the LightDock protocol can be found at [https://lightdock.org](https://lightdock.org).
-
-
-## 5. Get Help
-
-LightDock is being actively developed and some issues may arise or you may get some extra help to run LightDock. In those cases, there are two main ways to get help:
+LightDock is being actively developed and some issues may arise or you may need extra help to run LightDock. In those cases, there are two main ways to get help:
 
 1. Read the [FAQ](https://lightdock.org/tutorials/faq) in case your problem is known
 2. Open a [new issue in this repository](https://github.com/lightdock/lightdock/issues/new)
 3. Or write an email to <b.jimenezgarcia@uu.nl>
 
-## 6. LICENSE
+## 7. LICENSE
 
-LightDock is available under GPLv3 License. See LICENSE document for more details.
+LightDock is available under GPLv3 License. See [LICENSE](LICENSE) document for more details.
