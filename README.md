@@ -28,6 +28,14 @@ Jorge Roel-Touris, Alexandre M.J.J. Bonvin, [Brian Jiménez-García](http://bjim
 
 
 ## 3. Installation
+
+Lightdock software is compatible and it has been tested with the followings OS:
+
+* **macOS**: El Capitan, Sierra, High Sierra, Mojave, Catalina.
+* **GNU/Linux**: Ubuntu 16+, Debian Stretch+, Scientific Linux 6+, CentOS 6+.
+
+Microsoft Windows is not officially supported, despite many parts of the protocol might be able to run. Please use it at your own risk. If you wish to contribute testing and developing LightDock for Windows, please contact us.
+
 ### 3.1. Dependencies
 LightDock has the following dependencies:
 
