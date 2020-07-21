@@ -170,13 +170,17 @@ def write_pdb_to_file(molecule, output_file_name, atom_coordinates=None, structu
     output_file.close()
 
 
-def create_pdb_from_points(pdb_file_name, points, atom_type='H'):
+def create_pdb_from_points(pdb_file_name, points, atom_type='H', res_type='XXX', element=''):
     """Creates a PDB file which contains an atom_type atom for each point
     in points list.
     """
     pdb_file = open(pdb_file_name, 'w')
     for index, point in enumerate(points):
-        line = "ATOM  %5d %-4s XXX    1     %8.3f%8.3f%8.3f\n" % (index, atom_type,
-                                                                  point[0], point[1], point[2])
+        line = "ATOM  %5d %-4s %3s    1     %8.3f%8.3f%8.3f" % (index, atom_type, res_type,
+                                                                point[0], point[1], point[2])
+        if element:
+            line += "                       %1s\n" % element
+        else:
+            line += "\n"
         pdb_file.write(line)
     pdb_file.close()

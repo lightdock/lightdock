@@ -71,7 +71,7 @@ exts = [Extension(name='lightdock.mathutil.cython.cutil',
 
 setuptools.setup(
     name='lightdock',
-    version='0.8.0',
+    version='0.8.1',
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -117,7 +117,7 @@ setuptools.setup(
         'bin/lgd_prepare_new_simulation.py','bin/lgd_quaternion_to_euler.py',
         'bin/lgd_rank.py','bin/lgd_stats.py','bin/lgd_success_rate.py','bin/lgd_top.py',
         'bin/lgd_rank_swarm.py', 'bin/lgd_copy_structures.py', 'bin/lgd_flatten.py',
-        'bin/lightdock3.py','bin/lightdock3_setup.py'
+        'bin/lightdock3.py','bin/lightdock3_setup.py', 'bin/lgd_create_membrane.py'
     ],
     setup_requires=[
         'nose'
