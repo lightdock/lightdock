@@ -4,8 +4,8 @@ import json
 import time
 from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
-    DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, \
-    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, DEFAULT_POSITIONS_FOLDER, \
+    DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, \
+    MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, \
     DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
@@ -218,9 +218,11 @@ def get_default_box(use_anm, anm_rec, anm_lig):
 
 
 def parse_restraints_file(restraints_file_name):
+    """Parse a restraints file, returns a dictionary for receptor and ligand"""
     with open(restraints_file_name) as input_restraints:
         raw_restraints = [line.rstrip(os.linesep) for line in input_restraints.readlines()]
-        restraints = {'receptor': {'active':[], 'passive':[]}, 'ligand': {'active':[], 'passive':[]}}
+        restraints = {'receptor': {'active':[], 'passive':[], 'blocked':[]}, 
+                      'ligand': {'active':[], 'passive':[], 'blocked':[]}}
         for restraint in raw_restraints:
             if restraint and restraint[0] in ['R', 'L']:
                 try:
@@ -234,25 +236,33 @@ def parse_restraints_file(restraints_file_name):
                     residue_number = int(residue_identifier[2])
                     parsed_restraint = "%s.%s.%d" % (chain_id, residue, residue_number)
                     # Check type of restraint:
-                    active = True
+                    active = passive = blocked = False
                     try:
-                        active = not (fields[2][0].upper() == 'P')
+                        restraint_type = fields[2][0].upper()
+                        passive = (restraint_type == 'P')
+                        blocked = (restraint_type == 'B')
+                        active = (restraint_type == 'A')
                     except:
-                        pass
+                        active = True
+
                     if fields[0] == 'R':
                         if parsed_restraint not in restraints['receptor']['active'] and \
                             parsed_restraint not in restraints['receptor']['passive']:
                             if active:
                                 restraints['receptor']['active'].append(parsed_restraint)
-                            else:
+                            elif passive:
                                 restraints['receptor']['passive'].append(parsed_restraint)
+                            else:
+                                restraints['receptor']['blocked'].append(parsed_restraint)
                     else:
                         if parsed_restraint not in restraints['ligand']['active'] and \
                             parsed_restraint not in restraints['ligand']['passive']:
                             if active:
                                 restraints['ligand']['active'].append(parsed_restraint)
-                            else:
+                            elif passive:
                                 restraints['ligand']['passive'].append(parsed_restraint)
+                            else:
+                                restraints['ligand']['blocked'].append(parsed_restraint)
                 except:
                     log.warning('Ignoring malformed restraint %s' % restraint)
 
@@ -263,8 +273,8 @@ def get_restraints(structure, restraints):
     """Check for each restraint in the format Chain.ResidueName.ResidueNumber in 
     restraints if they exist in the given structure.
     """
-    residues = {'active':[], 'passive':[]}
-    for restraint_type in ['active', 'passive']:
+    residues = {'active':[], 'passive':[], 'blocked':[]}
+    for restraint_type in ['active', 'passive', 'blocked']:
         for restraint in restraints[restraint_type]:
             chain_id, residue_name, residue_number = restraint.split('.')
             residue = structure.get_residue(chain_id, residue_name, residue_number)
@@ -273,4 +283,3 @@ def get_restraints(structure, restraints):
             else:
                 residues[restraint_type].append(residue)
     return residues
-

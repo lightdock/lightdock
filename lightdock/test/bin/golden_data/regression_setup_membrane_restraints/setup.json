@@ -36,6 +36,7 @@
             "A.GLU.1189",
             "A.SER.1190"
         ],
+        "blocked": [],
         "passive": []
     },
     "membrane": true,
@@ -60,6 +61,7 @@
             "B.THR.86",
             "B.SER.87"
         ],
+        "blocked": [],
         "passive": []
     },
     "restraints": "restraints.list",

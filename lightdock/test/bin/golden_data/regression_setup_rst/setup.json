@@ -9,6 +9,7 @@
         "active": [
             "B.LEU.37"
         ],
+        "blocked": [],
         "passive": [
             "B.LYS.39",
             "B.CYS.38"
@@ -23,6 +24,7 @@
             "A.CYS.191",
             "A.SER.195"
         ],
+        "blocked": [],
         "passive": [
             "A.PHE.41"
         ]

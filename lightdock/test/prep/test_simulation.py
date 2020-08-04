@@ -38,7 +38,8 @@ class TestParsingRestraintsFile:
 
         restraints = parse_restraints_file(input_file)
 
-        expected = {'receptor': {'active': ['A.ALA.1'], 'passive': []}, 'ligand': {'active': [], 'passive': ['B.TYR.1']}}
+        expected = {'receptor': {'active': ['A.ALA.1'], 'passive': [], 'blocked':[]}, 
+                    'ligand': {'active': [], 'passive': ['B.TYR.1'], 'blocked':[]}}
         
         assert restraints == expected
 
@@ -47,7 +48,8 @@ class TestParsingRestraintsFile:
 
         restraints = parse_restraints_file(input_file)
 
-        expected = {'receptor': {'active': ['A.ALA.1'], 'passive': []}, 'ligand': {'active': [], 'passive': ['B.TYR.1']}}
+        expected = {'receptor': {'active': ['A.ALA.1'], 'passive': [], 'blocked':[]}, 
+                    'ligand': {'active': [], 'passive': ['B.TYR.1'], 'blocked':[]}}
         
         assert restraints == expected
 
@@ -56,7 +58,18 @@ class TestParsingRestraintsFile:
 
         restraints = parse_restraints_file(input_file)
 
-        expected = {'receptor': {'active': [], 'passive': []}, 'ligand': {'active': [], 'passive': []}}
+        expected = {'receptor': {'active': [], 'passive': [], 'blocked':[]}, 
+                    'ligand': {'active': [], 'passive': [], 'blocked':[]}}
+        
+        assert restraints == expected
+
+    def test_blocked_restraints_file(self):
+        input_file = os.path.join(self.golden_data_path, 'rst_4.lst')
+
+        restraints = parse_restraints_file(input_file)
+
+        expected = {'receptor': {'active': ['A.ALA.1'], 'passive': [], 'blocked':['A.LYS.2']}, 
+                    'ligand': {'active': [], 'passive': ['B.TYR.1'], 'blocked':['B.TRP.2']}}
         
         assert restraints == expected
 
@@ -84,7 +97,7 @@ class TestRestraints:
         input_file = os.path.join(self.golden_data_path, '2UUY_lig.pdb')
         atoms, residues, chains = parse_complex_from_file(input_file)
         structure = Complex(chains)
-        restraints = {'active':['B.ALA.21'], 'passive':['B.GLY.75']}
+        restraints = {'active':['B.ALA.21'], 'passive':['B.GLY.75'], 'blocked':[]}
         
         residues = get_restraints(structure, restraints)
 
@@ -97,7 +110,7 @@ class TestRestraints:
         input_file = os.path.join(self.golden_data_path, '2UUY_lig.pdb')
         atoms, residues, chains = parse_complex_from_file(input_file)
         structure = Complex(chains)
-        restraints = {'active':['B.VAL.21'], 'passive':['B.GLY.75']}
+        restraints = {'active':['B.VAL.21'], 'passive':['B.GLY.75'], 'blocked':[]}
         
         residues = get_restraints(structure, restraints)
 
