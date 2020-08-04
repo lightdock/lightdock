@@ -32,7 +32,6 @@ static PyObject * cdna_calculate_energy(PyObject *self, PyObject *args) {
     unsigned int *interface_receptor = NULL, *interface_ligand = NULL;
     double **rec_array, **lig_array, x, y, z, distance2, interface_cutoff, interface_cutoff2;
     npy_intp dims[2];
-    PyArray_Descr *descr;
     double *rec_c_charges, *lig_c_charges, *rec_c_vdw, *lig_c_vdw, *rec_c_vdw_radii, *lig_c_vdw_radii = NULL;
     PyObject *result = PyTuple_New(4);
 
@@ -49,7 +48,6 @@ static PyObject * cdna_calculate_energy(PyObject *self, PyObject *args) {
 
         interface_cutoff2 = interface_cutoff*interface_cutoff;
 
-        descr = PyArray_DescrFromType(NPY_DOUBLE);
 
         tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
         tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
@@ -59,10 +57,10 @@ static PyObject * cdna_calculate_energy(PyObject *self, PyObject *args) {
 
         dims[1] = 3;
         dims[0] = rec_len;
-        PyArray_AsCArray((PyObject **)&tmp0, (void **)&rec_array, dims, 2, descr);
+        PyArray_AsCArray((PyObject **)&tmp0, (void **)&rec_array, dims, 2, PyArray_DescrFromType(NPY_DOUBLE));
 
         dims[0] = lig_len;
-        PyArray_AsCArray((PyObject **)&tmp1, (void **)&lig_array, dims, 2, descr);
+        PyArray_AsCArray((PyObject **)&tmp1, (void **)&lig_array, dims, 2, PyArray_DescrFromType(NPY_DOUBLE));
 
         // Get pointers to the Python array structures
         rec_c_charges = PyArray_GETPTR1(rec_charges, 0);
