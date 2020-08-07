@@ -180,7 +180,8 @@ def create_file_from_poses(pos_file_name, poses):
 
 def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints, 
                      distance_cutoff, translation, swarms_per_restraint=10):
-    """Filter out swarm centers which are not close to the given restraints"""
+    """Filter out swarm centers which are not close to the given restraints or too close 
+    to blocking residues"""
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
         distances = {}
@@ -223,7 +224,6 @@ def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints,
             # closer_swarms
             centers_list = swarm_centers
 
-        print(len(centers_list))
         for i, residue in enumerate(blocking_restraints):
             # We will use CA in case of protein, P in case of DNA
             ca = residue.get_calpha()
@@ -233,11 +233,12 @@ def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints,
             for center_id, center in enumerate(centers_list):
                 d = cdistance(ca.x + translation[0], ca.y + translation[1], ca.z + translation[2],
                               center[0], center[1], center[2])
+                # Using ligand radius minus 5 Angstroms (10A is the swarm radius)
                 if d <= distance_cutoff - 5.:
                     to_remove.append(center_id)
             to_remove = list(set(to_remove))
             centers_list = [centers_list[c] for c in range(len(centers_list)) if not c in to_remove]
-        print(len(centers_list))
+
         return centers_list
 
 
