@@ -97,6 +97,13 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
     """Creates new poses around a given center and a given radius"""
     new_poses = []
 
+    # Flatten if necessary receptor_restraints
+    if receptor_restraints:
+        try:
+            receptor_restraints = receptor_restraints['active'] + receptor_restraints['passive']
+        except TypeError:
+            pass
+
     # Calculate closest residue restraints
     closest_residues = []
     if receptor_restraints:
@@ -171,9 +178,10 @@ def create_file_from_poses(pos_file_name, poses):
     positions_file.close()
 
 
-def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, translation, 
-                     swarms_per_restraint=10):
-    """Filter out swarm centers which are not close to the given restraints"""
+def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints, 
+                     distance_cutoff, translation, swarms_per_restraint=10):
+    """Filter out swarm centers which are not close to the given restraints or too close 
+    to blocking residues"""
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
         distances = {}
@@ -200,7 +208,38 @@ def apply_restraints(swarm_centers, receptor_restraints, distance_cutoff, transl
 
     # Final filtered list of swarms
     new_swarm_centers = [swarm_centers[i] for i in closer_swarm_ids]
-    return new_swarm_centers
+
+    if not blocking_restraints:
+        return new_swarm_centers
+    else:
+        # We need to distinguish between two cases:
+        if len(closer_swarm_ids) > 0:
+            # We have a list of closer swarms to passive and active restraints, we need 
+            # to filter out from this list of closer swarms the ones closed to blocking
+            # restraints
+            centers_list = new_swarm_centers
+        else:
+            # From the total list of swarms, we will need to filter out the ones closed to
+            # the blocking residues. This is basically the same as the code for calculating
+            # closer_swarms
+            centers_list = swarm_centers
+
+        for i, residue in enumerate(blocking_restraints):
+            # We will use CA in case of protein, P in case of DNA
+            ca = residue.get_calpha()
+            if not ca:
+                ca = residue.get_atom('P')
+            to_remove = []
+            for center_id, center in enumerate(centers_list):
+                d = cdistance(ca.x + translation[0], ca.y + translation[1], ca.z + translation[2],
+                              center[0], center[1], center[2])
+                # Using ligand radius minus 5 Angstroms (10A is the swarm radius)
+                if d <= distance_cutoff - 5.:
+                    to_remove.append(center_id)
+            to_remove = list(set(to_remove))
+            centers_list = [centers_list[c] for c in range(len(centers_list)) if not c in to_remove]
+
+        return centers_list
 
 
 def estimate_membrane(z_coordinates, cutoff=10.0):
@@ -267,7 +306,8 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
                                                                                  is_membrane=is_membrane)
     # Filter swarms far from the restraints
     if receptor_restraints:
-        swarm_centers = apply_restraints(swarm_centers, receptor_restraints, 
+        regular_restraints = receptor_restraints['active'] + receptor_restraints['passive']
+        swarm_centers = apply_restraints(swarm_centers, regular_restraints, receptor_restraints['blocked'], 
                                          ligand_diameter / 2., rec_translation)
 
     # Filter out swarms which are not compatible with the explicit membrane

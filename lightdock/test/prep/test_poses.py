@@ -6,12 +6,15 @@ import filecmp
 import numpy as np
 from nose.tools import assert_almost_equal
 from lightdock.prep.poses import normalize_vector, quaternion_from_vectors, get_quaternion_for_restraint, \
-        get_random_point_within_sphere, estimate_membrane, upper_layer, populate_poses, calculate_initial_poses
+        get_random_point_within_sphere, estimate_membrane, upper_layer, populate_poses, \
+        calculate_initial_poses, apply_restraints
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.structure.residue import Residue
 from lightdock.mathutil.lrandom import MTGenerator, NMExtentGenerator
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
+from lightdock.structure.residue import Residue
+from lightdock.structure.atom import Atom
 from lightdock.prep.simulation import parse_restraints_file, get_restraints
 
 
@@ -355,3 +358,111 @@ class TestPoses:
 
         assert filecmp.cmp(positions_files[0], os.path.join(self.golden_data_path, '3p0g', 'init', 'initial_positions_0.dat'))
         assert filecmp.cmp(positions_files[1], os.path.join(self.golden_data_path, '3p0g', 'init', 'initial_positions_1.dat'))
+
+    def test_apply_restraints(self):
+        swarm_centers = [[13.861446721229493, -28.730453433364488, 0.024305878079852336],
+                         [-29.427540743780476, -2.960299745528308, -5.168493906227671],
+                         [24.244162925019417, 2.9322386764307304, -15.44286271885186],
+                         [2.0463687050893857, -13.94537658944639, -24.099372234598455],
+                         [-10.833120242061193, 13.517315520348813, -20.69794891072167],
+                         [-10.934383879949547, 24.302392364266915, 4.508648686944662],
+                         [-13.742376304140548, -18.137915011405447, 12.54861921589357],
+                         [-6.5003433948735, 7.824777098389764, 23.942006739050495],
+                         [17.345254847698744, 18.209853942307866, 6.384609403593564],
+                         [13.837506572006518, -7.152838167487336, 18.165186863034638]]
+        distance_cutoff = 19.522956365520056
+        translation = [-21.630461302211305, -5.510320024570013, -20.27116646191647]
+        atoms = [Atom(atom_number=1, atom_name='N', x=25.344, y=-10.048, z=26.435),
+                 Atom(atom_number=2, atom_name='CA', x=26.439, y=-10.798, z=26.994),
+                 Atom(atom_number=3, atom_name='C', x=26.646, y=-12.135, z=26.328),
+                 Atom(atom_number=4, atom_name='O', x=27.790, y=-12.531, z=26.028),
+                 Atom(atom_number=5, atom_name='CB', x=26.230, y=-10.933, z=28.503),
+                 Atom(atom_number=6, atom_name='CG', x=26.448, y=-9.540, z=29.191),
+                 Atom(atom_number=7, atom_name='CD', x=26.283, y=-9.676, z=30.689),
+                 Atom(atom_number=8, atom_name='CE', x=26.609, y=-8.392, z=31.454),
+                 Atom(atom_number=9, atom_name='NZ', x=26.210, y=-8.498, z=32.884)]
+        receptor_restraints = [Residue('LYS', 239, atoms=atoms)]
+
+        expected_new_centers = [[13.861446721229493, -28.730453433364488, 0.024305878079852336],
+                                [13.837506572006518, -7.152838167487336, 18.165186863034638]]
+
+        new_centers = apply_restraints(swarm_centers, receptor_restraints, [], distance_cutoff, translation)
+
+        assert np.allclose(expected_new_centers, new_centers)
+
+    def test_apply_restraints_with_blocking(self):
+        swarm_centers = [[13.861446721229493, -28.730453433364488, 0.024305878079852336],
+                         [-29.427540743780476, -2.960299745528308, -5.168493906227671],
+                         [24.244162925019417, 2.9322386764307304, -15.44286271885186],
+                         [2.0463687050893857, -13.94537658944639, -24.099372234598455],
+                         [-10.833120242061193, 13.517315520348813, -20.69794891072167],
+                         [-10.934383879949547, 24.302392364266915, 4.508648686944662],
+                         [-13.742376304140548, -18.137915011405447, 12.54861921589357],
+                         [-6.5003433948735, 7.824777098389764, 23.942006739050495],
+                         [17.345254847698744, 18.209853942307866, 6.384609403593564],
+                         [13.837506572006518, -7.152838167487336, 18.165186863034638]]
+        distance_cutoff = 19.522956365520056
+        translation = [-21.630461302211305, -5.510320024570013, -20.27116646191647]
+        atoms = [Atom(atom_number=1, atom_name='N', x=25.344, y=-10.048, z=26.435),
+                 Atom(atom_number=2, atom_name='CA', x=26.439, y=-10.798, z=26.994),
+                 Atom(atom_number=3, atom_name='C', x=26.646, y=-12.135, z=26.328),
+                 Atom(atom_number=4, atom_name='O', x=27.790, y=-12.531, z=26.028),
+                 Atom(atom_number=5, atom_name='CB', x=26.230, y=-10.933, z=28.503),
+                 Atom(atom_number=6, atom_name='CG', x=26.448, y=-9.540, z=29.191),
+                 Atom(atom_number=7, atom_name='CD', x=26.283, y=-9.676, z=30.689),
+                 Atom(atom_number=8, atom_name='CE', x=26.609, y=-8.392, z=31.454),
+                 Atom(atom_number=9, atom_name='NZ', x=26.210, y=-8.498, z=32.884)]
+        receptor_restraints = [Residue('LYS', 239, atoms=atoms)]
+
+        atoms = [Atom(atom_number=1, atom_name='N', x=30.795, y=-14.563, z=19.577),
+                 Atom(atom_number=2, atom_name='CA', x=30.969, y=-13.948, z=18.287),
+                 Atom(atom_number=3, atom_name='C', x=32.148, y=-12.988, z=18.291),
+                 Atom(atom_number=4, atom_name='O', x=32.601, y=-12.684, z=19.413),
+                 Atom(atom_number=5, atom_name='CB', x=29.742, y=-13.163, z=17.861),
+                 Atom(atom_number=6, atom_name='CG', x=28.586, y=-14.066, z=17.510),
+                 Atom(atom_number=7, atom_name='OD1', x=28.470, y=-14.548, z=16.359),
+                 Atom(atom_number=8, atom_name='ND2', x=27.742, y=-14.322, z=18.456)]
+        blocking_restraints = [Residue('ASN', 245, atoms=atoms)]
+        expected_new_centers = [[13.837506572006518, -7.152838167487336, 18.165186863034638]]
+
+        new_centers = apply_restraints(swarm_centers, receptor_restraints, blocking_restraints, 
+                                       distance_cutoff, translation)
+
+        assert np.allclose(expected_new_centers, new_centers)
+
+    def test_apply_restraints_only_blocking(self):
+        swarm_centers = [[13.861446721229493, -28.730453433364488, 0.024305878079852336],
+                         [-29.427540743780476, -2.960299745528308, -5.168493906227671],
+                         [24.244162925019417, 2.9322386764307304, -15.44286271885186],
+                         [2.0463687050893857, -13.94537658944639, -24.099372234598455],
+                         [-10.833120242061193, 13.517315520348813, -20.69794891072167],
+                         [-10.934383879949547, 24.302392364266915, 4.508648686944662],
+                         [-13.742376304140548, -18.137915011405447, 12.54861921589357],
+                         [-6.5003433948735, 7.824777098389764, 23.942006739050495],
+                         [17.345254847698744, 18.209853942307866, 6.384609403593564],
+                         [13.837506572006518, -7.152838167487336, 18.165186863034638]]
+        distance_cutoff = 19.522956365520056
+        translation = [-21.630461302211305, -5.510320024570013, -20.27116646191647]
+
+        atoms = [Atom(atom_number=1, atom_name='N', x=30.795, y=-14.563, z=19.577),
+                 Atom(atom_number=2, atom_name='CA', x=30.969, y=-13.948, z=18.287),
+                 Atom(atom_number=3, atom_name='C', x=32.148, y=-12.988, z=18.291),
+                 Atom(atom_number=4, atom_name='O', x=32.601, y=-12.684, z=19.413),
+                 Atom(atom_number=5, atom_name='CB', x=29.742, y=-13.163, z=17.861),
+                 Atom(atom_number=6, atom_name='CG', x=28.586, y=-14.066, z=17.510),
+                 Atom(atom_number=7, atom_name='OD1', x=28.470, y=-14.548, z=16.359),
+                 Atom(atom_number=8, atom_name='ND2', x=27.742, y=-14.322, z=18.456)]
+        blocking_restraints = [Residue('ASN', 245, atoms=atoms)]
+        expected_new_centers = [[-29.427540743780476, -2.960299745528308, -5.168493906227671],
+                                [24.244162925019417, 2.9322386764307304, -15.44286271885186],
+                                [2.0463687050893857, -13.94537658944639, -24.099372234598455],
+                                [-10.833120242061193, 13.517315520348813, -20.69794891072167],
+                                [-10.934383879949547, 24.302392364266915, 4.508648686944662],
+                                [-13.742376304140548, -18.137915011405447, 12.54861921589357],
+                                [-6.5003433948735, 7.824777098389764, 23.942006739050495],
+                                [17.345254847698744, 18.209853942307866, 6.384609403593564],
+                                [13.837506572006518, -7.152838167487336, 18.165186863034638]]
+
+        new_centers = apply_restraints(swarm_centers, [], blocking_restraints, distance_cutoff, translation)
+
+        assert np.allclose(expected_new_centers, new_centers)
