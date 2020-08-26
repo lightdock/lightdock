@@ -117,19 +117,22 @@ if __name__ == "__main__":
 
     # If normal modes used, need to read them
     nmodes_rec = nmodes_lig = None
-    if len(rec_extents):
-        nm_path = os.path.abspath(os.path.dirname(args.receptor_structures))
-        nmodes_rec = read_nmodes(os.path.join(nm_path, DEFAULT_REC_NM_FILE + '.npy'))
-    if len(lig_extents):
-        nm_path = os.path.abspath(os.path.dirname(args.ligand_structures))
-        nmodes_lig = read_nmodes(os.path.join(nm_path, DEFAULT_LIG_NM_FILE + '.npy'))
+    nm_path = os.path.abspath(os.path.dirname(args.receptor_structures))
+    # Check NM file for receptor
+    nm_rec_file = os.path.join(nm_path, DEFAULT_REC_NM_FILE + '.npy')
+    if os.path.exists(nm_rec_file):
+        nmodes_rec = read_nmodes(nm_rec_file)
+    # Check NM file for ligand
+    nm_lig_file = os.path.join(nm_path, DEFAULT_LIG_NM_FILE + '.npy')
+    if os.path.exists(nm_lig_file):
+        nmodes_lig = read_nmodes(nm_lig_file)
 
     for i in range(num_conformations):
         receptor_pose = receptor.atom_coordinates[receptor_ids[i]].clone()
         ligand_pose = ligand.atom_coordinates[ligand_ids[i]].clone()
 
         # Use normal modes if provided:
-        if len(rec_extents):
+        if nmodes_rec is not None and nmodes_rec.any():
             try:
                 for nm in range(num_anm_rec):
                     receptor_pose.coordinates += nmodes_rec[nm] * rec_extents[i][nm]
@@ -142,7 +145,7 @@ if __name__ == "__main__":
                 log.error("Problem found on calculating ANM for receptor:")
                 log.error("If you have used anm_rec different than default, please use --setup")
                 raise SystemExit
-        if len(lig_extents):
+        if nmodes_lig is not None and nmodes_lig.any():
             try:
                 for nm in range(num_anm_lig):
                     ligand_pose.coordinates += nmodes_lig[nm] * lig_extents[i][nm]
