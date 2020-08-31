@@ -209,7 +209,7 @@ def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints,
     # Final filtered list of swarms
     new_swarm_centers = [swarm_centers[i] for i in closer_swarm_ids]
 
-    if not blocking_restraints:
+    if not blocking_restraints and receptor_restraints:
         return new_swarm_centers
     else:
         # We need to distinguish between two cases:
