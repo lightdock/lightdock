@@ -183,11 +183,9 @@ def create_simulation_info_file(args, path='.', file_name=DEFAULT_LIGHTDOCK_INFO
     if os.path.isfile(output_file_name):
         original_file_name = output_file_name
         i = 1
-        while os.path.isfile(output_file_name) and i < 255:
-            output_file_name = "%s.%d" % (original_file_name, i)
+        while os.path.isfile(output_file_name):
+            output_file_name = f'{original_file_name}.{i}'
             i += 1
-        if i == 255:
-            raise LightDockError('Too many simulation files')
 
     # Data to store
     now = time.strftime("%Y-%m-%d %H:%M:%S")

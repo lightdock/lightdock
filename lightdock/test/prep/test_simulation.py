@@ -8,7 +8,7 @@ from nose.tools import assert_almost_equal, raises
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.prep.simulation import parse_restraints_file, get_restraints, get_default_box,\
     get_setup_from_file, create_setup_file, prepare_results_environment, get_pdb_files, \
-    read_input_structure
+    read_input_structure, load_starting_positions, create_simulation_info_file, check_starting_file
 from lightdock.structure.complex import Complex
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.util.parser import SetupCommandLineParser
@@ -224,3 +224,66 @@ class TestSimulation:
                                          ignore_hydrogens=False, verbose_parser=False)
 
         assert structure.num_structures == 2
+
+    def test_load_starting_positions(self):
+        working_path = os.path.join(self.golden_data_path, 'load_starting_positions', 'ok')
+        os.chdir(working_path)
+
+        swarms = 2
+        glowworms = 10
+        use_anm = False
+        positions = load_starting_positions(swarms, glowworms, use_anm)
+        
+        assert positions == ['init/initial_positions_0.dat', 'init/initial_positions_1.dat']
+
+    @raises(LightDockError)
+    def test_load_starting_positions_wrong_num_swarms(self):
+        working_path = os.path.join(self.golden_data_path, 'load_starting_positions', 'ok')
+        os.chdir(working_path)
+
+        swarms = 5
+        glowworms = 10
+        use_anm = False
+        positions = load_starting_positions(swarms, glowworms, use_anm)
+        
+        assert False
+
+    @raises(LightDockError)
+    def test_load_starting_positions_wrong_dat_files(self):
+        working_path = os.path.join(self.golden_data_path, 'load_starting_positions', 'wrong_dat')
+        os.chdir(working_path)
+
+        swarms = 2
+        glowworms = 10
+        use_anm = False
+        positions = load_starting_positions(swarms, glowworms, use_anm)
+        
+        assert False
+
+    def test_create_simulation_info_file(self):
+        setup = get_setup_from_file(os.path.join(self.golden_data_path, 'create_simulation_info_file', 'setup.json'))
+        class Args:
+            pass
+        args = Args()
+        for k, v in setup.items():
+            setattr(args, k, v)
+
+        file_name = create_simulation_info_file(args, path=self.test_path)
+        
+        assert os.path.basename(file_name) == 'lightdock.info'
+
+        file_name = create_simulation_info_file(args, path=self.test_path)
+
+        assert os.path.basename(file_name) == 'lightdock.info.1'
+
+    def test_check_starting_file(self):
+        file_name = os.path.join(self.golden_data_path, 'load_starting_positions', 'ok',
+                                 'init', 'initial_positions_0.dat')
+        glowworms = 10
+        use_anm = False
+        anm_rec = 0
+        anm_lig = 0
+        assert check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig)
+
+        glowworms = 9
+        assert not check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig)
