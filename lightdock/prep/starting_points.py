@@ -1,9 +1,11 @@
 """Calculate the position of a set of points around a protein."""
 
 import math
+import time
 from scipy import spatial
 import numpy as np
 from lightdock.mathutil.cython.cutil import distance2
+from lightdock.error.lightdock_errors import SetupError
 
 
 def points_on_sphere(number_of_points):
@@ -67,20 +69,29 @@ def calculate_surface_points(receptor, ligand, num_points, distance_step=0.5, is
     
     surface_points = []
     marked = []
+    start = time.time()
     while len(surface_points) < num_points:
         for i, point in enumerate(points):
             if i not in marked:
                 for atom in receptor.atoms:
                     if atom.residue_name != 'MMB':
-                        if distance2(receptor_atom_coordinates[atom.index][0],
+                        d = distance2(receptor_atom_coordinates[atom.index][0],
                                      receptor_atom_coordinates[atom.index][1],
                                      receptor_atom_coordinates[atom.index][2],
-                                     point[0], point[1], point[2]) <= surface_distance:
+                                     point[0], point[1], point[2])
+                        if d <= surface_distance:
                             marked.append(i)
                             surface_points.append(point)
                             break
                 point[0] += rays[i][0] * distance_step
                 point[1] += rays[i][1] * distance_step
                 point[2] += rays[i][2] * distance_step
+
+        # This is a PATCH of SHAME. This algorithm should be completely eradicated, but
+        # backcompatibility will be broken. I leave this message here as a promise of 
+        # doing it much better in a new release and stop coding while I'm drunk or so...
+        if time.time() - start > 10*60:
+            # 10 minutes timeout
+            raise SetupError(f'Timeout: cannot calculate surface points ({len(surface_points)} out of {num_points})')
     
     return surface_points, receptor_max_diameter, ligand_max_diameter

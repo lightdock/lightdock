@@ -95,3 +95,7 @@ class NotSupportedInScoringError(LightDockError):
 class NormalModesCalculationError(LightDockError):
     """Error in normal modes calculation"""
     pass
+
+class SetupError(LightDockError):
+    """Error in setup"""
+    pass
