@@ -139,7 +139,7 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
             # The strategy is similar to previous but for the receptor side we will use a simulated point
             # over the receptor surface to point out the quaternion
             coef = norm(center) / ligand_diameter
-            if coef > 1.0:
+            if coef > 1.5:
                 raise LightDockWarning('Found wrong coefficient on calculating poses with restraints')
             # It is important to keep the coordinates as in the original complex without
             # moving to the center of coordinates (applying translation)
