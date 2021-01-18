@@ -90,7 +90,7 @@ def calculate_surface_points(receptor, ligand, num_points, distance_step=0.5, is
         # This is a PATCH of SHAME. This algorithm should be completely eradicated, but
         # backcompatibility will be broken. I leave this message here as a promise of 
         # doing it much better in a new release and stop coding while I'm drunk or so...
-        if time.time() - start > 10*60:
+        if time.time() - start > 15*60:
             # 10 minutes timeout
             raise SetupError(f'Timeout: cannot calculate surface points ({len(surface_points)} out of {num_points})')
     
