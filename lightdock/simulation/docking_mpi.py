@@ -14,7 +14,7 @@ from lightdock.mathutil.lrandom import MTGenerator
 from lightdock.gso.parameters import GSOParameters
 from lightdock.constants import DEFAULT_SCORING_FUNCTION, DEFAULT_SWARM_FOLDER, \
                                 DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE, NUMPY_FILE_SAVE_EXTENSION, \
-                                DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG
+                                DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_LIGHTDOCK_PREFIX
 from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
 from lightdock.scoring.multiple import ScoringConfiguration
@@ -43,7 +43,8 @@ def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions,
         anm_rec = anm_lig = 0
     gso = builder.create_from_file(number_of_glowworms, random_number_generator, gso_parameters,
                                    adapters, scoring_functions, bounding_box, initial_positions,
-                                   step_translation, step_rotation, nmodes_step, local_minimization)
+                                   step_translation, step_rotation, nmodes_step, local_minimization,
+                                   anm_rec, anm_lig)
     return gso
 
 

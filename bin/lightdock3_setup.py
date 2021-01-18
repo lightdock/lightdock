@@ -8,6 +8,7 @@ receptor and populates each swarm with random coordinates for each glowworm's
 optimization vector.
 """
 
+import os
 import argparse
 import numpy as np
 from lightdock.util.parser import SetupCommandLineParser
@@ -41,18 +42,24 @@ if __name__ == "__main__":
 
         # Calculate reference points for receptor
         log.info("Calculating reference points for receptor %s..." % args.receptor_pdb)
-        rec_ellipsoid = MinimumVolumeEllipsoid(receptor.representative().coordinates)
         ellipsoid_data_file = "%s%s" % (DEFAULT_LIGHTDOCK_PREFIX % receptor.structure_file_names[0],
                                         DEFAULT_ELLIPSOID_DATA_EXTENSION)
-        np.save(ellipsoid_data_file, np.array([rec_ellipsoid.center.copy()]))
+        if not os.path.exists(ellipsoid_data_file):
+            log.info("Reference points for receptor found, skipping")
+        else:
+            rec_ellipsoid = MinimumVolumeEllipsoid(receptor.representative().coordinates)
+            np.save(ellipsoid_data_file, np.array([rec_ellipsoid.center.copy()]))
         log.info("Done.")
 
         # Calculate reference points for ligand
         log.info("Calculating reference points for ligand %s..." % args.ligand_pdb)
-        lig_ellipsoid = MinimumVolumeEllipsoid(ligand.representative().coordinates)
         ellipsoid_data_file = "%s%s" % (DEFAULT_LIGHTDOCK_PREFIX % ligand.structure_file_names[0],
                                         DEFAULT_ELLIPSOID_DATA_EXTENSION)
-        np.save(ellipsoid_data_file, np.array([lig_ellipsoid.center.copy()]))
+        if not os.path.exists(ellipsoid_data_file):
+            log.info("Reference points for ligand found, skipping")
+        else:
+            lig_ellipsoid = MinimumVolumeEllipsoid(ligand.representative().coordinates)
+            np.save(ellipsoid_data_file, np.array([lig_ellipsoid.center.copy()]))
         log.info("Done.")
 
         # Save to file parsed structures
