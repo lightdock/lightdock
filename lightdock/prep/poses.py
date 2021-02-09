@@ -302,7 +302,7 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
     swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor, 
                                                                                  ligand, 
                                                                                  num_clusters,
-                                                                                 distance_step=1.0,
+                                                                                 rec_translation,
                                                                                  is_membrane=is_membrane)
     # Filter swarms far from the restraints
     if receptor_restraints:
