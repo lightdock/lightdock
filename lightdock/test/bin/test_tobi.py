@@ -26,11 +26,7 @@ class TestRegressionTOBIShort(RegressionTest):
         steps = 4
 
         command = "lightdock3_setup.py %s %s %d %d " \
-                  "-ft %s > test_lightdock.out" % ('1PPE_rec.pdb',
-                                                   '1PPE_lig.pdb',
-                                                   num_swarms,
-                                                   num_glowworms,
-                                                   self.golden_data_path + '1PPE.ftdock')
+                  "> test_lightdock.out" % ('1PPE_rec.pdb','1PPE_lig.pdb', num_swarms, num_glowworms)
         os.system(command)
         command = "lightdock3.py %s %d -c 1 -f %s -s " \
                   "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',
@@ -109,11 +105,7 @@ class TestRegressionTOBIMoreGlowworms(RegressionTest):
             steps = 2
             
             command = "lightdock3_setup.py %s %s %d %d " \
-                      "-ft %s > test_lightdock.out" % ('1PPE_rec.pdb',
-                                                       '1PPE_lig.pdb',
-                                                       num_swarms,
-                                                       num_glowworms,
-                                                       self.golden_data_path + '1PPE.ftdock')
+                      "> test_lightdock.out" % ('1PPE_rec.pdb', '1PPE_lig.pdb', num_swarms, num_glowworms)
             os.system(command)
             command = "lightdock3.py %s %d -c 1 -f %s -s " \
                       "tobi >> test_lightdock.out" % (self.test_path + 'setup.json',

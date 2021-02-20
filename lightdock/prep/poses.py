@@ -5,7 +5,6 @@ import operator
 import numpy as np
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
 from lightdock.prep.starting_points import calculate_surface_points
-from lightdock.prep.ftdock import FTDockCoordinatesParser, classify_ftdock_poses
 from lightdock.mathutil.lrandom import MTGenerator, NormalGenerator
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.cython.cutil import distance as cdistance
@@ -285,8 +284,9 @@ def apply_membrane(swarm_centers, membrane_beads, translation):
 def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
                             seed, receptor_restraints, ligand_restraints, 
                             rec_translation, lig_translation,
-                            dest_folder, ftdock_file='', nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
-                            is_membrane=False):
+                            dest_folder, nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
+                            is_membrane=False, is_transmembrane=False,
+                            writing_starting_positions=False):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
     
     # Random number generator for poses
@@ -322,54 +322,21 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
     radius = 10.    # ligand_diameter / 2.
     positions_files = []
 
-    # Populate the clusters using the FTDock poses
-    if ftdock_file:
-        if nm_mode:
-            raise NotImplementedError('Using FTDock poses with NM is not supported')
 
-        poses = FTDockCoordinatesParser.get_list_of_poses(ftdock_file, ligand_center)
-        clusters = classify_ftdock_poses(poses, swarm_centers, radius)
-
-        for cluster_id, ftdock_poses in clusters.items():
-            # Translate FTDock poses into lightdock poses
-            poses = []
-            for pose in ftdock_poses:
-                poses.append([pose.translation[0],
-                              pose.translation[1],
-                              pose.translation[2],
-                              pose.q.w,
-                              pose.q.x,
-                              pose.q.y,
-                              pose.q.z])
-
-            # Populate new poses if needed
-            if len(poses) < num_glowworms:
-                needed = num_glowworms - len(poses)
-                poses.extend(populate_poses(needed, swarm_centers[cluster_id], radius, rng, rec_translation, lig_translation))
-
-            # Save poses as pdb file
-            pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, cluster_id))
-            create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])
-
-            # Save poses as initial_positions file
-            pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, cluster_id))
-            bild_file_name = os.path.join(dest_folder, '%s_%s.bild' % (DEFAULT_BILD_STARTING_PREFIX, cluster_id))
-            create_file_from_poses(pos_file_name, poses[:num_glowworms])
-            positions_files.append(pos_file_name)
-            create_bild_file(bild_file_name, poses)
-    else:
-        for swarm_id, swarm_center in enumerate(swarm_centers):
-            poses = populate_poses(num_glowworms, swarm_center, radius, rng, rec_translation, lig_translation,
-                                    rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints, ligand_diameter)
+    for swarm_id, swarm_center in enumerate(swarm_centers):
+        poses = populate_poses(num_glowworms, swarm_center, radius, rng, rec_translation, lig_translation,
+                                rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints, ligand_diameter)
+        if writing_starting_positions:
             # Save poses as pdb file
             pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, swarm_id))
             create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])
-
-            # Save poses as initial_positions file
-            pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, swarm_id))
+            # Generate bild files for glowworm orientations
             bild_file_name = os.path.join(dest_folder, '%s_%s.bild' % (DEFAULT_BILD_STARTING_PREFIX, swarm_id))
-            create_file_from_poses(pos_file_name, poses[:num_glowworms])
-            positions_files.append(pos_file_name)
             create_bild_file(bild_file_name, poses)
+
+        # Save poses as initial_positions file
+        pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, swarm_id))
+        create_file_from_poses(pos_file_name, poses[:num_glowworms])
+        positions_files.append(pos_file_name)
 
     return positions_files

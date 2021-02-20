@@ -1,5 +1,9 @@
 """LightDock default parameters"""
 
+# Simulation defaults
+DEFAULT_NUM_SWARMS = 400
+DEFAULT_NUM_GLOWWORMS = 200
+
 # GSO algorithm constants
 MAX_TRANSLATION = 30                # In Angstroms
 MAX_ROTATION = 1.0                  # Quaternion default value for its components
@@ -56,4 +60,4 @@ CLUSTER_REPRESENTATIVES_FILE = CLUSTER_DEFAULT_NAME + DEFAULT_REPRESENTATIVES_EX
 DEFAULT_LIGHTDOCK_INFO = "lightdock.info"
 
 # Surface density
-MIN_SURFACE_DENSITY = 100.0
+MIN_SURFACE_DENSITY = 50.0

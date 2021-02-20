@@ -2,9 +2,9 @@
 
 import argparse
 import os
-from lightdock.constants import GSO_SEED, STARTING_POINTS_SEED,\
-    DEFAULT_TRANSLATION_STEP, DEFAULT_ROTATION_STEP, STARTING_NM_SEED, DEFAULT_NMODES_STEP, DEFAULT_LIST_EXTENSION, \
-    DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG
+from lightdock.constants import DEFAULT_NUM_SWARMS, DEFAULT_NUM_GLOWWORMS, GSO_SEED, STARTING_POINTS_SEED,\
+    DEFAULT_TRANSLATION_STEP, DEFAULT_ROTATION_STEP, STARTING_NM_SEED, DEFAULT_NMODES_STEP, \
+    DEFAULT_LIST_EXTENSION, DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, MIN_SURFACE_DENSITY
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.version import CURRENT_VERSION
 
@@ -71,29 +71,24 @@ def valid_float_number(float_value):
 
 class SetupCommandLineParser(object):
     """Parses the command line of lightdock_setup"""
-
     def __init__(self, input_args=None):
-        parser = argparse.ArgumentParser(prog="lightdock_setup")
+        parser = argparse.ArgumentParser(prog="lightdock3_setup")
         
         # Receptor
-        parser.add_argument("receptor_pdb", help="Receptor structure PDB file", 
+        parser.add_argument("receptor_pdb", help="Receptor structure PDB file",
                             type=valid_file, metavar="receptor_pdb_file")
         # Ligand
         parser.add_argument("ligand_pdb", help="Ligand structure PDB file",
                             type=valid_file, metavar="ligand_pdb_file")
         # Clusters
-        parser.add_argument("swarms", help="Number of swarms of the simulation",
-                            type=valid_integer_number)
+        parser.add_argument("-s", "--swarms", help="Number of swarms of the simulation",
+                            dest="swarms", type=valid_integer_number, default=DEFAULT_NUM_SWARMS)
         # Glowworms
-        parser.add_argument("glowworms", help="Number of glowworms per swarm", 
-                            type=valid_integer_number)
+        parser.add_argument("-g", "--glowworms", help="Number of glowworms per swarm",
+                            dest="glowworms", type=valid_integer_number, default=DEFAULT_NUM_GLOWWORMS)
         # Starting points seed
         parser.add_argument("--seed_points", help="Random seed used in starting positions calculation",
                             dest="starting_points_seed", type=int, default=STARTING_POINTS_SEED)
-        # FTDock poses as cluster centers
-        parser.add_argument("-ft", "--ftdock", help="Use previous FTDock poses as starting positions", 
-                            dest="ftdock_file", type=valid_file,
-                            metavar="ftdock_file")
         # Dealing with OXT atoms
         parser.add_argument("--noxt", help="Remove OXT atoms",
                             dest="noxt", action='store_true', default=False)
@@ -109,19 +104,31 @@ class SetupCommandLineParser(object):
         # Normal modes extent seed
         parser.add_argument("--seed_anm", help="Random seed used in ANM intial extent",
                             dest="anm_seed", type=int, default=STARTING_NM_SEED)
-        parser.add_argument("-anm_rec", "--anm_rec", help="Number of ANM modes for receptor", 
+        parser.add_argument("-ar", "-anm_rec", "--anm_rec", help="Number of ANM modes for receptor",
                             type=valid_natural_number,
                             dest="anm_rec", default=DEFAULT_NMODES_REC)
-        parser.add_argument("-anm_lig", "--anm_lig", help="Number of ANM modes for ligand", 
+        parser.add_argument("-al", "-anm_lig", "--anm_lig", help="Number of ANM modes for ligand",
                             type=valid_natural_number,
                             dest="anm_lig", default=DEFAULT_NMODES_LIG)
         # Restraints file
-        parser.add_argument("-rst", "--rst", help="Restraints file", 
+        parser.add_argument("-r", "-rst", "--rst", help="Restraints file",
                             dest="restraints", type=valid_file,
                             metavar="restraints", default=None)
         # Membrane setup
-        parser.add_argument("-membrane", "--membrane", help="Enables the extra filter for membrane restraints", 
+        parser.add_argument("-membrane", "--membrane", help="Enables the extra filter for membrane restraints",
                             dest="membrane", action='store_true', default=False)
+        # Transmembrane setup
+        parser.add_argument("-transmembrane", "--transmembrane",
+                            help="Enables the extra filter for transmembrane restraints",
+                            dest="transmembrane", action='store_true', default=False)
+        # Create bild files
+        parser.add_argument("-sp", "-starting_positions", "--starting_positions",
+                            help="Enables the generation of support files in init directory",
+                            dest="write_starting_positions", action='store_true', default=False)
+        # Surface density
+        parser.add_argument("-sd", "-surface_density", "--surface_density",
+                            help="Minimum value for surface density used for calculating number of swarms",
+                            type=valid_float_number, dest="surface_density", default=MIN_SURFACE_DENSITY)
 
         if input_args:
             self.args = parser.parse_args(input_args)
@@ -130,10 +137,11 @@ class SetupCommandLineParser(object):
 
 
 class ListScoringAction(argparse.Action):
+    """Support class for listing the available scoring functions"""
     def __call__(self, parser, namespace, values, option_string=None):
         from lightdock import scoring
         scoring_path = os.path.dirname(scoring.__file__)
-        scoring_functions = [ name for name in os.listdir(scoring_path) if os.path.isdir(os.path.join(scoring_path, name)) ]
+        scoring_functions = [s for s in os.listdir(scoring_path) if os.path.isdir(os.path.join(scoring_path, name))]
         print('Available scoring functions are: ', ', '.join(scoring_functions))
         raise SystemExit
 
@@ -141,7 +149,7 @@ class ListScoringAction(argparse.Action):
 class CommandLineParser(object):
     """Parses the command line"""
     def __init__(self):
-        parser = argparse.ArgumentParser(prog="lightdock")
+        parser = argparse.ArgumentParser(prog="lightdock3")
         
         # Receptor
         parser.add_argument("setup_file", help="Setup file name", 

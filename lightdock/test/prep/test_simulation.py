@@ -153,7 +153,6 @@ class TestSimulation:
             "anm_lig": 10,
             "anm_rec": 10,
             "anm_seed": 324324,
-            "ftdock_file": None,
             "glowworms": 10,
             "ligand_pdb": "2UUY_lig.pdb",
             "membrane": False,
