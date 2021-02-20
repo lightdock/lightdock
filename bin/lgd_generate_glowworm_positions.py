@@ -7,7 +7,6 @@ import os
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
 from lightdock.util.logger import LoggingManager
-from lightdock.constants import DEFAULT_LIST_EXTENSION, DEFAULT_LIGHTDOCK_PREFIX
 
 
 log = LoggingManager.get_logger('generate_glowworm_positions')
@@ -18,29 +17,6 @@ def valid_file(file_name):
     if not os.path.exists(file_name):
         raise argparse.ArgumentTypeError("The file does not exist")
     return file_name
-
-
-def get_lightdock_structures(input_file):
-    """Get a list of the PDB files in the input_file"""
-    input_file_name, input_file_extension = os.path.splitext(input_file)
-    file_names = []
-    if input_file_extension == DEFAULT_LIST_EXTENSION:
-        with open(input_file) as input_lines:
-            for line in input_lines:
-                file_name = line.rstrip(os.linesep)
-                lightdock_structure = os.path.join(os.path.dirname(file_name),
-                                                   DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
-                if os.path.exists(lightdock_structure):
-                    file_names.append(lightdock_structure)
-    else:
-        file_name = input_file
-        lightdock_structure = os.path.join(os.path.dirname(file_name),
-                                           DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(file_name))
-        if os.path.exists(lightdock_structure):
-            file_names.append(lightdock_structure)
-        else:
-            raise LightDockError('Structure file %s not found' % lightdock_structure)
-    return file_names
 
 
 def parse_output_file(lightdock_output):
