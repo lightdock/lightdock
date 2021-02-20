@@ -1,42 +1,43 @@
 """Calculate the position of a set of points around a protein."""
 
+from math import sqrt, cos, sin, pi, ceil
 import numpy as np
-import math
 import freesasa
 from scipy.cluster.vq import kmeans2
 from scipy.spatial import distance, KDTree
-from prody import parsePDB, confProDy
-from lightdock.constants import MIN_SURFACE_DENSITY
+from prody import parsePDB
+from lightdock.constants import DEFAULT_SURFACE_DENSITY
+from lightdock.error.lightdock_errors import SetupError
 
-confProDy(verbosity='info')
+freesasa.setVerbosity(freesasa.silent)
 
 
 def points_on_sphere(number_of_points):
     """Creates a list of points using a spiral method.
-    
-    Based on method of 'Minimal Discrete Energy on the Sphere' (E. B. Saff, E.A. 
+
+    Based on method of 'Minimal Discrete Energy on the Sphere' (E. B. Saff, E.A.
     Rakhmanov and Y.M. Zhou), Mathematical Research Letters, Vol. 1 (1994), pp. 647-662.
-    
-    Spiral method: Spiral from top of sphere to bottom of sphere, with points 
+
+    Spiral method: Spiral from top of sphere to bottom of sphere, with points
     places at distances the same as the distance between coils of the spiral.
     """
     points = []
-    increment = math.pi * (3. - math.sqrt(5.))
-    offset = 2./number_of_points
+    increment = pi * (3. - sqrt(5.))
+    offset = 2. / number_of_points
     for point in range(number_of_points):
         y = point * offset - 1.0 + (offset / 2.0)
-        r = math.sqrt(1 - y*y)
+        r = sqrt(1 - y*y)
         phi = point * increment
-        points.append([math.cos(phi)*r, y, math.sin(phi)*r])
+        points.append([cos(phi) * r, y, sin(phi) * r])
     return points
 
 
-def calculate_surface_points(receptor, ligand, num_points, rec_translation, 
-    num_sphere_points=100, is_membrane=False):
+def calculate_surface_points(receptor, ligand, num_points, rec_translation,
+    is_membrane=False, surface_density=DEFAULT_SURFACE_DENSITY, num_sphere_points=100):
     """Calculates the position of num_points on the surface of the given protein"""
-    if num_points <= 0: 
-        return []
-    
+    if num_points < 0:
+        raise SetupError("Invalid number of points to generate over the surface")
+
     receptor_atom_coordinates = receptor.representative(is_membrane)
 
     distances_matrix_rec = distance.pdist(receptor_atom_coordinates)
@@ -51,11 +52,11 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation,
     coords = surface.getCoords()
 
     # SASA
-    structure = freesasa.Structure(pdb_file_name)
-    result = freesasa.calc(structure)
-    total_sasa = result.totalArea()
-    density = total_sasa / num_points
-    num_points = math.ceil(total_sasa / MIN_SURFACE_DENSITY)
+    if num_points == 0:
+        structure = freesasa.Structure(pdb_file_name)
+        result = freesasa.calc(structure)
+        total_sasa = result.totalArea()
+        num_points = ceil(total_sasa / surface_density)
 
     # Surface clusters
     if len(coords) > num_points:
@@ -70,13 +71,13 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation,
         sphere_points = np.array(points_on_sphere(num_sphere_points))
         surface_points = sphere_points * surface_distance + sc
         sampling.append(surface_points)
-    
+
     # Filter out not compatible points
     centroids_kd_tree = KDTree(surface_centroids)
     for i_centroid in range(len(sampling)):
         # print('.', end="", flush=True)
         centroid = surface_centroids[i_centroid]
-        # Search for this centroid neighbors 
+        # Search for this centroid neighbors
         centroid_neighbors = centroids_kd_tree.query_ball_point(centroid, r=20.)
         # For each neighbor, remove points too close
         for n in centroid_neighbors:
@@ -97,7 +98,7 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation,
         # Final cluster of points
         s_clusters = kmeans2(data=s, k=num_points, minit='points', iter=100)
         s = s_clusters[0]
-    
+
     for p in s:
         p += rec_translation
 

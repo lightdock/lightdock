@@ -13,7 +13,7 @@ import argparse
 import numpy as np
 import math
 from lightdock.constants import DEFAULT_SWARM_FOLDER, CLUSTER_REPRESENTATIVES_FILE, \
-    GSO_OUTPUT_FILE, DEFAULT_POSITIONS_FOLDER, DEFAULT_BILD_STARTING_PREFIX, CLUSTERS_CENTERS_FILE, \
+    GSO_OUTPUT_FILE, DEFAULT_POSITIONS_FOLDER, DEFAULT_BILD_STARTING_PREFIX, SWARM_CENTERS_FILE, \
     DEFAULT_STARTING_PREFIX
 from lightdock.prep.poses import create_file_from_poses
 from lightdock.util.logger import LoggingManager
@@ -78,7 +78,7 @@ def create_positions(path, cid, pose):
 
 
 def create_centers_file(path, poses):
-    centers_file = os.path.join(path, CLUSTERS_CENTERS_FILE)
+    centers_file = os.path.join(path, SWARM_CENTERS_FILE)
     create_pdb_from_points(centers_file, poses)
 
 

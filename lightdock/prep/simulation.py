@@ -9,7 +9,7 @@ from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
     DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, \
     MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, \
-    DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION
+    DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SWARM_RADIUS, DEFAULT_SURFACE_DENSITY
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
@@ -106,10 +106,11 @@ def check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig):
 def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_points_seed,
     receptor_restraints, ligand_restraints, rec_translation, lig_translation,
     use_anm=False, anm_seed=0, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG,
-    is_membrane=False, is_transmembrane=False, write_starting_positions=False):
+    is_membrane=False, is_transmembrane=False, write_starting_positions=False,
+    swarm_radius=DEFAULT_SWARM_RADIUS, surface_density=DEFAULT_SURFACE_DENSITY):
     """Defines the starting positions of each glowworm in the simulation.
 
-    If the init_folder already exists, uses the starting positions from this folder.
+    If the init folder already exists, uses the starting positions from this folder.
     """
     log.info("Calculating starting positions...")
     init_folder = DEFAULT_POSITIONS_FOLDER
@@ -123,7 +124,8 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
                                                         init_folder,
                                                         use_anm, anm_seed, anm_rec, anm_lig,
                                                         is_membrane, is_transmembrane,
-                                                        write_starting_positions)
+                                                        write_starting_positions,
+                                                        swarm_radius, surface_density)
         log.info(f"Generated {len(starting_points_files)} positions files")
     else:
         if receptor_restraints:
@@ -160,8 +162,7 @@ def prepare_results_environment(swarms=10):
         saving_path = "%s%d" % (DEFAULT_SWARM_FOLDER, id_swarm)
         if Path(saving_path).is_dir():
             raise LightDockError(f"Simulation folder {saving_path} already exists")
-        else:
-            os.mkdir(saving_path)
+        os.mkdir(saving_path)
     log.info("Done.")
 
 
@@ -242,7 +243,7 @@ def parse_restraints_file(restraints_file_name):
                         passive = (restraint_type == 'P')
                         blocked = (restraint_type == 'B')
                         active = (restraint_type == 'A')
-                    except:
+                    except (IndexError, AttributeError):
                         active = True
 
                     if fields[0] == 'R':
@@ -252,8 +253,10 @@ def parse_restraints_file(restraints_file_name):
                                 restraints['receptor']['active'].append(parsed_restraint)
                             elif passive:
                                 restraints['receptor']['passive'].append(parsed_restraint)
-                            else:
+                            elif blocked:
                                 restraints['receptor']['blocked'].append(parsed_restraint)
+                            else:
+                                pass
                     else:
                         if parsed_restraint not in restraints['ligand']['active'] and \
                             parsed_restraint not in restraints['ligand']['passive']:
@@ -261,9 +264,11 @@ def parse_restraints_file(restraints_file_name):
                                 restraints['ligand']['active'].append(parsed_restraint)
                             elif passive:
                                 restraints['ligand']['passive'].append(parsed_restraint)
-                            else:
+                            elif blocked:
                                 restraints['ligand']['blocked'].append(parsed_restraint)
-                except:
+                            else:
+                                pass
+                except (AttributeError, IndexError):
                     log.warning(f"Ignoring malformed restraint {restraint}")
 
         return restraints
@@ -280,6 +285,5 @@ def get_restraints(structure, restraints):
             residue = structure.get_residue(chain_id, residue_name, residue_number)
             if not residue:
                 raise LightDockError(f"Restraint {restraint} not found in structure")
-            else:
-                residues[restraint_type].append(residue)
+            residues[restraint_type].append(residue)
     return residues

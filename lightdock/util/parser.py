@@ -4,7 +4,8 @@ import argparse
 import os
 from lightdock.constants import DEFAULT_NUM_SWARMS, DEFAULT_NUM_GLOWWORMS, GSO_SEED, STARTING_POINTS_SEED,\
     DEFAULT_TRANSLATION_STEP, DEFAULT_ROTATION_STEP, STARTING_NM_SEED, DEFAULT_NMODES_STEP, \
-    DEFAULT_LIST_EXTENSION, DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, MIN_SURFACE_DENSITY
+    DEFAULT_LIST_EXTENSION, DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, \
+    DEFAULT_SURFACE_DENSITY, DEFAULT_SWARM_RADIUS
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.version import CURRENT_VERSION
 
@@ -81,37 +82,37 @@ class SetupCommandLineParser(object):
         parser.add_argument("ligand_pdb", help="Ligand structure PDB file",
                             type=valid_file, metavar="ligand_pdb_file")
         # Clusters
-        parser.add_argument("-s", "--swarms", help="Number of swarms of the simulation",
-                            dest="swarms", type=valid_integer_number, default=DEFAULT_NUM_SWARMS)
+        parser.add_argument("-s", "--s", "--swarms", help="Fixed number of swarms of the simulation",
+                            dest="swarms", type=valid_integer_number, default=0)
         # Glowworms
-        parser.add_argument("-g", "--glowworms", help="Number of glowworms per swarm",
+        parser.add_argument("-g", "--g", "--glowworms", help="Number of glowworms per swarm",
                             dest="glowworms", type=valid_integer_number, default=DEFAULT_NUM_GLOWWORMS)
         # Starting points seed
         parser.add_argument("--seed_points", help="Random seed used in starting positions calculation",
                             dest="starting_points_seed", type=int, default=STARTING_POINTS_SEED)
         # Dealing with OXT atoms
-        parser.add_argument("--noxt", help="Remove OXT atoms",
+        parser.add_argument("--noxt", "-noxt", help="Remove OXT atoms",
                             dest="noxt", action='store_true', default=False)
         # Dealing with hydrogen atoms
-        parser.add_argument("--noh", help="Remove Hydrogen atoms",
+        parser.add_argument("--noh", "-noh", help="Remove Hydrogen atoms",
                             dest="noh", action='store_true', default=False)
         # Verbose PDB parser
-        parser.add_argument("--verbose_parser", help="PDB parsing verbose mode",
+        parser.add_argument("--verbose_parser", "-verbose_parser", help="PDB parsing verbose mode",
                             dest="verbose_parser", action='store_true', default=False)
         # Normal modes
         parser.add_argument("-anm", "--anm", help="Activates the use of ANM backbone flexibility",
                             dest="use_anm", action='store_true', default=False)
         # Normal modes extent seed
-        parser.add_argument("--seed_anm", help="Random seed used in ANM intial extent",
+        parser.add_argument("--seed_anm", "-seed_anm", help="Random seed used in ANM intial extent",
                             dest="anm_seed", type=int, default=STARTING_NM_SEED)
-        parser.add_argument("-ar", "-anm_rec", "--anm_rec", help="Number of ANM modes for receptor",
+        parser.add_argument("-ar", "--ar", "-anm_rec", "--anm_rec", help="Number of ANM modes for receptor",
                             type=valid_natural_number,
                             dest="anm_rec", default=DEFAULT_NMODES_REC)
-        parser.add_argument("-al", "-anm_lig", "--anm_lig", help="Number of ANM modes for ligand",
+        parser.add_argument("-al", "--al", "-anm_lig", "--anm_lig", help="Number of ANM modes for ligand",
                             type=valid_natural_number,
                             dest="anm_lig", default=DEFAULT_NMODES_LIG)
         # Restraints file
-        parser.add_argument("-r", "-rst", "--rst", help="Restraints file",
+        parser.add_argument("-r", "--r", "-rst", "--rst", help="Restraints file",
                             dest="restraints", type=valid_file,
                             metavar="restraints", default=None)
         # Membrane setup
@@ -122,14 +123,17 @@ class SetupCommandLineParser(object):
                             help="Enables the extra filter for transmembrane restraints",
                             dest="transmembrane", action='store_true', default=False)
         # Create bild files
-        parser.add_argument("-sp", "-starting_positions", "--starting_positions",
+        parser.add_argument("-sp", "--sp", "-starting_positions", "--starting_positions",
                             help="Enables the generation of support files in init directory",
                             dest="write_starting_positions", action='store_true', default=False)
         # Surface density
-        parser.add_argument("-sd", "-surface_density", "--surface_density",
-                            help="Minimum value for surface density used for calculating number of swarms",
-                            type=valid_float_number, dest="surface_density", default=MIN_SURFACE_DENSITY)
-
+        parser.add_argument("-sd", "--sd", "-surface_density", "--surface_density",
+                            help="Surface density used for calculating the number of swarms",
+                            type=valid_float_number, dest="surface_density", default=DEFAULT_SURFACE_DENSITY)
+        # Swarm radius
+        parser.add_argument("-sr", "--sr", "-swarm_radius", "--swarm_radius",
+                            help="Swarm radius at generating glowworm poses (translation)",
+                            type=valid_float_number, dest="swarm_radius", default=DEFAULT_SWARM_RADIUS)
         if input_args:
             self.args = parser.parse_args(input_args)
         else:

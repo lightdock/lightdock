@@ -9,9 +9,9 @@ from lightdock.mathutil.lrandom import MTGenerator, NormalGenerator
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.cython.cutil import distance as cdistance
 from lightdock.mathutil.cython.cutil import norm
-from lightdock.constants import CLUSTERS_CENTERS_FILE,\
+from lightdock.constants import SWARM_CENTERS_FILE,\
     DEFAULT_PDB_STARTING_PREFIX, DEFAULT_STARTING_PREFIX, DEFAULT_BILD_STARTING_PREFIX, DEFAULT_EXTENT_MU, \
-    DEFAULT_EXTENT_SIGMA
+    DEFAULT_EXTENT_SIGMA, DEFAULT_SURFACE_DENSITY
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
 from lightdock.error.lightdock_errors import LightDockWarning
@@ -281,12 +281,13 @@ def apply_membrane(swarm_centers, membrane_beads, translation):
     return compatible
 
 
-def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
+def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
                             seed, receptor_restraints, ligand_restraints, 
                             rec_translation, lig_translation,
                             dest_folder, nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
                             is_membrane=False, is_transmembrane=False,
-                            writing_starting_positions=False):
+                            writing_starting_positions=False,
+                            swarm_radius=10., surface_density=DEFAULT_SURFACE_DENSITY):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
     
     # Random number generator for poses
@@ -301,9 +302,10 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
     # Calculate swarm centers
     swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor, 
                                                                                  ligand, 
-                                                                                 num_clusters,
+                                                                                 num_swarms,
                                                                                  rec_translation,
-                                                                                 is_membrane=is_membrane)
+                                                                                 is_membrane=is_membrane,
+                                                                                 surface_density=surface_density)
     # Filter swarms far from the restraints
     if receptor_restraints:
         regular_restraints = receptor_restraints['active'] + receptor_restraints['passive']
@@ -315,16 +317,15 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
         membrane_beads = [residue for residue in receptor.residues if residue.name == 'MMB']
         swarm_centers = apply_membrane(swarm_centers, membrane_beads, rec_translation)
 
-    pdb_file_name = os.path.join(dest_folder, CLUSTERS_CENTERS_FILE)
+    pdb_file_name = os.path.join(dest_folder, SWARM_CENTERS_FILE)
     create_pdb_from_points(pdb_file_name, swarm_centers)
 
     ligand_center = ligand.center_of_coordinates()
-    radius = 10.    # ligand_diameter / 2.
     positions_files = []
 
 
     for swarm_id, swarm_center in enumerate(swarm_centers):
-        poses = populate_poses(num_glowworms, swarm_center, radius, rng, rec_translation, lig_translation,
+        poses = populate_poses(num_glowworms, swarm_center, swarm_radius, rng, rec_translation, lig_translation,
                                 rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints, ligand_diameter)
         if writing_starting_positions:
             # Save poses as pdb file
