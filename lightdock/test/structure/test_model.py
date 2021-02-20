@@ -10,23 +10,21 @@ from lightdock.mathutil.cython.quaternion import Quaternion
 
 class TestDockingModel:
 
-    def setUp(self):
+    def __init__(self):
         self.atoms1 = [Atom(1, 'CA', '', 'A', 'ALA', x=1., y=1., z=1.),
                        Atom(2, 'N', '', 'A', 'ALA', x=2., y=2., z=2.)]
         self.atoms2 = [Atom(3, 'CA', '', 'A', 'HIS', x=1.1, y=1.2, z=1.3),
                        Atom(4, 'N', '', 'A', 'HIS', x=2.9, y=2.8, z=2.7)]
         self.residues = [Residue('ALA', 1, self.atoms1), Residue('HIS', 2, self.atoms2)]
 
-    def tearDown(self):
-        pass
-
     def test_create_model(self):
-        docking_model = DockingModel(objects=self.residues, coordinates=SpacePoints([[1, 1, 1], [1.1, 1.2, 1.3]]))
+        docking_model = DockingModel(objects=self.residues,
+                                     coordinates=SpacePoints([[1, 1, 1], [1.1, 1.2, 1.3]]))
 
         expected_coordinates = SpacePoints([[1, 1, 1], [1.1, 1.2, 1.3]])
 
-        assert 2 == len(docking_model.objects)
-        assert (expected_coordinates == docking_model.coordinates[0])
+        assert len(docking_model.objects) == 2
+        assert expected_coordinates == docking_model.coordinates[0]
 
     def test_translate(self):
         atom1 = Atom(1, 'CA', '', 'A', 'ALA', x=2., y=2., z=2.)
@@ -37,7 +35,7 @@ class TestDockingModel:
         docking_model.translate([-2, -2, -2])
 
         expected_coordinates = SpacePoints([[0, 0, 0], [-2, -2, -2]])
-        assert (expected_coordinates == docking_model.coordinates[0])
+        assert expected_coordinates == docking_model.coordinates[0]
 
         expected_coordinates = SpacePoints([[-1, -1, -1]])
         assert np.allclose(expected_coordinates, docking_model.reference_points)
@@ -76,7 +74,7 @@ class TestDockingModel:
 
         expected_coordinates = SpacePoints([[1., 1., 1.]])
 
-        assert (expected_coordinates == docking_model.reference_points)
+        assert expected_coordinates == docking_model.reference_points
 
     def test_reference_points_minimum_volume_ellipsoid(self):
         atom1 = Atom(1, 'CA', '', 'A', 'ALA', x=1.2, y=-1., z=2.)
