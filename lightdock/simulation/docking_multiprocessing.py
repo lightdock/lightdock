@@ -145,6 +145,12 @@ def run_simulation(parser):
 
         scoring_functions, adapters = set_scoring_function(parser, receptor, ligand)
 
+        # Check if scoring functions are compatible with ANM if activated
+        if args.use_anm:
+            for s in scoring_functions:
+                if not s.anm_support:
+                    raise NotSupportedInScoringError(f"ANM is activated while {type(s).__name__} has no support for it")
+
         tasks = prepare_gso_tasks(parser, adapters, scoring_functions, starting_points_files)
 
         # Preparing the parallel execution

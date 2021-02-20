@@ -114,7 +114,7 @@ class MJ3h(ScoringFunction):
     min_distance_cutoff = 6.2  # 2.5^2
 
     def __init__(self, weight=1.0, penalization=3.0):
-        super(MJ3h, self).__init__(weight)
+        super(MJ3h, self).__init__(weight, anm_support=False)
         self.penalization = penalization
         self.potential = MJPotential()
         self.potentials = self.potential.potentials['MJ3h']
