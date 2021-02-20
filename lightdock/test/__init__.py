@@ -1,7 +1,8 @@
 import os
+from pathlib import Path
 
 # Set global path variables
-test_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__)))
-configuration_path = "%s%s%s%s" % (test_path, os.sep, 'etc', os.sep)
+test_path = Path(__file__).absolute().parent
+configuration_path = test_path / 'etc'
 
-os.environ['LIGHTDOCK_CONF_PATH'] = configuration_path
+os.environ['LIGHTDOCK_CONF_PATH'] = str(configuration_path)
