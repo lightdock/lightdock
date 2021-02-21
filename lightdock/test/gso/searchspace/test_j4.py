@@ -7,7 +7,7 @@ from nose.tools import assert_almost_equals
 
 class TestJ4:
 
-    def setUp(self):
+    def __init__(self):
         self.expected_values = [
             [ 29, 28, 27, 26, 25, 25 ],
             [ 28, 27, 26, 25, 24, 24 ],
@@ -17,9 +17,6 @@ class TestJ4:
             [ 25, 24, 23, 22, 21, 21 ]
             ]
 
-    def tearDown(self):
-        pass
-    
     def test_compute_J1_matrix(self):
         j4 = J4()
         for i in range(6):
