@@ -304,6 +304,7 @@ def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
                                                                                  ligand, 
                                                                                  num_swarms,
                                                                                  rec_translation,
+                                                                                 seed=seed,
                                                                                  is_membrane=is_membrane,
                                                                                  surface_density=surface_density)
     # Filter swarms far from the restraints

@@ -6,7 +6,7 @@ import freesasa
 from scipy.cluster.vq import kmeans2
 from scipy.spatial import distance, KDTree
 from prody import parsePDB
-from lightdock.constants import DEFAULT_SURFACE_DENSITY
+from lightdock.constants import DEFAULT_SURFACE_DENSITY, STARTING_POINTS_SEED
 from lightdock.error.lightdock_errors import SetupError
 
 freesasa.setVerbosity(freesasa.silent)
@@ -32,7 +32,7 @@ def points_on_sphere(number_of_points):
     return points
 
 
-def calculate_surface_points(receptor, ligand, num_points, rec_translation,
+def calculate_surface_points(receptor, ligand, num_points, rec_translation, seed=STARTING_POINTS_SEED,
     is_membrane=False, surface_density=DEFAULT_SURFACE_DENSITY, num_sphere_points=100):
     """Calculates the position of num_points on the surface of the given protein"""
     if num_points < 0:
@@ -60,6 +60,8 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation,
 
     # Surface clusters
     if len(coords) > num_points:
+        # Extremely important to set seed in order to get reproducible results
+        np.random.seed(seed)
         surface_clusters = kmeans2(data=coords, k=num_points, minit='points', iter=100)
         surface_centroids = surface_clusters[0]
     else:
@@ -94,8 +96,10 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation,
     for points in sampling:
         s.extend(points)
 
+    # Final cluster of points
     if len(s) > num_points:
-        # Final cluster of points
+        # Extremely important to set seed in order to get reproducible results
+        np.random.seed(seed)
         s_clusters = kmeans2(data=s, k=num_points, minit='points', iter=100)
         s = s_clusters[0]
 

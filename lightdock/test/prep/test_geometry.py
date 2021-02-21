@@ -1,30 +1,32 @@
 """Tests for geometry module"""
 
 import os
+from pathlib import Path
 import shutil
 import filecmp
-from nose.tools import assert_almost_equal
 from lightdock.prep.geometry import sphere, axis, create_bild_file
 
 
 class TestGeometry:
 
-    def setUp(self):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.test_path = self.path + '/scratch/'
+    def __init__(self):
+        self.path = Path(__file__).absolute().parent
+        self.test_path = self.path / 'scratch_geometry'
+        self.golden_data_path = self.path / 'golden_data'
+
+    def setup(self):
         try:
             shutil.rmtree(self.test_path)
-        except:
+        except OSError:
             pass
         os.mkdir(self.test_path)
-        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + '/golden_data/'
 
-    def tearDown(self):
+    def teardown(self):
         try:
             shutil.rmtree(self.test_path)
-        except:
+        except OSError:
             pass
-    
+
     def test_sphere(self):
         center = [5., 5., 5.]
         radius = 0.3
@@ -48,15 +50,15 @@ class TestGeometry:
 """
 
         assert expected == axis(pose)
-        
+
     def test_create_bild_file(self):
         poses = [[0., 0., 0., 0.5, 0.5, 0.5, 0.5],
                  [2., 2., 2., 0., 0.7071, 0.7071, 0.],
                  [-2., -2., -2., 0., 0., 0.7071, 0.7071]]
-        
-        generated_file = os.path.join(self.test_path, 'test.bild')
-        expected_file = os.path.join(self.golden_data_path, 'test.bild')
+
+        generated_file = self.test_path / 'test.bild'
+        expected_file = self.golden_data_path / 'test.bild'
 
         create_bild_file(generated_file, poses)
-    
+
         assert filecmp.cmp(generated_file, expected_file)
