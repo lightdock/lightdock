@@ -1,9 +1,10 @@
 """Tests for Ellipsoid module"""
 
 import os
+import shutil
+from pathlib import Path
 import numpy as np
 from nose.tools import assert_almost_equal, raises
-
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
@@ -13,15 +14,26 @@ from lightdock.mathutil.constants import ERROR_TOLERANCE
 
 class TestEllipsoid:
 
-    def setUp(self):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + '/golden_data/'
+    def __init__(self):
+        self.path = Path(__file__).absolute().parent
+        self.test_path = self.path / 'scratch_ellipsoid'
+        self.golden_data_path = self.path / 'golden_data'
 
-    def tearDown(self):
-        pass
+    def setup(self):
+        try:
+            shutil.rmtree(self.test_path)
+        except OSError:
+            pass
+        os.mkdir(self.test_path)
+
+    def teardown(self):
+        try:
+            shutil.rmtree(self.test_path)
+        except OSError:
+            pass
 
     def test_calculate_min_volume_ellipsoid(self):
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path + '1PPE_l_u.pdb')
+        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPE_l_u.pdb')
         protein = Complex(chains, atoms)
 
         ellipsoid = MinimumVolumeEllipsoid(protein.atom_coordinates[0].coordinates)
