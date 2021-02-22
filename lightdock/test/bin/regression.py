@@ -1,12 +1,14 @@
 import shutil
 import os
+from pathlib import Path
 
 
 class RegressionTest(object):
+
     def __init__(self):
-        self.path = ''
-        self.test_path = ''
-        self.golden_data_path = ''
+        self.path = None
+        self.test_path = None
+        self.golden_data_path = None
 
     def ini_test_path(self):
         try:
