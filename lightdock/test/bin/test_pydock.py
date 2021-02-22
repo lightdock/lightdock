@@ -3,124 +3,83 @@
 import shutil
 import os
 import filecmp
-
-from .regression import RegressionTest
-
-
-class TestRegressionPyDockShort(RegressionTest):
-
-    def setup(self):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.test_path = self.path + '/scratch_pydock_short/'
-        self.ini_test_path()
-        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + \
-                                '/golden_data/regression_pydock_short/'
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_rec.pdb.H'), self.test_path)
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_lig.pdb.H'), self.test_path)
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_rec.pdb.amber'), self.test_path)
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_lig.pdb.amber'), self.test_path)
-
-    def teardown(self):
-        self.clean_test_path()
-
-    def test_lightdock_1ppe_1_step_5_glowworms_1_swarm(self):
-        os.chdir(self.test_path)
-        num_swarms = 1
-        num_glowworms = 5
-        steps = 1
-
-        command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
-                                                                        '1PPE_lig.pdb.H',
-                                                                        num_swarms,
-                                                                        num_glowworms
-                                                                        )
-        os.system(command)
-        command = "lightdock3.py %s %d -c 1 -s " \
-                  "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
-                                                     steps)
-        os.system(command)
-
-        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
-                           self.test_path + 'swarm_0/gso_0.out')
-        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_1.out',
-                           self.test_path + 'swarm_0/gso_1.out')
-
-
-class TestRegressionPyDockLong(RegressionTest):
-
-    def setup(self):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.test_path = self.path + '/scratch_pydock_long/'
-        self.ini_test_path()
-        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + \
-                                '/golden_data/regression_pydock_long/'
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_rec.pdb.H'), self.test_path)
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_lig.pdb.H'), self.test_path)
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_rec.pdb.amber'), self.test_path)
-        shutil.copy(os.path.join(self.golden_data_path, '1PPE_lig.pdb.amber'), self.test_path)
-
-    def teardown(self):
-        self.clean_test_path()
-
-    def test_lightdock_1ppe_10_steps_10_glowworms_1_swarm(self):
-        if 'LIGHTDOCK_LONG_TEST' in os.environ and os.environ['LIGHTDOCK_LONG_TEST'] == 'true':
-            os.chdir(self.test_path)
-            num_swarms = 1
-            num_glowworms = 10
-            steps = 10
-            
-            command = "lightdock3_setup.py %s %s %d %d > test_lightdock.out" % ('1PPE_rec.pdb.H',
-                                                                            '1PPE_lig.pdb.H',
-                                                                            num_swarms,
-                                                                            num_glowworms
-                                                                            )
-            os.system(command)
-            command = "lightdock3.py %s %d -c 1 -s " \
-                      "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
-                                                         steps)
-            os.system(command)
-
-            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
-                               self.test_path + 'swarm_0/gso_0.out')
-            assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_10.out',
-                               self.test_path + 'swarm_0/gso_10.out')
+from pathlib import Path
+from lightdock.test.bin.regression import RegressionTest
 
 
 class TestRegressionPyDockRestraints(RegressionTest):
 
+    def __init__(self):
+        super().__init__()
+        self.path = Path(__file__).absolute().parent
+        self.test_path = self.path / 'scratch_pydock_restraints'
+        self.golden_data_path = self.path / 'golden_data' / 'regression_pydock_restraints'
+
     def setup(self):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.test_path = self.path + '/scratch_pydock_restraints/'
         self.ini_test_path()
-        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + \
-                                '/golden_data/regression_pydock_restraints/'
-        shutil.copy(os.path.join(self.golden_data_path, '2UUY_rec.pdb'), self.test_path)
-        shutil.copy(os.path.join(self.golden_data_path, '2UUY_lig.pdb'), self.test_path)
+        shutil.copy(self.golden_data_path / '1PPE_rec.pdb.H', self.test_path)
+        shutil.copy(self.golden_data_path / '1PPE_lig.pdb.H', self.test_path)
+        shutil.copy(self.golden_data_path / 'restraints.list', self.test_path)
 
     def teardown(self):
         self.clean_test_path()
 
-    def test_lightdock_2uuy_20_steps_25_glowworms_1_swarm(self):
+    def test_lightdock_2uuy_20_steps_25_glowworms_rst(self):
         os.chdir(self.test_path)
-        num_swarms = 4
         num_glowworms = 25
         steps = 20
 
-        command = "lightdock3_setup.py %s %s %d %d -rst %s > test_lightdock.out" % ('2UUY_rec.pdb',
-                                                                                '2UUY_lig.pdb',
-                                                                                num_swarms,
-                                                                                num_glowworms,
-                                                                                self.golden_data_path + 'restraints.list'
-                                                                                )
-        os.system(command)
-        command = "lightdock3.py %s %d -c 1 -s " \
-                  "cpydock >> test_lightdock.out" % (self.test_path + 'setup.json',
-                                                     steps)
+        command = f"lightdock3_setup.py 1PPE_rec.pdb.H 1PPE_lig.pdb.H -g {num_glowworms} -anm "
+        command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 
-        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_0.out',
-                           self.test_path + 'swarm_0/gso_0.out')
-        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_10.out',
-                           self.test_path + 'swarm_0/gso_10.out')
-        assert filecmp.cmp(self.golden_data_path + 'swarm_0/gso_20.out',
-                           self.test_path + 'swarm_0/gso_20.out')
+        command = f"lightdock3.py -c 1 -s cpydock setup.json {steps} -l 0 >> test_lightdock.out"
+        os.system(command)
+
+        assert filecmp.cmp(self.golden_data_path / 'swarm_0' / 'gso_0.out',
+                           self.test_path / 'swarm_0' / 'gso_0.out')
+        assert filecmp.cmp(self.golden_data_path / 'swarm_0' / 'gso_10.out',
+                           self.test_path / 'swarm_0' / 'gso_10.out')
+        assert filecmp.cmp(self.golden_data_path / 'swarm_0' / 'gso_20.out',
+                           self.test_path / 'swarm_0' / 'gso_20.out')
+
+
+class TestRegressionCPyDockLong(RegressionTest):
+
+    def __init__(self):
+        super().__init__()
+        self.path = Path(__file__).absolute().parent
+        self.test_path = self.path / 'scratch_pydock_long'
+        self.golden_data_path = self.path / 'golden_data' / 'regression_pydock_long'
+
+    def setup(self):
+        self.ini_test_path()
+        shutil.copy(self.golden_data_path / '1PPE_rec.pdb.H', self.test_path)
+        shutil.copy(self.golden_data_path / '1PPE_lig.pdb.H', self.test_path)
+
+    def teardown(self):
+        self.clean_test_path()
+
+    def test_lightdock_2uuy_40_steps_50_glowworms(self):
+        os.chdir(self.test_path)
+        num_glowworms = 50
+        steps = 40
+
+        command = f"lightdock3_setup.py 1PPE_rec.pdb.H 1PPE_lig.pdb.H -g {num_glowworms} >> test_lightdock.out"
+        os.system(command)
+
+        command = f"lightdock3.py -c 1 -s cpydock setup.json {steps} -l 100 >> test_lightdock.out"
+        os.system(command)
+
+        assert filecmp.cmp(self.golden_data_path / 'swarm_100' / 'gso_0.out',
+                           self.test_path / 'swarm_100' / 'gso_0.out')
+        assert filecmp.cmp(self.golden_data_path / 'swarm_100' / 'gso_10.out',
+                           self.test_path / 'swarm_100' / 'gso_10.out')
+        assert filecmp.cmp(self.golden_data_path / 'swarm_100' / 'gso_20.out',
+                           self.test_path / 'swarm_100' / 'gso_20.out')
+        assert filecmp.cmp(self.golden_data_path / 'swarm_100' / 'gso_30.out',
+                           self.test_path / 'swarm_100' / 'gso_30.out')
+        assert filecmp.cmp(self.golden_data_path / 'swarm_100' / 'gso_40.out',
+                           self.test_path / 'swarm_100' / 'gso_40.out')
+        assert filecmp.cmp(self.golden_data_path / 'init' / 'swarm_centers.pdb',
+                           self.test_path / 'init' / 'swarm_centers.pdb')
