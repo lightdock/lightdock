@@ -4,17 +4,12 @@
     "anm_seed": 324324,
     "configuration_file": null,
     "cores": 1,
-    "ftdock_file": null,
     "glowworms": 25,
     "gso_seed": 324324,
     "ligand_pdb": "2UUY_lig.pdb",
     "ligand_restraints": {
-        "active": [
-            "B.GLY.67",
-            "B.GLU.68",
-            "B.CYS.69",
-            "B.ALA.70"
-        ],
+        "active": [],
+        "blocked": [],
         "passive": []
     },
     "listscoring": null,
@@ -35,16 +30,24 @@
             "A.ILE.238",
             "A.LYS.239"
         ],
+        "blocked": [],
         "passive": []
     },
     "restraints": "restraints.list",
     "rotation_step": 0.5,
     "scoring_function": "fastdfire",
-    "setup_file": "/Users/bjimenez/workspaces/lightdocking/lightdock_3/lightdock/lightdock/test/bin/scratch_fastdfire_restraints/setup.json",
+    "setup_file": "setup.json",
     "starting_points_seed": 324324,
     "steps": 20,
-    "swarms": 1,
+    "surface_density": 50.0,
+    "swarm_list": [
+        0
+    ],
+    "swarm_radius": 10.0,
+    "swarms": 17,
     "translation_step": 0.5,
-    "use_anm": false,
-    "verbose_parser": false
+    "transmembrane": false,
+    "use_anm": true,
+    "verbose_parser": false,
+    "write_starting_positions": false
 }
