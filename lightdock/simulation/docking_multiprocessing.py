@@ -18,14 +18,14 @@ from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
 from lightdock.scoring.multiple import ScoringConfiguration
 from lightdock.structure.nm import read_nmodes
-from lightdock.error.lightdock_errors import NotSupportedInScoringError
+from lightdock.error.lightdock_errors import NotSupportedInScoringError, SwarmNumError
 
 
 log = LoggingManager.get_logger('lightdock')
 
 
 def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions, seed,
-            step_translation, step_rotation, configuration_file=None, 
+            step_translation, step_rotation, configuration_file=None,
             use_anm=False, nmodes_step=0.1, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG,
             local_minimization=False):
     """Creates a lightdock GSO simulation object"""
@@ -90,7 +90,15 @@ def set_scoring_function(parser, receptor, ligand):
 def prepare_gso_tasks(parser, adapters, scoring_functions, starting_points_files):
     """Creates the parallel GSOTasks objects to be executed by the scheduler"""
     tasks = []
-    for id_swarm in range(parser.args.swarms):
+    # Prepare tasks depending on swarms to simulate
+    if parser.args.swarm_list:
+        swarm_ids = parser.args.swarm_list
+        if min(swarm_ids) < 0 or max(swarm_ids) >= parser.args.swarms:
+            raise SwarmNumError("Wrong list of swarms")
+    else:
+        swarm_ids = list(range(parser.args.swarms))
+
+    for id_swarm in swarm_ids:
         gso = set_gso(parser.args.glowworms, adapters, scoring_functions, starting_points_files[id_swarm],
                       parser.args.gso_seed, parser.args.translation_step,
                       parser.args.rotation_step, parser.args.configuration_file,

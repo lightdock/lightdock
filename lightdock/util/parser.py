@@ -29,7 +29,7 @@ def get_lightdock_structures(input_file):
         if os.path.exists(lightdock_structure):
             file_names.append(lightdock_structure)
         else:
-            raise LightDockError('Structure file %s not found' % lightdock_structure)
+            raise LightDockError(f"Structure file {lightdock_structure} not found")
     return file_names
 
 
@@ -44,9 +44,9 @@ def valid_integer_number(int_value):
     try:
         int_value = int(int_value)
     except:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        raise argparse.ArgumentTypeError(f"{int_value} is an invalid value")
     if int_value <= 0:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        raise argparse.ArgumentTypeError(f"{int_value} is an invalid value")
     return int_value
 
 
@@ -54,19 +54,19 @@ def valid_natural_number(int_value):
     try:
         int_value = int(int_value)
     except:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        raise argparse.ArgumentTypeError(f"{int_value} is an invalid value")
     if int_value < 0:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % int_value)
+        raise argparse.ArgumentTypeError(f"{int_value} is an invalid value")
     return int_value
-    
+
 
 def valid_float_number(float_value):
     try:
         float_value = float(float_value)
     except:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % float_value)
+        raise argparse.ArgumentTypeError(f"{float_value} is an invalid value")
     if float_value <= 0.:
-        raise argparse.ArgumentTypeError("%s is an invalid value" % float_value)
+        raise argparse.ArgumentTypeError(f"{float_value} is an invalid value")
     return float_value
 
 
@@ -74,7 +74,7 @@ class SetupCommandLineParser(object):
     """Parses the command line of lightdock_setup"""
     def __init__(self, input_args=None):
         parser = argparse.ArgumentParser(prog="lightdock3_setup")
-        
+
         # Receptor
         parser.add_argument("receptor_pdb", help="Receptor structure PDB file",
                             type=valid_file, metavar="receptor_pdb_file")
@@ -154,40 +154,40 @@ class CommandLineParser(object):
     """Parses the command line"""
     def __init__(self):
         parser = argparse.ArgumentParser(prog="lightdock3")
-        
+
         # Receptor
-        parser.add_argument("setup_file", help="Setup file name", 
+        parser.add_argument("setup_file", help="Setup file name",
                             type=valid_file, metavar="setup_file")
         # Steps
         parser.add_argument("steps", help="number of steps of the simulation",
                             type=valid_integer_number)
         # Configuration file
         parser.add_argument("-f", "--file", help="algorithm configuration file",
-                            dest="configuration_file", type=valid_file, 
+                            dest="configuration_file", type=valid_file,
                             metavar="configuration_file")
         # Scoring function
         parser.add_argument("-s", "--scoring_function", help="scoring function used",
                             dest="scoring_function")
         # GSO seed
-        parser.add_argument("-sg", "--seed", help="seed used in the algorithm", 
+        parser.add_argument("-sg", "--seed", help="seed used in the algorithm",
                             dest="gso_seed", type=int, default=GSO_SEED)
         # Translation step
-        parser.add_argument("-t", "--translation_step", help="translation step", 
+        parser.add_argument("-t", "--translation_step", help="translation step",
                             type=valid_float_number, default=DEFAULT_TRANSLATION_STEP)
         # Rotation step
-        parser.add_argument("-r", "--rotation_step", help="normalized rotation step", 
+        parser.add_argument("-r", "--rotation_step", help="normalized rotation step",
                             type=valid_float_number, default=DEFAULT_ROTATION_STEP)
         # Version
-        parser.add_argument("-V", "-v", "--version", help="show version", 
+        parser.add_argument("-V", "-v", "--version", help="show version",
                             action='version', version="%s %s" % (parser.prog, CURRENT_VERSION))
         # Number of cpu cores to use
         parser.add_argument("-c", "--cores", help="number of cpu cores to use",
                             dest="cores", type=valid_integer_number)
         # Profiling
-        parser.add_argument("--profile", help="Output profiling data", 
+        parser.add_argument("--profile", help="Output profiling data",
                             dest="profiling", action='store_true', default=False)
         # MPI parallel execution
-        parser.add_argument("-mpi", "--mpi", help="activates the MPI parallel execution", 
+        parser.add_argument("-mpi", "--mpi", help="activates the MPI parallel execution",
                             dest="mpi", action='store_true', default=False)
         # Normal modes step
         parser.add_argument("-ns", "--nmodes_step", help="normalized normal modes step",
@@ -196,7 +196,10 @@ class CommandLineParser(object):
         parser.add_argument("-min", "--min", help="activates the local minimization",
                             dest="local_minimization", action='store_true', default=False)
         # List of available scoring functions
-        parser.add_argument("--listscoring", help="list all available scoring functions", 
+        parser.add_argument("--listscoring", help="list all available scoring functions",
                             action=ListScoringAction, nargs=0)
+        # List of swarms to simulate
+        parser.add_argument("-l", "--list", help="List of swarms to simulate",
+                            dest="swarm_list", nargs="+", type=int, required=False)
 
         self.args = parser.parse_args()
