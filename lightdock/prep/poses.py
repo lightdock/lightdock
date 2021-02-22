@@ -31,13 +31,13 @@ def get_random_point_within_sphere(number_generator, radius):
 def normalize_vector(v):
     """Normalizes a given vector"""
     norm = np.linalg.norm(v)
-    if norm < 0.00001: 
+    if norm < 0.00001:
        return v
     return v / norm
 
 
 def quaternion_from_vectors(a, b):
-    """Calculate quaternion between two vectors a and b. 
+    """Calculate quaternion between two vectors a and b.
 
     Code source: http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
     """
@@ -84,7 +84,7 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
     # Define restraints vectors
     a = np.array([lx, ly, lz])
     b = np.array([rx - tx, ry - ty, rz - tz])
-    
+
     q = quaternion_from_vectors(a, b)
 
     return q
@@ -142,8 +142,8 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
                 raise LightDockWarning('Found wrong coefficient on calculating poses with restraints')
             # It is important to keep the coordinates as in the original complex without
             # moving to the center of coordinates (applying translation)
-            rec_residue = Residue.dummy(center[0]*coef - rec_translation[0], 
-                                        center[1]*coef - rec_translation[1], 
+            rec_residue = Residue.dummy(center[0]*coef - rec_translation[0],
+                                        center[1]*coef - rec_translation[1],
                                         center[2]*coef - rec_translation[2])
 
             lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
@@ -177,9 +177,9 @@ def create_file_from_poses(pos_file_name, poses):
     positions_file.close()
 
 
-def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints, 
+def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints,
                      distance_cutoff, translation, swarms_per_restraint=10):
-    """Filter out swarm centers which are not close to the given restraints or too close 
+    """Filter out swarm centers which are not close to the given restraints or too close
     to blocking residues"""
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
@@ -213,7 +213,7 @@ def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints,
     else:
         # We need to distinguish between two cases:
         if len(closer_swarm_ids) > 0:
-            # We have a list of closer swarms to passive and active restraints, we need 
+            # We have a list of closer swarms to passive and active restraints, we need
             # to filter out from this list of closer swarms the ones closed to blocking
             # restraints
             centers_list = new_swarm_centers
@@ -267,7 +267,7 @@ def upper_layer(layers):
 
 def apply_membrane(swarm_centers, membrane_beads, translation):
     """Applies membrane restraints to the given swarm centers
-    
+
     Requires membrane beads to be orthogal to Z-axis.
     """
     bead_z_coordinates = [residue.get_atom('BJ').z for residue in membrane_beads]
@@ -282,14 +282,14 @@ def apply_membrane(swarm_centers, membrane_beads, translation):
 
 
 def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
-                            seed, receptor_restraints, ligand_restraints, 
+                            seed, receptor_restraints, ligand_restraints,
                             rec_translation, lig_translation,
                             dest_folder, nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
                             is_membrane=False, is_transmembrane=False,
                             writing_starting_positions=False,
                             swarm_radius=10., surface_density=DEFAULT_SURFACE_DENSITY):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
-    
+
     # Random number generator for poses
     rng = MTGenerator(seed)
 
@@ -298,10 +298,10 @@ def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
         rng_nm = NormalGenerator(nm_seed, mu=DEFAULT_EXTENT_MU, sigma=DEFAULT_EXTENT_SIGMA)
     else:
         rng_nm = None
-    
+
     # Calculate swarm centers
-    swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor, 
-                                                                                 ligand, 
+    swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor,
+                                                                                 ligand,
                                                                                  num_swarms,
                                                                                  rec_translation,
                                                                                  seed=seed,
@@ -310,7 +310,7 @@ def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
     # Filter swarms far from the restraints
     if receptor_restraints:
         regular_restraints = receptor_restraints['active'] + receptor_restraints['passive']
-        swarm_centers = apply_restraints(swarm_centers, regular_restraints, receptor_restraints['blocked'], 
+        swarm_centers = apply_restraints(swarm_centers, regular_restraints, receptor_restraints['blocked'],
                                          ligand_diameter / 2., rec_translation)
 
     # Filter out swarms which are not compatible with the explicit membrane
