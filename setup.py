@@ -103,10 +103,9 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=[
         'numpy>=1.17.1',
-        'scipy>=1.3.1,<1.6',
+        'scipy>=1.3.1',
         'cython>=0.29.13',
-        'pyparsing==2.4.7',
-        'prody==1.10.11',
+        'prody>=1.10.11',
         'freesasa>=2.0.3',
     ],
     scripts=[
