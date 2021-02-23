@@ -105,3 +105,8 @@ class SetupError(LightDockError):
 class SwarmNumError(LightDockError):
     """Error in number of swarms"""
     pass
+
+
+class MembraneSetupError(LightDockError):
+    """Error in membrane setup"""
+    pass

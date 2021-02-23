@@ -33,12 +33,12 @@ def points_on_sphere(number_of_points):
 
 
 def calculate_surface_points(receptor, ligand, num_points, rec_translation, seed=STARTING_POINTS_SEED,
-    is_membrane=False, surface_density=DEFAULT_SURFACE_DENSITY, num_sphere_points=100):
+    has_membrane=False, surface_density=DEFAULT_SURFACE_DENSITY, num_sphere_points=100):
     """Calculates the position of num_points on the surface of the given protein"""
     if num_points < 0:
         raise SetupError("Invalid number of points to generate over the surface")
 
-    receptor_atom_coordinates = receptor.representative(is_membrane)
+    receptor_atom_coordinates = receptor.representative(has_membrane)
 
     distances_matrix_rec = distance.pdist(receptor_atom_coordinates)
     receptor_max_diameter = np.max(distances_matrix_rec)

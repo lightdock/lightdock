@@ -14,7 +14,7 @@ from lightdock.constants import SWARM_CENTERS_FILE,\
     DEFAULT_EXTENT_SIGMA, DEFAULT_SURFACE_DENSITY
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
-from lightdock.error.lightdock_errors import LightDockWarning
+from lightdock.error.lightdock_errors import LightDockWarning, MembraneSetupError
 
 
 def get_random_point_within_sphere(number_generator, radius):
@@ -264,20 +264,39 @@ def upper_layer(layers):
     upper = layers[np.argmax(avgs)]
     return upper
 
+def bottom_layer(layers):
+    """Calculates which is the bottom membrane layer"""
+    avgs = [np.mean(layer) for layer in layers]
+    bottom = layers[np.argmin(avgs)]
+    return bottom
 
-def apply_membrane(swarm_centers, membrane_beads, translation):
+
+def apply_membrane(swarm_centers, membrane_beads, translation, is_transmembrane):
     """Applies membrane restraints to the given swarm centers
 
     Requires membrane beads to be orthogal to Z-axis.
     """
     bead_z_coordinates = [residue.get_atom('BJ').z for residue in membrane_beads]
     layers = estimate_membrane(bead_z_coordinates)
-    layer = upper_layer(layers)
-    min_z = max(layer) + translation[2]
+    if is_transmembrane and len(layers) != 2:
+        raise MembraneSetupError("Number of membrane layers and transmembrane option does not correspond")
+
     compatible = []
-    for swarm_id, center in enumerate(swarm_centers):
-        if center[2] >= min_z:
-            compatible.append(center)
+    if is_transmembrane:
+        upper = upper_layer(layers)
+        bottom = bottom_layer(layers)
+        max_z = min(upper) + translation[2]
+        min_z = max(bottom) + translation[2]
+        for swarm_id, center in enumerate(swarm_centers):
+            if center[2] >= min_z and center[2] <= max_z:
+                compatible.append(center)
+    else:
+        layer = upper_layer(layers)
+        min_z = max(layer) + translation[2]
+        for swarm_id, center in enumerate(swarm_centers):
+            if center[2] >= min_z:
+                compatible.append(center)
+
     return compatible
 
 
@@ -300,12 +319,13 @@ def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
         rng_nm = None
 
     # Calculate swarm centers
+    has_membrane = is_membrane or is_transmembrane
     swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor,
                                                                                  ligand,
                                                                                  num_swarms,
                                                                                  rec_translation,
                                                                                  seed=seed,
-                                                                                 is_membrane=is_membrane,
+                                                                                 has_membrane=has_membrane,
                                                                                  surface_density=surface_density)
     # Filter swarms far from the restraints
     if receptor_restraints:
@@ -314,9 +334,9 @@ def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
                                          ligand_diameter / 2., rec_translation)
 
     # Filter out swarms which are not compatible with the explicit membrane
-    if is_membrane:
+    if has_membrane:
         membrane_beads = [residue for residue in receptor.residues if residue.name == 'MMB']
-        swarm_centers = apply_membrane(swarm_centers, membrane_beads, rec_translation)
+        swarm_centers = apply_membrane(swarm_centers, membrane_beads, rec_translation, is_transmembrane)
 
     pdb_file_name = os.path.join(dest_folder, SWARM_CENTERS_FILE)
     create_pdb_from_points(pdb_file_name, swarm_centers)
