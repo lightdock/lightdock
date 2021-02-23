@@ -16,10 +16,10 @@ class TestPrepareNewSimulation(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / 'prepare_new_simulation'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_prepare_new_simulation(self):
         # Prepare folder structure for this test

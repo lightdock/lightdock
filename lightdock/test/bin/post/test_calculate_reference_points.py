@@ -16,10 +16,10 @@ class TestCalculateReferencePoints(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / 'reference_points'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_calculate_4IZ7_B(self):
         os.chdir(self.test_path)

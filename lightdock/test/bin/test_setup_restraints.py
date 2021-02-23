@@ -16,13 +16,13 @@ class TestSetupWithRestraints(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / 'regression_setup_rst'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
         shutil.copy(self.golden_data_path / '2UUY_rec.pdb', self.test_path)
         shutil.copy(self.golden_data_path / '2UUY_lig.pdb', self.test_path)
         shutil.copy(self.golden_data_path / 'restraints.list', self.test_path)
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_lightdock_setup_automatic(self):
         os.chdir(self.test_path)

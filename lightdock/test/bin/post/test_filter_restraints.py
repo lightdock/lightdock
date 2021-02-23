@@ -16,10 +16,10 @@ class TestFilterRestraints(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / 'filter_restraints'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_filter_restraints(self):
 

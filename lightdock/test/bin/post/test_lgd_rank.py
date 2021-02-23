@@ -16,10 +16,10 @@ class TestGenerateRanking(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / '4IZ7'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_rank_with_clusters(self):
         num_swarms = 4
@@ -52,10 +52,10 @@ class TestGenerateRankingWithoutClusters(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / '4IZ7'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_rank_with_clusters(self):
         num_swarms = 4

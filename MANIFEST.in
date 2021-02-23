@@ -13,7 +13,6 @@ recursive-include lightdock/test/gso/golden_data *
 recursive-include lightdock/test/util/golden_data *
 recursive-include lightdock/test/bin/post/golden_data *
 recursive-include lightdock/test/bin/golden_data *
-recursive-include lightdock/test/rotamer/golden_data *
 recursive-include lightdock/test/pdbutil/golden_data *
 recursive-include lightdock/test/scoring/golden_data *
 recursive-include lightdock/test/structure/golden_data *

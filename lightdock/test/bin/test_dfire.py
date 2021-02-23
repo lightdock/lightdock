@@ -16,12 +16,12 @@ class TestRegressionDFIREShort(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / 'regression_dfire_short'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
         shutil.copy(self.golden_data_path / '2UUY_rec.pdb', self.test_path)
         shutil.copy(self.golden_data_path / '2UUY_lig.pdb', self.test_path)
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_lightdock_2uuy_10_steps_25_glowworms_100_swarms(self):
         os.chdir(self.test_path)
@@ -52,12 +52,12 @@ class TestRegressionDFIRELong(RegressionTest):
         self.golden_data_path = self.path / 'golden_data' / 'regression_dfire_long'
 
     def setup(self):
-        self.ini_test_path()
+        self.ini_path()
         shutil.copy(self.golden_data_path / '1PPE_rec.pdb', self.test_path)
         shutil.copy(self.golden_data_path / '1PPE_lig.pdb', self.test_path)
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_lightdock_1ppe_50_steps_20_glowworms_100_swarms(self):
         os.chdir(self.test_path)

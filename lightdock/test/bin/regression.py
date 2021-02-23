@@ -10,7 +10,7 @@ class RegressionTest(object):
         self.test_path = None
         self.golden_data_path = None
 
-    def ini_test_path(self):
+    def ini_path(self):
         try:
             if self.test_path:
                 shutil.rmtree(self.test_path)
@@ -18,7 +18,7 @@ class RegressionTest(object):
             pass
         os.mkdir(self.test_path)
 
-    def clean_test_path(self):
+    def clean_path(self):
         try:
             shutil.rmtree(self.test_path)
         except OSError:
