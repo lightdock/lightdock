@@ -74,7 +74,7 @@ exts = [Extension(name='lightdock.mathutil.cython.cutil',
 
 setuptools.setup(
     name='lightdock',
-    version='0.9.0',
+    version='0.9.0a1',
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
