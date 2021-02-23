@@ -16,8 +16,8 @@ log = LoggingManager.get_logger('diameter')
 def parse_command_line():
     parser = argparse.ArgumentParser(prog='calculate_diameter')
     parser.add_argument("pdb", help="PDB file for structure to calculate maximum diameter")
-    args = parser.parse_args()
-    return args
+    parsed_args = parser.parse_args()
+    return parsed_args
 
 
 if __name__ == "__main__":

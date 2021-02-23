@@ -36,7 +36,7 @@ if __name__ == "__main__":
         log.error(f'File {args.input_pdb_file} does not exist')
         raise SystemExit
     molecule = parsePDB(args.input_pdb_file)
-    
+
     try:
         chain, res_name, res_num = args.anchor_residue.split('.')
     except:
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     # Calculate the atom slice using ProDy
     atoms_slice = molecule.select(f'{z_min} <= z <= {z_max}')
-    
+
     # Keep only coordinates
     slice_coordinates = [atom.getCoords() for atom in atoms_slice]
 
@@ -110,4 +110,3 @@ if __name__ == "__main__":
     log.info(f'- Angular resolution: {args.angular_resolution} degrees')
     log.info(f'- Radius resolution: {args.radius_resolution} A')
     log.info(f'- Radius offset: {args.radius_offset} A')
-

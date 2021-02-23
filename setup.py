@@ -102,24 +102,22 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-        'numpy>=1.17.1', 
-        'scipy>=1.3.1,<1.6', 
-        'cython>=0.29.13', 
+        'numpy>=1.17.1',
+        'scipy>=1.3.1,<1.6',
+        'cython>=0.29.13',
         'pyparsing==2.4.7',
         'prody==1.10.11',
         'freesasa>=2.0.3',
     ],
     scripts=[
-        'bin/ant_thony.py','bin/lgd_add_chain.py','bin/lgd_calculate_diameter.py',
+        'bin/ant_thony.py','bin/lgd_calculate_diameter.py',
         'bin/lgd_calculate_reference_points.py','bin/lgd_calculate_scoring.py',
-        'bin/lgd_calculate_surface_density.py','bin/lgd_cluster_bsas.py',
-        'bin/lgd_filter_membrane.py','bin/lgd_filter_restraints.py',
+        'bin/lgd_cluster_bsas.py', 'bin/lgd_copy_structures.py', 'bin/lgd_create_membrane.py',
+        'bin/lgd_filter_membrane.py','bin/lgd_filter_restraints.py', 'bin/lgd_flatten.py',
         'bin/lgd_generate_conformations.py','bin/lgd_generate_glowworm_positions.py',
         'bin/lgd_generate_trajectory.py','bin/lgd_gso_to_csv.py','bin/lgd_move_anm.py',
-        'bin/lgd_prepare_new_simulation.py','bin/lgd_quaternion_to_euler.py',
-        'bin/lgd_rank.py','bin/lgd_stats.py','bin/lgd_success_rate.py','bin/lgd_top.py',
-        'bin/lgd_rank_swarm.py', 'bin/lgd_copy_structures.py', 'bin/lgd_flatten.py',
-        'bin/lightdock3.py','bin/lightdock3_setup.py', 'bin/lgd_create_membrane.py'
+        'bin/lgd_rank.py', 'bin/lgd_rank_swarm.py', 'bin/lgd_top.py',
+        'bin/lightdock3.py','bin/lightdock3_setup.py',
     ],
     setup_requires=[
         'nose'
