@@ -112,11 +112,12 @@ if __name__ == "__main__":
                                                              args.starting_points_seed,
                                                              receptor_restraints, lig_restraints,
                                                              rec_translation, lig_translation,
+                                                             args.surface_density,
                                                              args.use_anm, args.anm_seed,
                                                              args.anm_rec, args.anm_lig,
                                                              args.membrane, args.transmembrane,
                                                              args.write_starting_positions,
-                                                             args.swarm_radius, args.surface_density)
+                                                             args.swarm_radius)
         if len(starting_points_files) != args.swarms:
             args.swarms = len(starting_points_files)
             log.info(f"Number of calculated swarms is {args.swarms}")

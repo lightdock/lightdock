@@ -346,6 +346,7 @@ class TestPoses:
 
         num_swarms = 100
         num_glowworms = 10
+        surface_density = 50.
         restraints = parse_restraints_file(self.golden_data_path / '3p0g' / 'restraints.list')
         receptor_restraints = get_restraints(receptor, restraints['receptor'])
         ligand_restraints = get_restraints(ligand, restraints['ligand'])
@@ -354,7 +355,7 @@ class TestPoses:
 
         positions_files = calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
                                                   STARTING_POINTS_SEED, rec_restraints, lig_restraints,
-                                                  rec_translation, lig_translation,
+                                                  rec_translation, lig_translation, surface_density,
                                                   dest_folder=self.test_path, is_membrane=True)
 
         assert filecmp.cmp(positions_files[0], self.golden_data_path / '3p0g' / 'init' / 'initial_positions_0.dat')

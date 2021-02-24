@@ -9,7 +9,7 @@ from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
     DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, \
     MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, \
-    DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SWARM_RADIUS, DEFAULT_SURFACE_DENSITY
+    DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SWARM_RADIUS
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
@@ -104,10 +104,10 @@ def check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig):
 
 
 def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_points_seed,
-    receptor_restraints, ligand_restraints, rec_translation, lig_translation,
+    receptor_restraints, ligand_restraints, rec_translation, lig_translation, surface_density,
     use_anm=False, anm_seed=0, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG,
     is_membrane=False, is_transmembrane=False, write_starting_positions=False,
-    swarm_radius=DEFAULT_SWARM_RADIUS, surface_density=DEFAULT_SURFACE_DENSITY):
+    swarm_radius=DEFAULT_SWARM_RADIUS):
     """Defines the starting positions of each glowworm in the simulation.
 
     If the init folder already exists, uses the starting positions from this folder.
@@ -121,11 +121,11 @@ def calculate_starting_positions(receptor, ligand, swarms, glowworms, starting_p
                                                         starting_points_seed,
                                                         receptor_restraints, ligand_restraints,
                                                         rec_translation, lig_translation,
-                                                        init_folder,
+                                                        surface_density, init_folder,
                                                         use_anm, anm_seed, anm_rec, anm_lig,
                                                         is_membrane, is_transmembrane,
                                                         write_starting_positions,
-                                                        swarm_radius, surface_density)
+                                                        swarm_radius)
         log.info(f"Generated {len(starting_points_files)} positions files")
     else:
         if receptor_restraints:

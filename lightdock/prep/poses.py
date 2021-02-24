@@ -303,10 +303,11 @@ def apply_membrane(swarm_centers, membrane_beads, translation, is_transmembrane)
 def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
                             seed, receptor_restraints, ligand_restraints,
                             rec_translation, lig_translation,
+                            surface_density,
                             dest_folder, nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
                             is_membrane=False, is_transmembrane=False,
                             writing_starting_positions=False,
-                            swarm_radius=10., surface_density=DEFAULT_SURFACE_DENSITY):
+                            swarm_radius=10.):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
 
     # Random number generator for poses
@@ -324,9 +325,9 @@ def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
                                                                                  ligand,
                                                                                  num_swarms,
                                                                                  rec_translation,
+                                                                                 surface_density,
                                                                                  seed=seed,
-                                                                                 has_membrane=has_membrane,
-                                                                                 surface_density=surface_density)
+                                                                                 has_membrane=has_membrane)
     # Filter swarms far from the restraints
     if receptor_restraints:
         regular_restraints = receptor_restraints['active'] + receptor_restraints['passive']
