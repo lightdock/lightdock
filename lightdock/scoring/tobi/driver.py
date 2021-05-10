@@ -127,7 +127,7 @@ class TOBIAdapter(ModelAdapter):
 class TOBI(ScoringFunction):
     """Implements TOBI potential"""
     def __init__(self, weight=1.0):
-        super(TOBI, self).__init__(weight)
+        super(TOBI, self).__init__(weight, anm_support=False)
         self.vdw_coef = 0.6
         self.penalty = 1.0
         self.function = self._default

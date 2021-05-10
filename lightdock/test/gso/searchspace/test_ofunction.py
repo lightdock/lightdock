@@ -10,4 +10,3 @@ class TestObjectiveFunction:
     def test_call(self):
         function = ObjectiveFunction()
         function(coordinates=[])
-

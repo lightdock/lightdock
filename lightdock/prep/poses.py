@@ -5,17 +5,16 @@ import operator
 import numpy as np
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
 from lightdock.prep.starting_points import calculate_surface_points
-from lightdock.prep.ftdock import FTDockCoordinatesParser, classify_ftdock_poses
 from lightdock.mathutil.lrandom import MTGenerator, NormalGenerator
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.cython.cutil import distance as cdistance
 from lightdock.mathutil.cython.cutil import norm
-from lightdock.constants import CLUSTERS_CENTERS_FILE,\
+from lightdock.constants import SWARM_CENTERS_FILE,\
     DEFAULT_PDB_STARTING_PREFIX, DEFAULT_STARTING_PREFIX, DEFAULT_BILD_STARTING_PREFIX, DEFAULT_EXTENT_MU, \
-    DEFAULT_EXTENT_SIGMA
+    DEFAULT_EXTENT_SIGMA, DEFAULT_SURFACE_DENSITY
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
-from lightdock.error.lightdock_errors import LightDockWarning
+from lightdock.error.lightdock_errors import LightDockWarning, MembraneSetupError
 
 
 def get_random_point_within_sphere(number_generator, radius):
@@ -32,13 +31,13 @@ def get_random_point_within_sphere(number_generator, radius):
 def normalize_vector(v):
     """Normalizes a given vector"""
     norm = np.linalg.norm(v)
-    if norm < 0.00001: 
+    if norm < 0.00001:
        return v
     return v / norm
 
 
 def quaternion_from_vectors(a, b):
-    """Calculate quaternion between two vectors a and b. 
+    """Calculate quaternion between two vectors a and b.
 
     Code source: http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
     """
@@ -85,7 +84,7 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
     # Define restraints vectors
     a = np.array([lx, ly, lz])
     b = np.array([rx - tx, ry - ty, rz - tz])
-    
+
     q = quaternion_from_vectors(a, b)
 
     return q
@@ -143,8 +142,8 @@ def populate_poses(to_generate, center, radius, number_generator, rec_translatio
                 raise LightDockWarning('Found wrong coefficient on calculating poses with restraints')
             # It is important to keep the coordinates as in the original complex without
             # moving to the center of coordinates (applying translation)
-            rec_residue = Residue.dummy(center[0]*coef - rec_translation[0], 
-                                        center[1]*coef - rec_translation[1], 
+            rec_residue = Residue.dummy(center[0]*coef - rec_translation[0],
+                                        center[1]*coef - rec_translation[1],
                                         center[2]*coef - rec_translation[2])
 
             lig_residue = ligand_restraints[number_generator.randint(0, len(ligand_restraints)-1)]
@@ -178,9 +177,9 @@ def create_file_from_poses(pos_file_name, poses):
     positions_file.close()
 
 
-def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints, 
+def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints,
                      distance_cutoff, translation, swarms_per_restraint=10):
-    """Filter out swarm centers which are not close to the given restraints or too close 
+    """Filter out swarm centers which are not close to the given restraints or too close
     to blocking residues"""
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
@@ -214,7 +213,7 @@ def apply_restraints(swarm_centers, receptor_restraints, blocking_restraints,
     else:
         # We need to distinguish between two cases:
         if len(closer_swarm_ids) > 0:
-            # We have a list of closer swarms to passive and active restraints, we need 
+            # We have a list of closer swarms to passive and active restraints, we need
             # to filter out from this list of closer swarms the ones closed to blocking
             # restraints
             centers_list = new_swarm_centers
@@ -265,30 +264,52 @@ def upper_layer(layers):
     upper = layers[np.argmax(avgs)]
     return upper
 
+def bottom_layer(layers):
+    """Calculates which is the bottom membrane layer"""
+    avgs = [np.mean(layer) for layer in layers]
+    bottom = layers[np.argmin(avgs)]
+    return bottom
 
-def apply_membrane(swarm_centers, membrane_beads, translation):
+
+def apply_membrane(swarm_centers, membrane_beads, translation, is_transmembrane):
     """Applies membrane restraints to the given swarm centers
-    
+
     Requires membrane beads to be orthogal to Z-axis.
     """
     bead_z_coordinates = [residue.get_atom('BJ').z for residue in membrane_beads]
     layers = estimate_membrane(bead_z_coordinates)
-    layer = upper_layer(layers)
-    min_z = max(layer) + translation[2]
+    if is_transmembrane and len(layers) != 2:
+        raise MembraneSetupError("Number of membrane layers and transmembrane option does not correspond")
+
     compatible = []
-    for swarm_id, center in enumerate(swarm_centers):
-        if center[2] >= min_z:
-            compatible.append(center)
+    if is_transmembrane:
+        upper = upper_layer(layers)
+        bottom = bottom_layer(layers)
+        max_z = min(upper) + translation[2]
+        min_z = max(bottom) + translation[2]
+        for swarm_id, center in enumerate(swarm_centers):
+            if center[2] >= min_z and center[2] <= max_z:
+                compatible.append(center)
+    else:
+        layer = upper_layer(layers)
+        min_z = max(layer) + translation[2]
+        for swarm_id, center in enumerate(swarm_centers):
+            if center[2] >= min_z:
+                compatible.append(center)
+
     return compatible
 
 
-def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
-                            seed, receptor_restraints, ligand_restraints, 
+def calculate_initial_poses(receptor, ligand, num_swarms, num_glowworms,
+                            seed, receptor_restraints, ligand_restraints,
                             rec_translation, lig_translation,
-                            dest_folder, ftdock_file='', nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
-                            is_membrane=False):
+                            surface_density,
+                            dest_folder, nm_mode=False, nm_seed=0, rec_nm=0, lig_nm=0,
+                            is_membrane=False, is_transmembrane=False,
+                            writing_starting_positions=False,
+                            swarm_radius=10.):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
-    
+
     # Random number generator for poses
     rng = MTGenerator(seed)
 
@@ -297,79 +318,48 @@ def calculate_initial_poses(receptor, ligand, num_clusters, num_glowworms,
         rng_nm = NormalGenerator(nm_seed, mu=DEFAULT_EXTENT_MU, sigma=DEFAULT_EXTENT_SIGMA)
     else:
         rng_nm = None
-    
+
     # Calculate swarm centers
-    swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor, 
-                                                                                 ligand, 
-                                                                                 num_clusters,
-                                                                                 distance_step=1.0,
-                                                                                 is_membrane=is_membrane)
+    has_membrane = is_membrane or is_transmembrane
+    swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(receptor,
+                                                                                 ligand,
+                                                                                 num_swarms,
+                                                                                 rec_translation,
+                                                                                 surface_density,
+                                                                                 seed=seed,
+                                                                                 has_membrane=has_membrane)
     # Filter swarms far from the restraints
     if receptor_restraints:
         regular_restraints = receptor_restraints['active'] + receptor_restraints['passive']
-        swarm_centers = apply_restraints(swarm_centers, regular_restraints, receptor_restraints['blocked'], 
+        swarm_centers = apply_restraints(swarm_centers, regular_restraints, receptor_restraints['blocked'],
                                          ligand_diameter / 2., rec_translation)
 
     # Filter out swarms which are not compatible with the explicit membrane
-    if is_membrane:
+    if has_membrane:
         membrane_beads = [residue for residue in receptor.residues if residue.name == 'MMB']
-        swarm_centers = apply_membrane(swarm_centers, membrane_beads, rec_translation)
+        swarm_centers = apply_membrane(swarm_centers, membrane_beads, rec_translation, is_transmembrane)
 
-    pdb_file_name = os.path.join(dest_folder, CLUSTERS_CENTERS_FILE)
+    pdb_file_name = os.path.join(dest_folder, SWARM_CENTERS_FILE)
     create_pdb_from_points(pdb_file_name, swarm_centers)
 
     ligand_center = ligand.center_of_coordinates()
-    radius = 10.    # ligand_diameter / 2.
     positions_files = []
 
-    # Populate the clusters using the FTDock poses
-    if ftdock_file:
-        if nm_mode:
-            raise NotImplementedError('Using FTDock poses with NM is not supported')
 
-        poses = FTDockCoordinatesParser.get_list_of_poses(ftdock_file, ligand_center)
-        clusters = classify_ftdock_poses(poses, swarm_centers, radius)
-
-        for cluster_id, ftdock_poses in clusters.items():
-            # Translate FTDock poses into lightdock poses
-            poses = []
-            for pose in ftdock_poses:
-                poses.append([pose.translation[0],
-                              pose.translation[1],
-                              pose.translation[2],
-                              pose.q.w,
-                              pose.q.x,
-                              pose.q.y,
-                              pose.q.z])
-
-            # Populate new poses if needed
-            if len(poses) < num_glowworms:
-                needed = num_glowworms - len(poses)
-                poses.extend(populate_poses(needed, swarm_centers[cluster_id], radius, rng, rec_translation, lig_translation))
-
-            # Save poses as pdb file
-            pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, cluster_id))
-            create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])
-
-            # Save poses as initial_positions file
-            pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, cluster_id))
-            bild_file_name = os.path.join(dest_folder, '%s_%s.bild' % (DEFAULT_BILD_STARTING_PREFIX, cluster_id))
-            create_file_from_poses(pos_file_name, poses[:num_glowworms])
-            positions_files.append(pos_file_name)
-            create_bild_file(bild_file_name, poses)
-    else:
-        for swarm_id, swarm_center in enumerate(swarm_centers):
-            poses = populate_poses(num_glowworms, swarm_center, radius, rng, rec_translation, lig_translation,
-                                    rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints, ligand_diameter)
+    for swarm_id, swarm_center in enumerate(swarm_centers):
+        poses = populate_poses(num_glowworms, swarm_center, swarm_radius, rng, rec_translation, lig_translation,
+                                rng_nm, rec_nm, lig_nm, receptor_restraints, ligand_restraints, ligand_diameter)
+        if writing_starting_positions:
             # Save poses as pdb file
             pdb_file_name = os.path.join(dest_folder, '%s_%s.pdb' % (DEFAULT_PDB_STARTING_PREFIX, swarm_id))
             create_pdb_from_points(pdb_file_name, [[pose[0], pose[1], pose[2]] for pose in poses[:num_glowworms]])
-
-            # Save poses as initial_positions file
-            pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, swarm_id))
+            # Generate bild files for glowworm orientations
             bild_file_name = os.path.join(dest_folder, '%s_%s.bild' % (DEFAULT_BILD_STARTING_PREFIX, swarm_id))
-            create_file_from_poses(pos_file_name, poses[:num_glowworms])
-            positions_files.append(pos_file_name)
             create_bild_file(bild_file_name, poses)
+
+        # Save poses as initial_positions file
+        pos_file_name = os.path.join(dest_folder, '%s_%s.dat' % (DEFAULT_STARTING_PREFIX, swarm_id))
+        create_file_from_poses(pos_file_name, poses[:num_glowworms])
+        positions_files.append(pos_file_name)
 
     return positions_files

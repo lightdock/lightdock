@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
+"""A tool for parallel execution of tasks"""
 
-from multiprocessing import Process, cpu_count
+import os
 import argparse
 import logging
-import os
-
+from multiprocessing import Process, cpu_count
 
 logging.basicConfig(format='[Ant-Thony] %(levelname)s: %(message)s', level=logging.DEBUG)
 
 
-class Task(object):
+class Task:
     """A task class"""
     def __init__(self, command, path="."):
         self.command = command
@@ -25,18 +25,18 @@ class Task(object):
 class Ant(Process):
     """Ant-Thony's buddies"""
     def __init__(self, tasks):
-        super(Ant, self).__init__()
+        super().__init__()
         self.tasks = tasks
-        logging.info("{} ready with {} tasks".format(self.name, len(self.tasks)))
-        
+        logging.info(f"{self.name} ready with {self.tasks} tasks")
+
     def run(self):
         """Runs all the assigned tasks"""
         for task in self.tasks:
             task.run()
-        logging.info("{} going back to the nest".format(self.name))
+        logging.info(f"{self.name} going back to the nest")
 
 
-class Ant_Thony(object):
+class Ant_Thony:
     """Our buddy Ant-Thony"""
     def __init__(self, tasks, num_cpus=0):
         try:
@@ -46,27 +46,27 @@ class Ant_Thony(object):
         except (ValueError, TypeError):
             logging.warning("Number of cores has not been specified or it is incorrect. Using all available cores.")
             self.num_processes = cpu_count()
-        
-        logging.info("Ant-Thony will use {} cores".format(self.num_processes))
-        
+
+        logging.info(f"Ant-Thony will use {self.num_processes} cores")
+
         self.tasks = tasks
         self.num_tasks = len(tasks)
         self.workers = []
         workers_tasks = [tasks[i::self.num_processes] for i in range(self.num_processes)]
-        
+
         for i in range(self.num_processes):
             worker = Ant(workers_tasks[i])
             self.workers.append(worker)
-    
+
     def release(self):
         logging.info("Swarming!")
         for ant in self.workers:
             ant.start()
-            
+
         for ant in self.workers:
             ant.join()
-        
-        logging.info("{} tasks done".format(self.num_tasks))
+
+        logging.info(f"{self.num_tasks} tasks done")
 
     def go_home(self):
         for ant in self.workers:
@@ -83,12 +83,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.tasks_file_name) as handle:
-        tasks = []
+        all_tasks = []
         for line in handle:
             if line and not line.startswith("#"):
-                tasks.append(Task(line.rstrip(os.linesep)))
+                all_tasks.append(Task(line.rstrip(os.linesep)))
 
-        anthony = Ant_Thony(tasks, args.cores)
+        anthony = Ant_Thony(all_tasks, args.cores)
         anthony.release()
         anthony.go_home()
-

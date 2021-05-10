@@ -1,5 +1,9 @@
 """LightDock default parameters"""
 
+# Simulation defaults
+DEFAULT_NUM_SWARMS = 400
+DEFAULT_NUM_GLOWWORMS = 200
+
 # GSO algorithm constants
 MAX_TRANSLATION = 30                # In Angstroms
 MAX_ROTATION = 1.0                  # Quaternion default value for its components
@@ -40,7 +44,7 @@ DEFAULT_SETUP_FILE = "setup.json"
 DEFAULT_PDB_STARTING_PREFIX = "starting_positions"
 DEFAULT_BILD_STARTING_PREFIX = "starting_poses"
 DEFAULT_STARTING_PREFIX = "initial_positions"
-CLUSTERS_CENTERS_FILE = "cluster_centers.pdb"
+SWARM_CENTERS_FILE = "swarm_centers.pdb"
 RANKING_FILE = "solutions.list"
 RANKING_BY_RMSD_FILE = "rank_by_rmsd.list"
 RANKING_BY_LUCIFERIN_FILE = "rank_by_luciferin.list"
@@ -55,6 +59,6 @@ CLUSTER_ANALYSIS_FILE = CLUSTER_DEFAULT_NAME + ".repr"
 CLUSTER_REPRESENTATIVES_FILE = CLUSTER_DEFAULT_NAME + DEFAULT_REPRESENTATIVES_EXTENSION
 DEFAULT_LIGHTDOCK_INFO = "lightdock.info"
 
-# Surface density
-MIN_SURFACE_DENSITY = 200.0
-
+# Swarm calculations
+DEFAULT_SURFACE_DENSITY = 50.0
+DEFAULT_SWARM_RADIUS = 10.0

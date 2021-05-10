@@ -1,13 +1,13 @@
 """Tests for J5 function"""
 
-from lightdock.gso.searchspace.benchmark_ofunctions import J5
 from nose.tools import assert_equals
+from lightdock.gso.searchspace.benchmark_ofunctions import J5
 from lightdock.gso.coordinates import Coordinates
 
 
 class TestJ5:
 
-    def setUp(self):
+    def __init__(self):
         self.expected_values = [
              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
              [1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1],
@@ -26,9 +26,6 @@ class TestJ5:
              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
             ]
 
-    def tearDown(self):
-        pass
-    
     def test_compute_J1_matrix(self):
         j5 = J5()
         for i in range(15):

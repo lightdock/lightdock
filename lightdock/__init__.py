@@ -3,11 +3,10 @@
 import os
 
 __author__ = "Brian Jimenez-Garcia"
-__email__ = "brian.jimenez@bsc.es"
-__copyright__ = "Copyright 2017, Barcelona Supercomputing Center"
+__email__ = "br.jimenezgarcia@gmail.com"
 __credits__ = ["Brian Jimenez-Garcia", "Jorge Roel", "Miquel Vidal"]
-__license__ = "Apache"
-__version__ = "2.0"
+__license__ = "GPL"
+__version__ = "3.0"
 
 
 # Set global path variables

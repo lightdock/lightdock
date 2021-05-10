@@ -1,7 +1,8 @@
 """Reads GSO parameters from configuration file"""
 
-from configparser import ConfigParser
 import os
+from pathlib import Path
+from configparser import ConfigParser
 from lightdock.error.lightdock_errors import GSOParameteresError
 
 
@@ -13,10 +14,10 @@ class GSOParameters(object):
             if file_name:
                 self._config.readfp(open(file_name))
             else:
-                self._config.readfp(open("%s%s" % (os.environ['LIGHTDOCK_CONF_PATH'], 'glowworm.conf')))
+                self._config.readfp(open(Path(os.environ['LIGHTDOCK_CONF_PATH']) / 'glowworm.conf'))
         except Exception as e:
             raise GSOParameteresError(str(e))
-        
+
         try:
             self.rho = float(self._config.get('GSO', 'rho'))
             self.gamma = float(self._config.get('GSO', 'gamma'))
@@ -25,6 +26,6 @@ class GSOParameters(object):
             self.initial_vision_range = float(self._config.get('GSO', 'initialVisionRange'))
             self.max_vision_range = float(self._config.get('GSO', 'maximumVisionRange'))
             self.max_neighbors = int(self._config.get('GSO', 'maximumNeighbors'))
-        
+
         except Exception as e:
             raise GSOParameteresError("Problem parsing GSO parameters file. Details: %s" % str(e))

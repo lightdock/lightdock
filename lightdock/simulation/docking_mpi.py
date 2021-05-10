@@ -19,14 +19,14 @@ from lightdock.parallel.kraken import Kraken
 from lightdock.parallel.util import GSOClusterTask
 from lightdock.scoring.multiple import ScoringConfiguration
 from lightdock.structure.nm import read_nmodes
-from lightdock.error.lightdock_errors import NotSupportedInScoringError
+from lightdock.error.lightdock_errors import NotSupportedInScoringError, SwarmNumError
 
 
 log = LoggingManager.get_logger('lightdock')
 
 
 def set_gso(number_of_glowworms, adapters, scoring_functions, initial_positions, seed,
-            step_translation, step_rotation, configuration_file=None, 
+            step_translation, step_rotation, configuration_file=None,
             use_anm=False, nmodes_step=0.1, anm_rec=DEFAULT_NMODES_REC, anm_lig=DEFAULT_NMODES_LIG,
             local_minimization=False):
     """Creates a lightdock GSO simulation object"""
@@ -141,7 +141,22 @@ def run_simulation(parser):
             if worker_id == minion_id:
                 starting_points_files = glob.glob('init/initial_positions*.dat')
                 scoring_functions, adapters = set_scoring_function(parser, receptor, ligand, minion_id)
-                for id_swarm in range(parser.args.swarms):
+
+                # Check if scoring functions are compatible with ANM if activated
+                if args.use_anm and minion_id == 0:
+                    for s in scoring_functions:
+                        if not s.anm_support:
+                            raise NotSupportedInScoringError(f"ANM is activated while {type(s).__name__} has no support for it")
+
+                # Prepare tasks depending on swarms to simulate
+                if parser.args.swarm_list:
+                    swarm_ids = parser.args.swarm_list
+                    if min(swarm_ids) < 0 or max(swarm_ids) >= parser.args.swarms:
+                        raise SwarmNumError("Wrong list of swarms")
+                else:
+                    swarm_ids = list(range(parser.args.swarms))
+
+                for id_swarm in swarm_ids:
                     if worker_id == (id_swarm % num_workers):
                         print('GSO cluster %d - Minion %d' % (id_swarm, minion_id))
                         gso = set_gso(parser.args.glowworms, adapters, scoring_functions,

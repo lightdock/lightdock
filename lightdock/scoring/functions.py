@@ -5,8 +5,9 @@ from lightdock.gso.searchspace.ofunction import ObjectiveFunction
 
 class ScoringFunction(ObjectiveFunction):
     """Scoring Functions interface"""
-    def __init__(self, weight=1.0):
+    def __init__(self, weight=1.0, anm_support=True):
         self.weight = float(weight)
+        self.anm_support = anm_support
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Calculates the value of the scoring function.

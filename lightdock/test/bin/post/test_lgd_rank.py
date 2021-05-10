@@ -1,22 +1,25 @@
 """Test for lgd_rank post script"""
 
 import os
+from pathlib import Path
 import filecmp
 import shutil
-from ..regression import RegressionTest
+from lightdock.test.bin.regression import RegressionTest
 
 
 class TestGenerateRanking(RegressionTest):
 
+    def __init__(self):
+        super().__init__()
+        self.path = Path(__file__).absolute().parent
+        self.test_path = self.path / 'scratch_lgd_rank'
+        self.golden_data_path = self.path / 'golden_data' / '4IZ7'
+
     def setup(self):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.test_path = self.path + '/scratch_lgd_rank/'
-        self.ini_test_path()
-        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + \
-                                '/golden_data/4IZ7/'
+        self.ini_path()
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_rank_with_clusters(self):
         num_swarms = 4
@@ -25,32 +28,34 @@ class TestGenerateRanking(RegressionTest):
         # Prepare folder structure for this test
         os.chdir(self.test_path)
         for i in range(num_swarms):
-            swarm_dir = 'swarm_%d' % i
+            swarm_dir = f"swarm_{i}"
             os.mkdir(swarm_dir)
-            shutil.copyfile(os.path.join(self.golden_data_path, swarm_dir, 'gso_%d.out' % num_steps),
-                            os.path.join(self.test_path, swarm_dir, 'gso_%d.out' % num_steps))
-            shutil.copyfile(os.path.join(self.golden_data_path, swarm_dir, 'cluster.repr'),
-                            os.path.join(self.test_path, swarm_dir, 'cluster.repr'))
+            shutil.copyfile(self.golden_data_path / swarm_dir / f"gso_{num_steps}.out",
+                            self.test_path / swarm_dir / f"gso_{num_steps}.out")
+            shutil.copyfile(self.golden_data_path / swarm_dir / 'cluster.repr',
+                            self.test_path / swarm_dir / 'cluster.repr')
 
-        
-        command = "lgd_rank.py %d %d > test.out" % (num_swarms, num_steps)
+
+        command = f"lgd_rank.py {num_swarms} {num_steps} > test.out"
         os.system(command)
 
-        assert filecmp.cmp(os.path.join(self.golden_data_path, 'rank_by_scoring.list'), 
-                           os.path.join(self.test_path, 'rank_by_scoring.list'))
+        assert filecmp.cmp(self.golden_data_path / 'rank_by_scoring.list',
+                           self.test_path / 'rank_by_scoring.list')
 
 
 class TestGenerateRankingWithoutClusters(RegressionTest):
 
+    def __init__(self):
+        super().__init__()
+        self.path = Path(__file__).absolute().parent
+        self.test_path = self.path / 'scratch_lgd_rank_no_clust'
+        self.golden_data_path = self.path / 'golden_data' / '4IZ7'
+
     def setup(self):
-        self.path = os.path.dirname(os.path.realpath(__file__))
-        self.test_path = self.path + '/scratch_lgd_rank_no_clust/'
-        self.ini_test_path()
-        self.golden_data_path = os.path.normpath(os.path.dirname(os.path.realpath(__file__))) + \
-                                '/golden_data/4IZ7/'
+        self.ini_path()
 
     def teardown(self):
-        self.clean_test_path()
+        self.clean_path()
 
     def test_rank_with_clusters(self):
         num_swarms = 4
@@ -59,16 +64,16 @@ class TestGenerateRankingWithoutClusters(RegressionTest):
         # Prepare folder structure for this test
         os.chdir(self.test_path)
         for i in range(num_swarms):
-            swarm_dir = 'swarm_%d' % i
+            swarm_dir = f"swarm_{i}"
             os.mkdir(swarm_dir)
-            shutil.copyfile(os.path.join(self.golden_data_path, swarm_dir, 'gso_%d.out' % num_steps),
-                            os.path.join(self.test_path, swarm_dir, 'gso_%d.out' % num_steps))
-            shutil.copyfile(os.path.join(self.golden_data_path, swarm_dir, 'cluster.repr'),
-                            os.path.join(self.test_path, swarm_dir, 'cluster.repr'))
+            shutil.copyfile(self.golden_data_path / swarm_dir / f"gso_{num_steps}.out",
+                            self.test_path / swarm_dir / f"gso_{num_steps}.out")
+            shutil.copyfile(self.golden_data_path / swarm_dir / 'cluster.repr',
+                            self.test_path / swarm_dir / 'cluster.repr')
 
-        
-        command = "lgd_rank.py %d %d --ignore_clusters > test.out" % (num_swarms, num_steps)
+
+        command = f"lgd_rank.py {num_swarms} {num_steps} --ignore_clusters > test.out"
         os.system(command)
 
-        assert filecmp.cmp(os.path.join(self.golden_data_path, 'rank_by_scoring_noclust.list'), 
-                           os.path.join(self.test_path, 'rank_by_scoring.list'))
+        assert filecmp.cmp(self.golden_data_path / 'rank_by_scoring_noclust.list',
+                           self.test_path / 'rank_by_scoring.list')
