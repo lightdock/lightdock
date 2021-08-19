@@ -27,7 +27,7 @@ class Ant(Process):
     def __init__(self, tasks):
         super().__init__()
         self.tasks = tasks
-        logging.info(f"{self.name} ready with {self.tasks} tasks")
+        logging.info(f"{self.name} ready with {len(self.tasks)} tasks")
 
     def run(self):
         """Runs all the assigned tasks"""
