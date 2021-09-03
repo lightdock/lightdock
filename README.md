@@ -54,7 +54,7 @@ Optional dependencies are:
 #### 3.1.1. Installing NumPy, Scipy, Cython, Biopython and ProDy
 
 ```bash
-pip3 install numpy, scipy, cython, biopython, pyparsing, prody
+pip3 install numpy scipy cython biopython pyparsing prody freesasa
 ```
 
 
@@ -117,7 +117,7 @@ You can run LightDock tests:
 
 ```bash
 cd lightdock
-nosetests-3.8 
+nosetests
 ```
 
 ## 5. Documentation
