@@ -1,7 +1,7 @@
 import setuptools
 from distutils.core import setup, Extension
 from setuptools.command.test import test as TestCommand
-import numpy
+import os
 
 
 # Inspired by the example at https://pytest.org/latest/goodpractises.html
@@ -19,62 +19,101 @@ class NoseTestCommand(TestCommand):
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-exts = [Extension(name='lightdock.mathutil.cython.cutil',
+
+# MDAnalysis NumPy delay on setup.py
+def abspath(file):
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), file)
+
+
+class LDExtension(Extension, object):
+    """Derived class to cleanly handle setup-time (numpy) dependencies."""
+    def __init__(self, name, sources, *args, **kwargs):
+        self._ld_include_dirs = []
+        super(LDExtension, self).__init__(name, sources, *args, **kwargs)
+
+    @property
+    def include_dirs(self):
+        if not self._ld_include_dirs:
+            for item in self._ld_include_dir_args:
+                try:
+                    self._ld_include_dirs.append(item())
+                except TypeError:
+                    item = abspath(item)
+                    self._ld_include_dirs.append((item))
+        return self._ld_include_dirs
+
+    @include_dirs.setter
+    def include_dirs(self, val):
+        self._ld_include_dir_args = val
+
+
+def get_numpy_include():
+    import builtins
+
+    builtins.__NUMPY_SETUP__ = False
+    try:
+        import numpy as np
+    except ImportError:
+        raise SystemExit('LightDock requires NumPy even for setup')
+    return np.get_include()
+
+
+exts = [LDExtension(name='lightdock.mathutil.cython.cutil',
                   sources=["lightdock/mathutil/cython/cutil.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.mathutil.cython.quaternion',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.mathutil.cython.quaternion',
                   sources=["lightdock/mathutil/cython/quaternion.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.gso.searchspace.cython.j1',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.gso.searchspace.cython.j1',
                   sources=["lightdock/gso/searchspace/cython/j1.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.gso.searchspace.cython.j2',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.gso.searchspace.cython.j2',
                   sources=["lightdock/gso/searchspace/cython/j2.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.gso.searchspace.cython.j3',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.gso.searchspace.cython.j3',
                   sources=["lightdock/gso/searchspace/cython/j3.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.gso.searchspace.cython.j4',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.gso.searchspace.cython.j4',
                   sources=["lightdock/gso/searchspace/cython/j4.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.gso.searchspace.cython.j5',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.gso.searchspace.cython.j5',
                   sources=["lightdock/gso/searchspace/cython/j5.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.pisa.cython.cpisa',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.pisa.cython.cpisa',
                   sources=["lightdock/scoring/pisa/cython/cpisa.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.dfire.cython.cdfire',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.dfire.cython.cdfire',
                   sources=["lightdock/scoring/dfire/cython/cdfire.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.ddna.cython.cddna',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.ddna.cython.cddna',
                   sources=["lightdock/scoring/ddna/cython/cddna.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.dfire2.c.cdfire2',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.dfire2.c.cdfire2',
                   sources=["lightdock/scoring/dfire2/c/cdfire2.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.sd.energy.c.sd',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.sd.energy.c.sd',
                   sources=["lightdock/scoring/sd/energy/c/sd.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.fastdfire.c.cdfire',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.fastdfire.c.cdfire',
                   sources=["lightdock/scoring/fastdfire/c/cdfire.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.cpydock.energy.c.cpydock',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.cpydock.energy.c.cpydock',
                   sources=["lightdock/scoring/cpydock/energy/c/cpydock.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.vdw.energy.c.cvdw',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.vdw.energy.c.cvdw',
                   sources=["lightdock/scoring/vdw/energy/c/cvdw.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.dna.energy.c.cdna',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.dna.energy.c.cdna',
                   sources=["lightdock/scoring/dna/energy/c/cdna.c"],
-                  include_dirs=[numpy.get_include()]),
-        Extension(name='lightdock.scoring.sipper.c.sipper',
+                  include_dirs=[get_numpy_include]),
+        LDExtension(name='lightdock.scoring.sipper.c.sipper',
                   sources=["lightdock/scoring/sipper/c/sipper.c"],
-                  include_dirs=[numpy.get_include()]),
+                  include_dirs=[get_numpy_include]),
 ]
 
 setuptools.setup(
     name='lightdock',
-    version='0.9.0',
+    version='0.9.1',
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -101,6 +140,10 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Chemistry"
     ],
     python_requires='>=3.6',
+    setup_requires=[
+        'numpy>=1.17.1',
+        'nose'
+    ],
     install_requires=[
         'numpy>=1.17.1',
         'scipy>=1.3.1',
@@ -117,9 +160,6 @@ setuptools.setup(
         'bin/lgd_generate_trajectory.py','bin/lgd_gso_to_csv.py','bin/lgd_move_anm.py',
         'bin/lgd_rank.py', 'bin/lgd_rank_swarm.py', 'bin/lgd_top.py',
         'bin/lightdock3.py','bin/lightdock3_setup.py',
-    ],
-    setup_requires=[
-        'nose'
     ],
     cmdclass={'test': NoseTestCommand},
     ext_modules=exts,
