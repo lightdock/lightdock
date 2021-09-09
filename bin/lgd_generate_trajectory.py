@@ -110,7 +110,7 @@ if __name__ == "__main__":
                 if nmodes_rec is not None:
                     try:
                         for nm in range(num_anm_rec):
-                            receptor_pose.coordinates += nmodes_rec[nm] * rec_extent[nm]
+                            receptor_pose.coordinates[receptor.nm_mask,:] += nmodes_rec[nm] * rec_extent[nm]
                     except ValueError:
                         log.error("Problem found on calculating ANM for receptor:")
                         log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))
@@ -123,7 +123,7 @@ if __name__ == "__main__":
                 if nmodes_lig is not None:
                     try:
                         for nm in range(num_anm_lig):
-                            ligand_pose.coordinates += nmodes_lig[nm] * lig_extent[nm]
+                            ligand_pose.coordinates[ligand.nm_mask,:] += nmodes_lig[nm] * lig_extent[nm]
                     except ValueError:
                         log.error("Problem found on calculating ANM for ligand:")
                         log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))

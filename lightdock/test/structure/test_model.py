@@ -26,6 +26,21 @@ class TestDockingModel:
         assert len(docking_model.objects) == 2
         assert expected_coordinates == docking_model.coordinates[0]
 
+    def test_create_full_model(self):
+        restraints = {'active':[], 'passive':[]}
+        membrane = []
+        reference_points = [[0,0,0]]
+        n_modes = [[1.,1.,1.],[1.,1.,1.],[1.,1.,1.],[1.,1.,1.]]
+        nm_mask = [True, True, True, True]
+        docking_model = DockingModel(objects=self.residues,
+                                     coordinates=SpacePoints([[1, 1, 1], [1.1, 1.2, 1.3]]),
+                                     restraints=restraints, membrane=membrane,
+                                     reference_points=reference_points, n_modes=n_modes, nm_mask=nm_mask)
+
+        assert 'active' in docking_model.restraints
+        assert len(docking_model.n_modes) == 4
+        assert len(docking_model.nm_mask) == 4 and all(docking_model.nm_mask)
+
     def test_translate(self):
         atom1 = Atom(1, 'CA', '', 'A', 'ALA', x=2., y=2., z=2.)
         atom2 = Atom(2, 'CB', '', 'A', 'ALA', x=0., y=0., z=0.)

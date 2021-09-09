@@ -29,6 +29,13 @@ class TestResidue:
         assert residue1.is_standard()
         assert not residue2.is_standard()
 
+    def test_is_protein(self):
+        residue1 = Residue('ALA', 1)
+        residue2 = Residue('DT', 2)
+
+        assert residue1.is_protein()
+        assert not residue2.is_protein()
+
     def test_is_nucleic(self):
         residue1 = Residue('DT', 1)
         residue2 = Residue('I', 2)
@@ -52,6 +59,31 @@ class TestResidue:
         assert atom1.name == "CA"
         assert atom2.name == "N"
         assert atom3 is None
+
+    def test_get_calpha(self):
+        atoms = [Atom(1, 'CA', '', 'A', 'ALA'), Atom(2, 'N', '', 'A', 'ALA')]
+        residue = Residue('ALA', 1, atoms)
+
+        atom = residue.get_calpha()
+
+        assert atom.name == "CA"
+
+        atoms = [Atom(1, 'CB', '', 'A', 'ALA'), Atom(2, 'N', '', 'A', 'ALA')]
+        residue = Residue('ALA', 1, atoms)
+
+        atom = residue.get_calpha()
+
+        assert atom is None
+
+    def test_get_non_hydrogen_atoms(self):
+        atoms = [Atom(1, 'CA', '', 'A', 'ALA'), Atom(2, 'N', '', 'A', 'ALA'), Atom(3, 'H', '', 'A', 'ALA')]
+        residue = Residue('ALA', 1, atoms)
+
+        no_h = residue.get_non_hydrogen_atoms()
+
+        assert len(no_h) == 2
+        assert no_h[0].name == "CA"
+        assert no_h[1].name == "N"
 
     def test_backbone_sidechain(self):
         atoms = [Atom(1, 'CA', '', 'A', 'ALA'),

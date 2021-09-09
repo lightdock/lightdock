@@ -148,10 +148,12 @@ class DockingLandscapePosition(LandscapePosition):
         # Use normal modes if provided:
         if self.num_rec_nmodes > 0:
             for i in range(self.num_rec_nmodes):
-                self.receptor_pose.coordinates += self.receptor.n_modes[i] * self.rec_extent[i]
+                # Only atoms as True in the mask are moved
+                self.receptor_pose.coordinates[self.receptor.nm_mask,:] += self.receptor.n_modes[i] * self.rec_extent[i]
         if self.num_lig_nmodes > 0:
             for i in range(self.num_lig_nmodes):
-                self.ligand_pose.coordinates += self.ligand.n_modes[i] * self.lig_extent[i]
+                # Only atoms as True in the mask are moved
+                self.ligand_pose.coordinates[self.ligand.nm_mask,:] += self.ligand.n_modes[i] * self.lig_extent[i]
 
         # We rotate first, ligand it's at initial position
         self.ligand_pose.rotate(self.rotation)

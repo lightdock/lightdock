@@ -1,7 +1,7 @@
-import setuptools
-from distutils.core import setup, Extension
-from setuptools.command.test import test as TestCommand
 import os
+import setuptools
+from distutils.core import Extension
+from setuptools.command.test import test as TestCommand
 
 
 # Inspired by the example at https://pytest.org/latest/goodpractises.html

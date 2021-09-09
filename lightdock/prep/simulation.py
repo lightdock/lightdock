@@ -4,12 +4,13 @@ import os
 import glob
 import json
 import time
+import numpy as np
 from pathlib import Path
 from lightdock.prep.poses import calculate_initial_poses
 from lightdock.constants import DEFAULT_POSITIONS_FOLDER, DEFAULT_SWARM_FOLDER, DEFAULT_LIST_EXTENSION, \
     DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, \
     MIN_EXTENT, MAX_EXTENT, DEFAULT_SETUP_FILE, DEFAULT_LIGHTDOCK_INFO, \
-    DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SWARM_RADIUS
+    DEFAULT_STARTING_PREFIX, MAX_TRANSLATION, MAX_ROTATION, DEFAULT_SWARM_RADIUS, DEFAULT_MASK_FILE
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
@@ -66,6 +67,11 @@ def read_input_structure(pdb_file_name, ignore_oxt=True, ignore_hydrogens=False,
     return structure
 
 
+def write_mask_to_file(nm_mask, mask_file_name):
+    """Saves the indexes of atoms involved in ANM"""
+    np.save(mask_file_name, nm_mask)
+
+
 def save_lightdock_structure(structure):
     """Saves the structure parsed by LightDock"""
     log.info("Saving processed structure to PDB file...")
@@ -74,6 +80,8 @@ def save_lightdock_structure(structure):
         if moved_file_name.exists():
             raise LightDockError(f"{moved_file_name} already exists, please delete previous setup generated files")
         write_pdb_to_file(structure, moved_file_name, structure[structure_index])
+        mask_file_name = Path(file_name).parent / Path(DEFAULT_MASK_FILE % Path(file_name).stem)
+        write_mask_to_file(structure.nm_mask, mask_file_name)
     log.info("Done.")
 
 

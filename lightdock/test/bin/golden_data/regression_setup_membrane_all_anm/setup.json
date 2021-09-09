@@ -1,0 +1,20 @@
+{
+    "anm_lig": 10,
+    "anm_rec": 10,
+    "anm_seed": 324324,
+    "glowworms": 200,
+    "ligand_pdb": "3x29_ligand.pdb",
+    "membrane": true,
+    "noh": true,
+    "noxt": true,
+    "receptor_pdb": "3x29_receptor_membrane.pdb",
+    "restraints": null,
+    "starting_points_seed": 324324,
+    "surface_density": 50.0,
+    "swarm_radius": 10.0,
+    "swarms": 62,
+    "transmembrane": false,
+    "use_anm": true,
+    "verbose_parser": false,
+    "write_starting_positions": false
+}

@@ -5,10 +5,9 @@
 import argparse
 import os
 import numpy as np
-from lightdock.error.lightdock_errors import LightDockError
 from lightdock.util.logger import LoggingManager
-from lightdock.constants import DEFAULT_LIST_EXTENSION, DEFAULT_LIGHTDOCK_PREFIX, \
-    DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE
+from lightdock.constants import DEFAULT_NMODES_REC, DEFAULT_NMODES_LIG, \
+    DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
 from lightdock.mathutil.cython.quaternion import Quaternion
@@ -41,9 +40,9 @@ def parse_output_file(lightdock_output, num_anm_rec, num_anm_lig):
             translations.append([float(coord[0]), float(coord[1]), float(coord[2])])
             rotations.append(Quaternion(float(coord[3]), float(coord[4]), float(coord[5]), float(coord[6])))
             if len(coord) > 7:
-                rec_extents.append(np.array([float(x) for x in coord[7:7+num_anm_rec]]))
+                rec_extents.append(np.array([float(x) for x in coord[7:7 + num_anm_rec]]))
                 lig_extents.append(np.array([float(x) for x in coord[-num_anm_lig:]]))
-            raw_data = line[last+1:].split()
+            raw_data = line[last + 1:].split()
             receptor_id = int(raw_data[0])
             ligand_id = int(raw_data[1])
             receptor_ids.append(receptor_id)
@@ -135,7 +134,7 @@ if __name__ == "__main__":
         if nmodes_rec is not None and nmodes_rec.any():
             try:
                 for nm in range(num_anm_rec):
-                    receptor_pose.coordinates += nmodes_rec[nm] * rec_extents[i][nm]
+                    receptor_pose.coordinates[receptor.nm_mask,:] += nmodes_rec[nm] * rec_extents[i][nm]
             except ValueError:
                 log.error("Problem found on calculating ANM for receptor:")
                 log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))
@@ -148,7 +147,7 @@ if __name__ == "__main__":
         if nmodes_lig is not None and nmodes_lig.any():
             try:
                 for nm in range(num_anm_lig):
-                    ligand_pose.coordinates += nmodes_lig[nm] * lig_extents[i][nm]
+                    ligand_pose.coordinates[ligand.nm_mask,:] += nmodes_lig[nm] * lig_extents[i][nm]
             except ValueError:
                 log.error("Problem found on calculating ANM for ligand:")
                 log.error("Number of atom coordinates is: %s" % str(receptor_pose.coordinates.shape))

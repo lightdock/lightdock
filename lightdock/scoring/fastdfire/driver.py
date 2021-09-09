@@ -35,8 +35,7 @@ class DFIREPotential(object):
                          'SER': ['N', 'CA', 'C', 'O', 'CB', 'OG'],
                          'THR': ['N', 'CA', 'C', 'O', 'CB', 'OG1', 'CG2'],
                          'VAL': ['N', 'CA', 'C', 'O', 'CB', 'CG1', 'CG2'],
-                         'TRP': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE2', 'NE1', 'CE3', 'CZ3', 'CH2',
-                                 'CZ2'],
+                         'TRP': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE2', 'NE1', 'CE3', 'CZ3', 'CH2', 'CZ2'],
                          'TYR': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE1', 'CE2', 'CZ', 'OH'],
                          'MMB': ['BJ']
                          }
@@ -141,9 +140,12 @@ class DFIREAdapter(ModelAdapter):
                         raise NotSupportedInScoringError('Residue {} or atom {} not supported. '.format(res_id, rec_atom.name) + 
                             'DFIRE only supports standard aminoacids without hydrogens.')
         try:
-            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints, membrane, n_modes=molecule.n_modes.copy())
+            return DockingModel(dfire_objects, molecule.copy_coordinates(),
+                restraints=parsed_restraints, membrane=membrane,
+                n_modes=molecule.n_modes.copy(), nm_mask=molecule.nm_mask)
         except AttributeError:
-            return DockingModel(dfire_objects, molecule.copy_coordinates(), parsed_restraints, membrane)
+            return DockingModel(dfire_objects, molecule.copy_coordinates(),
+                restraints=parsed_restraints, membrane=membrane, nm_mask=molecule.nm_mask)
 
 
 class DFIRE(ScoringFunction):

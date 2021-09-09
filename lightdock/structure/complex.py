@@ -1,5 +1,5 @@
 """Module to package a protein complex"""
-
+import numpy as np
 from lightdock.structure.space import SpacePoints
 
 
@@ -36,8 +36,11 @@ class Complex(object):
             self.atom_coordinates = [SpacePoints([[atom.x, atom.y, atom.z] for atom in self.atoms])]
 
         self.num_atoms = len(self.atoms)
+        self.protein_num_atoms = sum([len(residue.atoms) for residue in self.residues if residue.is_protein()])
+        self.nucleic_num_atoms = sum([len(residue.atoms) for residue in self.residues if residue.is_nucleic()])
         self.num_residues = len(self.residues)
         self.representative_id = representative_id
+        self.nm_mask = self.get_nm_mask()
 
     @staticmethod
     def from_structures(structures, representative_id=0):
@@ -56,7 +59,30 @@ class Complex(object):
         return molecule
 
     def copy_coordinates(self):
+        """Deep copy of atom coordinates"""
         return [coordinates.clone() for coordinates in self.atom_coordinates]
+
+    def get_nm_mask(self):
+        """Calculates the mask on atoms to apply ANM"""
+        mask = []
+        for residue in self.residues:
+            if residue.is_standard() or residue.is_nucleic():
+                mask.extend([True]*len(residue.atoms))
+            else:
+                mask.extend([False]*len(residue.atoms))
+        return np.array(mask)
+
+    def get_atoms(self, protein=True, nucleic=True, dummy=False):
+        """Selects atoms on structure depending on their nature"""
+        atoms = []
+        for residue in self.residues:
+            if residue.is_standard and protein:
+                atoms.extend(residue.atoms)
+            elif residue.is_nucleic and nucleic:
+                atoms.extend(residue.atoms)
+            elif residue.is_dummy and dummy:
+                atoms.extend(residue.atoms)
+        return atoms
 
     def center_of_mass(self, structure=None):
         """Calculates the center of mass"""

@@ -70,6 +70,11 @@ class Residue(object):
         """Checks if residue is standard"""
         return self.name in list(Residue.STANDARD_TYPES.keys())
 
+    def is_protein(self):
+        """Checks if residue is protein"""
+        return self.name in list(Residue.STANDARD_TYPES.keys()) \
+                or self.name in list(Residue.MODIFIED_TYPES.keys())
+
     def is_nucleic(self):
         """Check if residue is Deoxyribonucleotide or Ribonucleotide"""
         return self.name in Residue.DNA_STANDARD_TYPES+Residue.RNA_STANDARD_TYPES
@@ -124,10 +129,6 @@ class Residue(object):
 
     def get_non_hydrogen_atoms(self):
         return [atom for atom in self.atoms if not atom.is_hydrogen()]
-
-    def mutate_side_chain(self, rotamer):
-        """Moves this residue's side chain using the rotamer angles"""
-        pass
 
     @staticmethod
     def dummy(x=0., y=0., z=0.):
