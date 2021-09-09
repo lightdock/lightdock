@@ -10,9 +10,8 @@ from lightdock.mathutil.lrandom import MTGenerator
 
 
 class TestGSOBuilderInJ1:
-
     def __init__(self):
-        self.golden_data_path = Path(__file__).absolute().parent / 'golden_data'
+        self.golden_data_path = Path(__file__).absolute().parent / "golden_data"
         self.gso_parameters = GSOParameters()
         self.objective_function = J1()
         self.bounding_box = BoundingBox([Boundary(1, 2), Boundary(10, 15)])
@@ -21,14 +20,18 @@ class TestGSOBuilderInJ1:
 
     def test_GSOBuilder_using_FromFileInitializer(self):
         builder = GSOBuilder()
-        gso = builder.create_from_file(self.number_of_glowworms,
-                                          self.random_number_generator,
-                                          self.gso_parameters,
-                                          self.objective_function,
-                                          self.bounding_box,
-                                          self.golden_data_path / 'initial_positions.txt')
-        population_lines =  str(gso.swarm).split(os.linesep)
-        expected_lines = open(self.golden_data_path / 'initial_population_from_file.txt').readlines()
+        gso = builder.create_from_file(
+            self.number_of_glowworms,
+            self.random_number_generator,
+            self.gso_parameters,
+            self.objective_function,
+            self.bounding_box,
+            self.golden_data_path / "initial_positions.txt",
+        )
+        population_lines = str(gso.swarm).split(os.linesep)
+        expected_lines = open(
+            self.golden_data_path / "initial_population_from_file.txt"
+        ).readlines()
 
         assert len(expected_lines) == len(population_lines)
         for line1, line2 in zip(expected_lines, population_lines):
@@ -36,13 +39,17 @@ class TestGSOBuilderInJ1:
 
     def test_GSOBuilder_using_RandomInitializer(self):
         builder = GSOBuilder()
-        gso = builder.create(self.number_of_glowworms,
-                             self.random_number_generator,
-                             self.gso_parameters,
-                             self.objective_function,
-                             self.bounding_box)
-        population_lines =  str(gso.swarm).split(os.linesep)
-        expected_lines = open(self.golden_data_path / 'initial_population_random.txt').readlines()
+        gso = builder.create(
+            self.number_of_glowworms,
+            self.random_number_generator,
+            self.gso_parameters,
+            self.objective_function,
+            self.bounding_box,
+        )
+        population_lines = str(gso.swarm).split(os.linesep)
+        expected_lines = open(
+            self.golden_data_path / "initial_population_random.txt"
+        ).readlines()
 
         assert len(expected_lines) == len(population_lines)
         for line1, line2 in zip(expected_lines, population_lines):

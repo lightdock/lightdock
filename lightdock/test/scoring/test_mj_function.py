@@ -8,7 +8,6 @@ from lightdock.structure.complex import Complex
 
 
 class TestMJPotential:
-
     def test_create_MJPotential_interface(self):
         mj = MJPotential()
 
@@ -25,15 +24,18 @@ class TestMJPotential:
 
 
 class TestMJ3hAdapter:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.golden_data_path = self.path / 'golden_data'
+        self.golden_data_path = self.path / "golden_data"
 
     def test_create_adapter(self):
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPErec.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1PPErec.pdb"
+        )
         receptor = Complex(chains, atoms)
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPElig.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1PPElig.pdb"
+        )
         ligand = Complex(chains, atoms)
         adapter = MJ3hAdapter(receptor, ligand)
 
@@ -44,42 +46,74 @@ class TestMJ3hAdapter:
 
 
 class TestMJ3h:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.golden_data_path = self.path / 'golden_data'
+        self.golden_data_path = self.path / "golden_data"
         # Test for creating object in the interface tests for speeding up purposes
         self.mj3h = MJ3h()
 
     def test_calculate_MJ3h_1PPE(self):
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPErec.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1PPErec.pdb"
+        )
         receptor = Complex(chains, atoms)
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPElig.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1PPElig.pdb"
+        )
         ligand = Complex(chains, atoms)
         adapter = MJ3hAdapter(receptor, ligand)
-        assert_almost_equal(2.02, self.mj3h(adapter.receptor_model, adapter.receptor_model.coordinates[0],
-                                              adapter.ligand_model, adapter.ligand_model.coordinates[0]))
+        assert_almost_equal(
+            2.02,
+            self.mj3h(
+                adapter.receptor_model,
+                adapter.receptor_model.coordinates[0],
+                adapter.ligand_model,
+                adapter.ligand_model.coordinates[0],
+            ),
+        )
         # Original potential without min cutoff
         # assert_almost_equal(-17.94/2, self.mj3h(receptor, receptor.residue_coordinates, ligand, ligand.residue_coordinates))
 
     def test_calculate_MJ3h_1EAW(self):
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1EAWrec.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1EAWrec.pdb"
+        )
         receptor = Complex(chains, atoms)
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1EAWlig.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1EAWlig.pdb"
+        )
         ligand = Complex(chains, atoms)
         adapter = MJ3hAdapter(receptor, ligand)
-        assert_almost_equal(-4.22, self.mj3h(adapter.receptor_model, adapter.receptor_model.coordinates[0],
-                                              adapter.ligand_model, adapter.ligand_model.coordinates[0]))
+        assert_almost_equal(
+            -4.22,
+            self.mj3h(
+                adapter.receptor_model,
+                adapter.receptor_model.coordinates[0],
+                adapter.ligand_model,
+                adapter.ligand_model.coordinates[0],
+            ),
+        )
         # Original potential without min cutoff
         # assert_almost_equal(-3.14/2, self.mj3h(receptor, receptor.residue_coordinates, ligand, ligand.residue_coordinates))
 
     def test_calculate_MJ3h_1AY7(self):
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1AY7rec.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1AY7rec.pdb"
+        )
         receptor = Complex(chains, atoms)
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1AY7lig.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1AY7lig.pdb"
+        )
         ligand = Complex(chains, atoms)
         adapter = MJ3hAdapter(receptor, ligand)
-        assert_almost_equal(-12.92, self.mj3h(adapter.receptor_model, adapter.receptor_model.coordinates[0],
-                                              adapter.ligand_model, adapter.ligand_model.coordinates[0]))
+        assert_almost_equal(
+            -12.92,
+            self.mj3h(
+                adapter.receptor_model,
+                adapter.receptor_model.coordinates[0],
+                adapter.ligand_model,
+                adapter.ligand_model.coordinates[0],
+            ),
+        )
         # Original potential without min cutoff
         # assert_almost_equal(9.06/2, self.mj3h(receptor, receptor.residue_coordinates, ligand, ligand.residue_coordinates))

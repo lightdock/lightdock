@@ -3,7 +3,6 @@
 """Filter LightDock final swarm results depending on the percentage of restraints satisfied"""
 
 
-import sys
 import os
 import argparse
 import shutil
@@ -15,21 +14,28 @@ from lightdock.util.analysis import read_ranking_file
 
 
 # Disable ProDy output
-confProDy(verbosity='info')
-filtered_folder = 'filtered'
+confProDy(verbosity="info")
+filtered_folder = "filtered"
 
-log = LoggingManager.get_logger('lgd_filter_restraints')
+log = LoggingManager.get_logger("lgd_filter_restraints")
 
 
-def get_structures(ranking, base_path='.'):
+def get_structures(ranking, base_path="."):
     structures = []
     for rank in ranking:
         swarm_id = rank.id_swarm
         glowworm_id = rank.id_glowworm
         score = rank.scoring
-        structures.append([os.path.join(base_path, 
-                                       'swarm_{}'.format(swarm_id), 
-                                       'lightdock_{}.pdb'.format(glowworm_id)), score])
+        structures.append(
+            [
+                os.path.join(
+                    base_path,
+                    "swarm_{}".format(swarm_id),
+                    "lightdock_{}.pdb".format(glowworm_id),
+                ),
+                score,
+            ]
+        )
     return structures
 
 
@@ -40,35 +46,68 @@ def get_restraints(restraints_file):
         for line in handle:
             line = line.rstrip(os.linesep)
             if line:
-                if line.startswith('R'):
+                if line.startswith("R"):
                     restraints_receptor.add(line)
-                if line.startswith('L'):
+                if line.startswith("L"):
                     restraints_ligand.add(line)
     return restraints_receptor, restraints_ligand
 
 
 def parse_command_line():
     """Parses command line arguments"""
-    parser = argparse.ArgumentParser(prog='lgd_filter_restraints')
+    parser = argparse.ArgumentParser(prog="lgd_filter_restraints")
 
-    parser.add_argument("ranking_file", help="Path of ranking to be used", metavar="ranking_file")
-    parser.add_argument("restraints_file", help="File including restraints", metavar="restraints_file")
-    parser.add_argument("receptor_chains", help="Chains on the receptor partner", metavar="receptor_chains")
-    parser.add_argument("ligand_chains", help="Chains on the receptor partner", metavar="ligand_chains")
-    parser.add_argument("--cutoff", "-cutoff", "-c", help="Interaction cutoff",
-                            dest="cutoff", type=float, default=5.0)
-    parser.add_argument("--fnat", "-fnat", "-f", help="Structures with at least this fraction of native contacts",
-                            dest="fnat", type=float)
-    parser.add_argument("--rnuc", help="Is receptor molecule a nucleic acid?",
-                            dest="rnuc", action='store_true', default=False)
-    parser.add_argument("--lnuc", help="Is ligand molecule a nucleic acid?",
-                            dest="lnuc", action='store_true', default=False)
+    parser.add_argument(
+        "ranking_file", help="Path of ranking to be used", metavar="ranking_file"
+    )
+    parser.add_argument(
+        "restraints_file", help="File including restraints", metavar="restraints_file"
+    )
+    parser.add_argument(
+        "receptor_chains",
+        help="Chains on the receptor partner",
+        metavar="receptor_chains",
+    )
+    parser.add_argument(
+        "ligand_chains", help="Chains on the receptor partner", metavar="ligand_chains"
+    )
+    parser.add_argument(
+        "--cutoff",
+        "-cutoff",
+        "-c",
+        help="Interaction cutoff",
+        dest="cutoff",
+        type=float,
+        default=5.0,
+    )
+    parser.add_argument(
+        "--fnat",
+        "-fnat",
+        "-f",
+        help="Structures with at least this fraction of native contacts",
+        dest="fnat",
+        type=float,
+    )
+    parser.add_argument(
+        "--rnuc",
+        help="Is receptor molecule a nucleic acid?",
+        dest="rnuc",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--lnuc",
+        help="Is ligand molecule a nucleic acid?",
+        dest="lnuc",
+        action="store_true",
+        default=False,
+    )
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
- 
+if __name__ == "__main__":
+
     # Parse command line
     args = parse_command_line()
 
@@ -99,42 +138,71 @@ if __name__ == '__main__':
             contacts_ligand = set()
 
             pdb = pdb_file[0]
-            swarm_id = int(re.findall(r'swarm_\d+', pdb)[-1].split('_')[-1])
-            glowworm_id = int(re.findall(r'lightdock_\d+', pdb)[-1].split('_')[-1])
+            swarm_id = int(re.findall(r"swarm_\d+", pdb)[-1].split("_")[-1])
+            glowworm_id = int(re.findall(r"lightdock_\d+", pdb)[-1].split("_")[-1])
             score = float(pdb_file[-1])
 
             # Read molecule and split by receptor and ligand
             if score > 0.0:
                 molecule = parsePDB(pdb)
                 if args.rnuc:
-                    receptor = molecule.select('nucleic and chain {}'.format(args.receptor_chains))
+                    receptor = molecule.select(
+                        "nucleic and chain {}".format(args.receptor_chains)
+                    )
                 else:
-                    receptor = molecule.select('protein and chain {}'.format(args.receptor_chains))
+                    receptor = molecule.select(
+                        "protein and chain {}".format(args.receptor_chains)
+                    )
                 if args.lnuc:
-                    ligand = molecule.select('nucleic and chain {}'.format(args.ligand_chains))
+                    ligand = molecule.select(
+                        "nucleic and chain {}".format(args.ligand_chains)
+                    )
                 else:
-                    ligand = molecule.select('protein and chain {}'.format(args.ligand_chains))
+                    ligand = molecule.select(
+                        "protein and chain {}".format(args.ligand_chains)
+                    )
 
                 # Contacts on receptor side
                 protein_contacts = Contacts(receptor)
                 contacts = protein_contacts.select(args.cutoff, ligand)
                 if contacts:
                     for contact in contacts:
-                        contacts_receptor.add("R {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                        contacts_receptor.add(
+                            "R {}.{}.{}".format(
+                                contact.getChid(),
+                                contact.getResname(),
+                                contact.getResnum(),
+                            )
+                        )
 
                 # Contacts on ligand side
                 protein_contacts = Contacts(ligand)
                 contacts = protein_contacts.select(args.cutoff, receptor)
                 if contacts:
                     for contact in contacts:
-                        contacts_ligand.add("L {}.{}.{}".format(contact.getChid(), contact.getResname(), contact.getResnum()))
+                        contacts_ligand.add(
+                            "L {}.{}.{}".format(
+                                contact.getChid(),
+                                contact.getResname(),
+                                contact.getResnum(),
+                            )
+                        )
 
                 # Calculate percentage of satisfied restraints
-                perc = (len(contacts_receptor & restraints_receptor) + len(contacts_ligand & restraints_ligand)) / total
+                perc = (
+                    len(contacts_receptor & restraints_receptor)
+                    + len(contacts_ligand & restraints_ligand)
+                ) / total
                 percentages[(swarm_id, glowworm_id)] = perc
                 if args.fnat:
                     if perc >= args.fnat:
-                        shutil.copyfile(pdb, os.path.join(filtered_folder, 'swarm_{}_{}.pdb'.format(swarm_id, glowworm_id)))
+                        shutil.copyfile(
+                            pdb,
+                            os.path.join(
+                                filtered_folder,
+                                "swarm_{}_{}.pdb".format(swarm_id, glowworm_id),
+                            ),
+                        )
                         try:
                             filter_passed[swarm_id].append(glowworm_id)
                         except:
@@ -142,14 +210,24 @@ if __name__ == '__main__':
                 print("{:40s}  {:5.3f}".format(pdb, perc))
 
         except Exception as e:
-            log.error('Filtering has failed for structure {}. Please see error:'.format(pdb))
+            log.error(
+                "Filtering has failed for structure {}. Please see error:".format(pdb)
+            )
             log.error(str(e))
 
-
-    filtered_ranking = os.path.join(filtered_folder, 'rank_filtered.list')
-    with open(filtered_ranking, 'w') as handle:
+    filtered_ranking = os.path.join(filtered_folder, "rank_filtered.list")
+    with open(filtered_ranking, "w") as handle:
         for rank in ranking:
-            if rank.id_swarm in filter_passed and rank.id_glowworm in filter_passed[rank.id_swarm]:
-                handle.write('swarm_{}_{}.pdb   {:5.3f}  {:5.3f}'.format(rank.id_swarm, 
-                    rank.id_glowworm, rank.scoring, percentages[(rank.id_swarm, rank.id_glowworm)]) + os.linesep)
-
+            if (
+                rank.id_swarm in filter_passed
+                and rank.id_glowworm in filter_passed[rank.id_swarm]
+            ):
+                handle.write(
+                    "swarm_{}_{}.pdb   {:5.3f}  {:5.3f}".format(
+                        rank.id_swarm,
+                        rank.id_glowworm,
+                        rank.scoring,
+                        percentages[(rank.id_swarm, rank.id_glowworm)],
+                    )
+                    + os.linesep
+                )

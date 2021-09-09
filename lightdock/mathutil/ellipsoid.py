@@ -9,8 +9,7 @@ from lightdock.error.lightdock_errors import MinimumVolumeEllipsoidError
 
 
 class MinimumVolumeEllipsoid(object):
-
-    def __init__(self, points, precision=.01):
+    def __init__(self, points, precision=0.01):
         self.center = None
         self.radii = None
         self.rotation = None
@@ -21,10 +20,12 @@ class MinimumVolumeEllipsoid(object):
         try:
             self._get_min_vol_ellipsoid()
         except Exception as e:
-            raise MinimumVolumeEllipsoidError("Can not build minimum volume ellipsoid. Reason: %s" % str(e))
+            raise MinimumVolumeEllipsoidError(
+                "Can not build minimum volume ellipsoid. Reason: %s" % str(e)
+            )
 
     def _get_min_vol_ellipsoid(self):
-        """ Finds the minimum volume ellipsoid which contains the set of given points"""
+        """Finds the minimum volume ellipsoid which contains the set of given points"""
         (N, d) = np.shape(self._points)
         d = float(d)
 
@@ -39,7 +40,9 @@ class MinimumVolumeEllipsoid(object):
         # Khachiyan Algorithm
         while err > self._precision:
             V = np.dot(Q, np.dot(np.diag(u), QT))
-            M = np.diag(np.dot(QT, np.dot(linalg.inv(V), Q)))    # M the diagonal vector of an NxN matrix
+            M = np.diag(
+                np.dot(QT, np.dot(linalg.inv(V), Q))
+            )  # M the diagonal vector of an NxN matrix
             j = np.argmax(M)
             maximum = M[j]
             step_size = (maximum - d - 1.0) / ((d + 1.0) * (maximum - 1.0))
@@ -52,23 +55,30 @@ class MinimumVolumeEllipsoid(object):
         self.center = np.dot(self._points.T, u)
 
         # the A matrix for the ellipsoid
-        A = linalg.inv(
-                       np.dot(self._points.T, np.dot(np.diag(u), self._points)) -
-                       np.array([[a * b for b in self.center] for a in self.center])
-                       ) / d
+        A = (
+            linalg.inv(
+                np.dot(self._points.T, np.dot(np.diag(u), self._points))
+                - np.array([[a * b for b in self.center] for a in self.center])
+            )
+            / d
+        )
 
         _, s, self.rotation = linalg.svd(A)
         # s can be zero in degenerated cases causing RuntimeWarning divide by zero error
-        np.seterr(all='raise')
+        np.seterr(all="raise")
         self.radii = 1.0 / np.sqrt(s)
 
         # Calculate poles
-        axes = np.array([[self.radii[0], 0.0, 0.0],
-                         [0.0, self.radii[1], 0.0],
-                         [0.0, 0.0, self.radii[2]]])
+        axes = np.array(
+            [
+                [self.radii[0], 0.0, 0.0],
+                [0.0, self.radii[1], 0.0],
+                [0.0, 0.0, self.radii[2]],
+            ]
+        )
 
         for i in range(len(axes)):
-                axes[i] = np.dot(axes[i], self.rotation)
+            axes[i] = np.dot(axes[i], self.rotation)
         self.axes = axes
 
         self.poles = []

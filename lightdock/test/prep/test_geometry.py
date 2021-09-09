@@ -8,11 +8,10 @@ from lightdock.prep.geometry import sphere, axis, create_bild_file
 
 
 class TestGeometry:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_geometry'
-        self.golden_data_path = self.path / 'golden_data'
+        self.test_path = self.path / "scratch_geometry"
+        self.golden_data_path = self.path / "golden_data"
 
     def setup(self):
         try:
@@ -28,7 +27,7 @@ class TestGeometry:
             pass
 
     def test_sphere(self):
-        center = [5., 5., 5.]
+        center = [5.0, 5.0, 5.0]
         radius = 0.3
 
         expected = ".sphere 5.000000 5.000000 5.000000 0.300000"
@@ -37,7 +36,7 @@ class TestGeometry:
 
     def test_axis_origin_length_default(self):
         # pose is translation + quaternion
-        pose = [0., 0., 0., 1., 0., 0., 0.]
+        pose = [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]
 
         expected = """.color cornflower blue
 .sphere 0.000000 0.000000 0.000000 0.300000
@@ -52,12 +51,14 @@ class TestGeometry:
         assert expected == axis(pose)
 
     def test_create_bild_file(self):
-        poses = [[0., 0., 0., 0.5, 0.5, 0.5, 0.5],
-                 [2., 2., 2., 0., 0.7071, 0.7071, 0.],
-                 [-2., -2., -2., 0., 0., 0.7071, 0.7071]]
+        poses = [
+            [0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 0.5],
+            [2.0, 2.0, 2.0, 0.0, 0.7071, 0.7071, 0.0],
+            [-2.0, -2.0, -2.0, 0.0, 0.0, 0.7071, 0.7071],
+        ]
 
-        generated_file = self.test_path / 'test.bild'
-        expected_file = self.golden_data_path / 'test.bild'
+        generated_file = self.test_path / "test.bild"
+        expected_file = self.golden_data_path / "test.bild"
 
         create_bild_file(generated_file, poses)
 

@@ -8,17 +8,16 @@ from lightdock.test.bin.regression import RegressionTest
 
 
 class TestSetupWithoutRestraints(RegressionTest):
-
     def __init__(self):
         super().__init__()
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_setup_no_restraints'
-        self.golden_data_path = self.path / 'golden_data' / 'regression_setup'
+        self.test_path = self.path / "scratch_setup_no_restraints"
+        self.golden_data_path = self.path / "golden_data" / "regression_setup"
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / '2UUY_rec.pdb', self.test_path)
-        shutil.copy(self.golden_data_path / '2UUY_lig.pdb', self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
 
     def teardown(self):
         self.clean_path()
@@ -32,15 +31,26 @@ class TestSetupWithoutRestraints(RegressionTest):
         command += ">> test_lightdock.out"
         os.system(command)
 
-        assert filecmp.cmp(self.golden_data_path / 'init' / 'swarm_centers.pdb',
-                           self.test_path / 'init' / 'swarm_centers.pdb')
-        assert filecmp.cmp(self.golden_data_path / 'setup.json',
-                           self.test_path / 'setup.json')
-        assert filecmp.cmp(self.golden_data_path / 'init' / 'initial_positions_0.dat',
-                           self.test_path / 'init' / 'initial_positions_0.dat')
-        assert filecmp.cmp(self.golden_data_path / 'init' / 'initial_positions_45.dat',
-                           self.test_path / 'init' / 'initial_positions_45.dat')
-        assert filecmp.cmp(self.golden_data_path / 'lightdock_2UUY_rec.pdb',
-                           self.test_path / 'lightdock_2UUY_rec.pdb')
-        assert filecmp.cmp(self.golden_data_path / 'lightdock_2UUY_lig.pdb',
-                           self.test_path / 'lightdock_2UUY_lig.pdb')
+        assert filecmp.cmp(
+            self.golden_data_path / "init" / "swarm_centers.pdb",
+            self.test_path / "init" / "swarm_centers.pdb",
+        )
+        assert filecmp.cmp(
+            self.golden_data_path / "setup.json", self.test_path / "setup.json"
+        )
+        assert filecmp.cmp(
+            self.golden_data_path / "init" / "initial_positions_0.dat",
+            self.test_path / "init" / "initial_positions_0.dat",
+        )
+        assert filecmp.cmp(
+            self.golden_data_path / "init" / "initial_positions_45.dat",
+            self.test_path / "init" / "initial_positions_45.dat",
+        )
+        assert filecmp.cmp(
+            self.golden_data_path / "lightdock_2UUY_rec.pdb",
+            self.test_path / "lightdock_2UUY_rec.pdb",
+        )
+        assert filecmp.cmp(
+            self.golden_data_path / "lightdock_2UUY_lig.pdb",
+            self.test_path / "lightdock_2UUY_lig.pdb",
+        )

@@ -5,7 +5,6 @@ from nose.tools import raises
 
 
 class TestObjectiveFunction:
-
     @raises(NotImplementedError)
     def test_call(self):
         function = ObjectiveFunction()

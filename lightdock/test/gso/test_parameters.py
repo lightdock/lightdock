@@ -10,11 +10,10 @@ from nose.tools import raises
 
 
 class TestGSOParameters:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_gso_parameters'
-        self.golden_data_path = self.path / 'golden_data' / 'parameters'
+        self.test_path = self.path / "scratch_gso_parameters"
+        self.golden_data_path = self.path / "golden_data" / "parameters"
 
     def setup(self):
         try:
@@ -41,7 +40,7 @@ class TestGSOParameters:
         assert parameters.max_neighbors == 5
 
     def test_read_gso_parameters_with_file(self):
-        parameters = GSOParameters(self.golden_data_path / 'glowworm.conf')
+        parameters = GSOParameters(self.golden_data_path / "glowworm.conf")
 
         assert_almost_equals(0.1, parameters.rho)
         assert_almost_equals(0.2, parameters.gamma)
@@ -53,10 +52,10 @@ class TestGSOParameters:
 
     @raises(GSOParameteresError)
     def test_read_gso_parameters_wrong_file(self):
-        parameters = GSOParameters(self.golden_data_path / 'no_file.conf')
+        parameters = GSOParameters(self.golden_data_path / "no_file.conf")
         assert parameters is not None
 
     @raises(GSOParameteresError)
     def test_read_gso_parameters_wrong_parameters(self):
-        parameters = GSOParameters(self.golden_data_path / 'wrong_glowworm.conf')
+        parameters = GSOParameters(self.golden_data_path / "wrong_glowworm.conf")
         assert parameters is not None

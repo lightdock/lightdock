@@ -4,7 +4,10 @@
 
 import os
 import argparse
-from lightdock.constants import DEFAULT_LIST_EXTENSION, DEFAULT_REFERENCE_POINTS_EXTENSION
+from lightdock.constants import (
+    DEFAULT_LIST_EXTENSION,
+    DEFAULT_REFERENCE_POINTS_EXTENSION,
+)
 from lightdock.error.lightdock_errors import MinimumVolumeEllipsoidError
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, create_pdb_from_points
@@ -12,14 +15,22 @@ from lightdock.structure.complex import Complex
 from lightdock.util.logger import LoggingManager
 
 
-script_name = 'reference_points'
+script_name = "reference_points"
 log = LoggingManager.get_logger(script_name)
 
 
 def parse_command_line():
     parser = argparse.ArgumentParser(prog=script_name)
-    parser.add_argument("structure", help="structure to calculate reference points", metavar="structure")
-    parser.add_argument("--noxt", help="Remove OXT atoms", dest="noxt", action='store_true', default=False)
+    parser.add_argument(
+        "structure", help="structure to calculate reference points", metavar="structure"
+    )
+    parser.add_argument(
+        "--noxt",
+        help="Remove OXT atoms",
+        dest="noxt",
+        action="store_true",
+        default=False,
+    )
     return parser.parse_args()
 
 
@@ -45,7 +56,7 @@ if __name__ == "__main__":
 
         atoms_to_ignore = []
         if args.noxt:
-            atoms_to_ignore.append('OXT')
+            atoms_to_ignore.append("OXT")
 
         structures = []
         file_names = []
@@ -56,27 +67,40 @@ if __name__ == "__main__":
             file_names.append(args.structure)
         for file_name in file_names:
             log.info("Reading %s PDB file..." % file_name)
-            atoms, residues, chains = parse_complex_from_file(file_name, atoms_to_ignore)
-            structures.append({'atoms': atoms, 'residues': residues, 'chains': chains, 'file_name': file_name})
+            atoms, residues, chains = parse_complex_from_file(
+                file_name, atoms_to_ignore
+            )
+            structures.append(
+                {
+                    "atoms": atoms,
+                    "residues": residues,
+                    "chains": chains,
+                    "file_name": file_name,
+                }
+            )
             log.info("%s atoms, %s residues read." % (len(atoms), len(residues)))
 
         molecule = Complex.from_structures(structures)
         try:
             ellipsoid = MinimumVolumeEllipsoid(molecule.atom_coordinates[0].coordinates)
         except MinimumVolumeEllipsoidError as e:
-            log.error("Impossible to calculate minimum volume ellipsoid. Reason: %s" % str(e))
+            log.error(
+                "Impossible to calculate minimum volume ellipsoid. Reason: %s" % str(e)
+            )
             raise SystemExit("%s finished with error" % script_name)
 
-        output_file_name = molecule.structure_file_names[0] + DEFAULT_REFERENCE_POINTS_EXTENSION
-        with open(output_file_name, 'w') as output:
+        output_file_name = (
+            molecule.structure_file_names[0] + DEFAULT_REFERENCE_POINTS_EXTENSION
+        )
+        with open(output_file_name, "w") as output:
             for point in ellipsoid.poles:
                 output.write(get_point_respresentation(point) + os.linesep)
             output.write(get_point_respresentation(ellipsoid.center) + os.linesep)
-        log.info('Points written to %s' % output_file_name)
+        log.info("Points written to %s" % output_file_name)
 
         points = [point for point in ellipsoid.poles]
         points.append(ellipsoid.center)
-        pdb_file_name = output_file_name + '.pdb'
+        pdb_file_name = output_file_name + ".pdb"
         create_pdb_from_points(pdb_file_name, points)
         log.info("Points written to %s in pdb format" % pdb_file_name)
         log.info("Done.")

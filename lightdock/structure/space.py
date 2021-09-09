@@ -1,9 +1,9 @@
-
 import numpy as np
 
 
 class SpacePoints(object):
     """A collection of spatial points"""
+
     def __init__(self, coordinates):
         self.coordinates = np.array(coordinates)
 

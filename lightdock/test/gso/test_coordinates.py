@@ -9,7 +9,6 @@ from lightdock.error.lightdock_errors import GSOCoordinatesError
 
 
 class TestCoordinates:
-
     def __init__(self):
         self.values_2D = [1.0, 2.0]
         self.values_3D = [1.0, 2.0, 3.0]
@@ -110,8 +109,8 @@ class TestCoordinates:
         assert_almost_equals(0.0, coordinates.distance(coordinates))
 
     def test_distance_different_coordinates(self):
-        coordinates1 = Coordinates([0., 0., 0.])
-        coordinates2 = Coordinates([20., 0., 21.])
+        coordinates1 = Coordinates([0.0, 0.0, 0.0])
+        coordinates2 = Coordinates([20.0, 0.0, 21.0])
 
         assert_almost_equals(29.0, coordinates1.distance(coordinates2))
 
@@ -162,13 +161,14 @@ class TestCoordinates:
 
 
 class TestCoordinatesFileReader:
-
     def __init__(self):
-        self.golden_data_path = Path(__file__).absolute().parent / 'golden_data'
+        self.golden_data_path = Path(__file__).absolute().parent / "golden_data"
 
     def test_read_coordinates_from_file(self):
         reader = CoordinatesFileReader(2)
-        coordinates = reader.get_coordinates_from_file(self.golden_data_path / 'initial_positions.txt')
+        coordinates = reader.get_coordinates_from_file(
+            self.golden_data_path / "initial_positions.txt"
+        )
 
         assert coordinates and len(coordinates) == 50
         assert str(coordinates[0]) == "(0.745916, -0.92056)"
@@ -178,20 +178,24 @@ class TestCoordinatesFileReader:
     @raises(GSOCoordinatesError)
     def test_read_coordinates_from_file_with_errors(self):
         reader = CoordinatesFileReader(2)
-        reader.get_coordinates_from_file(self.golden_data_path / 'initial_positions_with_error.txt')
+        reader.get_coordinates_from_file(
+            self.golden_data_path / "initial_positions_with_error.txt"
+        )
 
         assert False
 
     @raises(GSOCoordinatesError)
     def test_read_coordinates_from_file_with_error_in_column(self):
         reader = CoordinatesFileReader(2)
-        reader.get_coordinates_from_file(self.golden_data_path / 'initial_positions_with_wrong_column.txt')
+        reader.get_coordinates_from_file(
+            self.golden_data_path / "initial_positions_with_wrong_column.txt"
+        )
 
         assert False
 
     @raises(GSOCoordinatesError)
     def test_read_coordinates_from_file_no_file(self):
         reader = CoordinatesFileReader(2)
-        reader.get_coordinates_from_file(self.golden_data_path / 'no_file.txt')
+        reader.get_coordinates_from_file(self.golden_data_path / "no_file.txt")
 
         assert False

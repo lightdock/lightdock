@@ -8,17 +8,16 @@ from lightdock.test.bin.regression import RegressionTest
 
 
 class TestRegressionFastDFIREShort(RegressionTest):
-
     def __init__(self):
         super().__init__()
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_fastdfire_short'
-        self.golden_data_path = self.path / 'golden_data' / 'regression_fastdfire_short'
+        self.test_path = self.path / "scratch_fastdfire_short"
+        self.golden_data_path = self.path / "golden_data" / "regression_fastdfire_short"
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / '2UUY_rec.pdb', self.test_path)
-        shutil.copy(self.golden_data_path / '2UUY_lig.pdb', self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
 
     def teardown(self):
         self.clean_path()
@@ -36,24 +35,27 @@ class TestRegressionFastDFIREShort(RegressionTest):
         command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l 10 >> test_lightdock.out"
         os.system(command)
 
-        assert filecmp.cmp(self.golden_data_path / 'swarm_10' / 'gso_0.out',
-                           self.test_path / 'swarm_10' / 'gso_0.out')
-        assert (self.test_path / 'swarm_10' / 'gso_5.out').exists()
+        assert filecmp.cmp(
+            self.golden_data_path / "swarm_10" / "gso_0.out",
+            self.test_path / "swarm_10" / "gso_0.out",
+        )
+        assert (self.test_path / "swarm_10" / "gso_5.out").exists()
 
 
 class TestRegressionFastDFIRERestraints(RegressionTest):
-
     def __init__(self):
         super().__init__()
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_fastdfire_restraints'
-        self.golden_data_path = self.path / 'golden_data' / 'regression_fastdfire_restraints'
+        self.test_path = self.path / "scratch_fastdfire_restraints"
+        self.golden_data_path = (
+            self.path / "golden_data" / "regression_fastdfire_restraints"
+        )
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / '2UUY_rec.pdb', self.test_path)
-        shutil.copy(self.golden_data_path / '2UUY_lig.pdb', self.test_path)
-        shutil.copy(self.golden_data_path / 'restraints.list', self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "restraints.list", self.test_path)
 
     def teardown(self):
         self.clean_path()
@@ -63,30 +65,33 @@ class TestRegressionFastDFIRERestraints(RegressionTest):
         num_glowworms = 25
         steps = 5
 
-        command = f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm "
+        command = (
+            f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm "
+        )
         command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 
         command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l 0 >> test_lightdock.out"
         os.system(command)
 
-        assert filecmp.cmp(self.golden_data_path / 'swarm_0' / 'gso_0.out',
-                           self.test_path / 'swarm_0' / 'gso_0.out')
-        assert (self.test_path / 'swarm_0' / 'gso_5.out').exists()
+        assert filecmp.cmp(
+            self.golden_data_path / "swarm_0" / "gso_0.out",
+            self.test_path / "swarm_0" / "gso_0.out",
+        )
+        assert (self.test_path / "swarm_0" / "gso_5.out").exists()
 
 
 class TestRegressionFastDFIRELong(RegressionTest):
-
     def __init__(self):
         super().__init__()
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_fastdfire_long'
-        self.golden_data_path = self.path / 'golden_data' / 'regression_fastdfire_long'
+        self.test_path = self.path / "scratch_fastdfire_long"
+        self.golden_data_path = self.path / "golden_data" / "regression_fastdfire_long"
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / '2UUY_rec.pdb', self.test_path)
-        shutil.copy(self.golden_data_path / '2UUY_lig.pdb', self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
 
     def teardown(self):
         self.clean_path()
@@ -102,11 +107,15 @@ class TestRegressionFastDFIRELong(RegressionTest):
         command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l 100 >> test_lightdock.out"
         os.system(command)
 
-        assert filecmp.cmp(self.golden_data_path / 'swarm_100' / 'gso_0.out',
-                           self.test_path / 'swarm_100' / 'gso_0.out')
-        assert filecmp.cmp(self.golden_data_path / 'init' / 'swarm_centers.pdb',
-                           self.test_path / 'init' / 'swarm_centers.pdb')
-        assert (self.test_path / 'swarm_100' / 'gso_10.out').exists()
-        assert (self.test_path / 'swarm_100' / 'gso_20.out').exists()
-        assert (self.test_path / 'swarm_100' / 'gso_30.out').exists()
-        assert (self.test_path / 'swarm_100' / 'gso_40.out').exists()
+        assert filecmp.cmp(
+            self.golden_data_path / "swarm_100" / "gso_0.out",
+            self.test_path / "swarm_100" / "gso_0.out",
+        )
+        assert filecmp.cmp(
+            self.golden_data_path / "init" / "swarm_centers.pdb",
+            self.test_path / "init" / "swarm_centers.pdb",
+        )
+        assert (self.test_path / "swarm_100" / "gso_10.out").exists()
+        assert (self.test_path / "swarm_100" / "gso_20.out").exists()
+        assert (self.test_path / "swarm_100" / "gso_30.out").exists()
+        assert (self.test_path / "swarm_100" / "gso_40.out").exists()

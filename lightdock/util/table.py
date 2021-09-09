@@ -17,15 +17,15 @@ class Table(object):
             length = len(arrays[0])
             for array in arrays[1:]:
                 if len(array) != length:
-                    raise TableError('Heterogeneous array length')
+                    raise TableError("Heterogeneous array length")
 
             if header is not None:
                 if len(header) != len(arrays):
-                    raise TableError('Header length different from array size')
+                    raise TableError("Header length different from array size")
 
             else:
                 # Build header
-                header = ['Col' + str(i) for i in range(len(arrays))]
+                header = ["Col" + str(i) for i in range(len(arrays))]
 
             self.__numCols = len(arrays)
             self.__numRows = length
@@ -81,24 +81,24 @@ class Table(object):
         """Show a Table instance"""
         if self.__numCols == 0:
             return "Empty Table"
-        table_out = ''
-        line1 = ''
-        line2 = ''
+        table_out = ""
+        line1 = ""
+        line2 = ""
         for key in self.__header:
-            line1 += '%12s' % key
-            line2 += '------------'
+            line1 += "%12s" % key
+            line2 += "------------"
 
         table_out += line1 + os.linesep + line2 + os.linesep
 
         for i in range(self.__numRows):
-            line = ''
+            line = ""
             for key in self.__header:
                 if type(self.__content[key][i]) == int:
-                    line += '%12i' % self.__content[key][i]
+                    line += "%12i" % self.__content[key][i]
                 elif type(self.__content[key][i]) == float:
-                    line += '%12.3f' % self.__content[key][i]
+                    line += "%12.3f" % self.__content[key][i]
                 else:
-                    line += '%12s' % self.__content[key][i]
+                    line += "%12s" % self.__content[key][i]
 
             table_out += line + os.linesep
 
@@ -114,8 +114,8 @@ class Table(object):
         except IOError as e:
             raise TableError(str(e))
 
-        if tab[0].split()[0] == '#>T':  # for icm table format
-            tab[0] = tab[1].replace('#>', ' ').replace('-', ' ')
+        if tab[0].split()[0] == "#>T":  # for icm table format
+            tab[0] = tab[1].replace("#>", " ").replace("-", " ")
             tab[1] = "-----------"
 
         arrays = []
@@ -141,27 +141,27 @@ class Table(object):
                         try:
                             arrays[k].append(str(line[k]))
                         except:
-                            arrays[k].append(' ')
+                            arrays[k].append(" ")
 
         return Table(arrays, header)
 
     def write(self, table_file, table_format=None):
         """Write a Table to a given file"""
         try:
-            f = open(table_file, 'w')
+            f = open(table_file, "w")
             if table_format == "icm":
-                f.write('#>T TABLE' + os.linesep)
-                f.write('#>-')
+                f.write("#>T TABLE" + os.linesep)
+                f.write("#>-")
                 for key in self.__header:
-                    col = '%12s' % key
-                    f.write(col.replace(' ', '-'))
+                    col = "%12s" % key
+                    f.write(col.replace(" ", "-"))
                 f.write(os.linesep)
             else:
-                line1 = ''
-                line2 = ''
+                line1 = ""
+                line2 = ""
                 for key in self.__header:
-                    line1 += '%12s' % key
-                    line2 += '------------'
+                    line1 += "%12s" % key
+                    line2 += "------------"
                 f.write(line1 + os.linesep)
                 f.write(line2 + os.linesep)
 
@@ -169,13 +169,13 @@ class Table(object):
                 for key in self.__header:
                     content_type = type(self.__content[key][i])
                     if content_type == int:
-                        f.write('%12i' % self.__content[key][i])
+                        f.write("%12i" % self.__content[key][i])
                     elif content_type == float:
-                        f.write('%12.3f' % self.__content[key][i])
-                    elif content_type.__name__ == 'float64':
-                        f.write('%12.3f' % self.__content[key][i])
+                        f.write("%12.3f" % self.__content[key][i])
+                    elif content_type.__name__ == "float64":
+                        f.write("%12.3f" % self.__content[key][i])
                     else:
-                        f.write('%12s' % self.__content[key][i])
+                        f.write("%12s" % self.__content[key][i])
                 f.write(os.linesep)
 
             f.close()
@@ -205,7 +205,7 @@ class Table(object):
         try:
             for key in col_names:
                 if key not in self.__header:
-                    raise TableError('Column name not found: %s' % key)
+                    raise TableError("Column name not found: %s" % key)
                 content.append(self.__content[key])
         except Exception as e:
             raise TableError(str(e))
@@ -214,13 +214,20 @@ class Table(object):
 
     def get_tab_by_rows(self, row_from, row_to):
         """Creates a new Table with selected rows (first row is 0, last is N-1)"""
-        if row_from < 0 or row_from > self.__numRows or row_to < 0 or row_to > self.__numRows:
-            raise TableError("Error in selection: index must be in [0:%s]" % self.__numRows)
+        if (
+            row_from < 0
+            or row_from > self.__numRows
+            or row_to < 0
+            or row_to > self.__numRows
+        ):
+            raise TableError(
+                "Error in selection: index must be in [0:%s]" % self.__numRows
+            )
 
         content = []
         try:
             for key in self.__header:
-                content.append(self.__content[key][row_from:row_to + 1])
+                content.append(self.__content[key][row_from : row_to + 1])
         except Exception as e:
             raise TableError(str(e))
 
@@ -273,7 +280,7 @@ class Table(object):
             raise TableError("Column name already exist")
 
         if col_name is None:
-            col_name = 'Col' + str(self.__numCols)
+            col_name = "Col" + str(self.__numCols)
 
         self.__header.append(col_name)
         self.__numCols += 1
@@ -284,7 +291,7 @@ class Table(object):
     def get_column(self, col_name):
         """Get a column identified by colName"""
         if col_name not in self.__header:
-            raise TableError('colName is not a valid column name')
+            raise TableError("colName is not a valid column name")
 
         return self.__content[col_name]
 
@@ -296,16 +303,16 @@ class Table(object):
         try:
             i = self.__header.index(old_header)
         except ValueError:
-            raise TableError('%s is not a valid column name' % old_header)
+            raise TableError("%s is not a valid column name" % old_header)
 
         if self.__header.count(new_header) > 0:
-            raise TableError('%s already exists' % new_header)
+            raise TableError("%s already exists" % new_header)
 
         self.__header[i] = new_header
         self.__content[new_header] = self.__content[old_header]
         del self.__content[old_header]
 
-    def add_index_column(self, name='RANK'):
+    def add_index_column(self, name="RANK"):
         """Adds a new column with numeric indexes"""
         indexes = [i for i in range(1, self.get_num_rows() + 1)]
         self.append_array(indexes, name)
@@ -313,6 +320,7 @@ class Table(object):
 
 class TableError(Exception):
     """Table Exception class"""
+
     def __init__(self, value):
         self.parameter = value
 

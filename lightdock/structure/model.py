@@ -1,4 +1,3 @@
-
 import numpy as np
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
 from lightdock.structure.space import SpacePoints
@@ -7,8 +6,17 @@ from lightdock.error.lightdock_errors import MinimumVolumeEllipsoidError
 
 class DockingModel(object):
     """Represents a docking model of a protein molecule"""
-    def __init__(self, objects, coordinates, restraints=None, membrane=None, reference_points=None,
-        n_modes=None, nm_mask=None):
+
+    def __init__(
+        self,
+        objects,
+        coordinates,
+        restraints=None,
+        membrane=None,
+        reference_points=None,
+        n_modes=None,
+        nm_mask=None,
+    ):
         self.objects = objects
         if type(coordinates) is list:
             self.coordinates = coordinates

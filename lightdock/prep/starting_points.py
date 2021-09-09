@@ -23,18 +23,26 @@ def points_on_sphere(number_of_points):
     places at distances the same as the distance between coils of the spiral.
     """
     points = []
-    increment = pi * (3. - sqrt(5.))
-    offset = 2. / number_of_points
+    increment = pi * (3.0 - sqrt(5.0))
+    offset = 2.0 / number_of_points
     for point in range(number_of_points):
         y = point * offset - 1.0 + (offset / 2.0)
-        r = sqrt(1 - y*y)
+        r = sqrt(1 - y * y)
         phi = point * increment
         points.append([cos(phi) * r, y, sin(phi) * r])
     return points
 
 
-def calculate_surface_points(receptor, ligand, num_points, rec_translation, surface_density,
-    seed=STARTING_POINTS_SEED, has_membrane=False, num_sphere_points=100):
+def calculate_surface_points(
+    receptor,
+    ligand,
+    num_points,
+    rec_translation,
+    surface_density,
+    seed=STARTING_POINTS_SEED,
+    has_membrane=False,
+    num_sphere_points=100,
+):
     """Calculates the position of num_points on the surface of the given protein"""
     if num_points < 0:
         raise SetupError("Invalid number of points to generate over the surface")
@@ -49,11 +57,14 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation, surf
 
     # Surface
     pdb_file_name = Path(receptor.structure_file_names[receptor.representative_id])
-    molecule = parsePDB(pdb_file_name).select('protein or nucleic')
+    molecule = parsePDB(pdb_file_name).select("protein or nucleic")
     if has_membrane:
-        pdb_no_membrane = str(pdb_file_name.absolute().parent / f"{pdb_file_name.stem}_no_membrane{pdb_file_name.suffix}")
+        pdb_no_membrane = str(
+            pdb_file_name.absolute().parent
+            / f"{pdb_file_name.stem}_no_membrane{pdb_file_name.suffix}"
+        )
         writePDB(pdb_no_membrane, molecule)
-    surface = molecule.select('protein and surface or nucleic and name P')
+    surface = molecule.select("protein and surface or nucleic and name P")
     coords = surface.getCoords()
 
     # SASA
@@ -70,7 +81,7 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation, surf
     if len(coords) > num_points:
         # Extremely important to set seed in order to get reproducible results
         np.random.seed(seed)
-        surface_clusters = kmeans2(data=coords, k=num_points, minit='points', iter=100)
+        surface_clusters = kmeans2(data=coords, k=num_points, minit="points", iter=100)
         surface_centroids = surface_clusters[0]
     else:
         surface_centroids = coords
@@ -88,7 +99,7 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation, surf
         # print('.', end="", flush=True)
         centroid = surface_centroids[i_centroid]
         # Search for this centroid neighbors
-        centroid_neighbors = centroids_kd_tree.query_ball_point(centroid, r=20.)
+        centroid_neighbors = centroids_kd_tree.query_ball_point(centroid, r=20.0)
         # For each neighbor, remove points too close
         for n in centroid_neighbors:
             points_to_remove = []
@@ -97,8 +108,11 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation, surf
                     if np.linalg.norm(p - surface_centroids[n]) <= surface_distance:
                         points_to_remove.append(i_p)
                 points_to_remove = list(set(points_to_remove))
-                sampling[i_centroid] = [sampling[i_centroid][i_p] \
-                    for i_p in range(len(sampling[i_centroid])) if i_p not in points_to_remove]
+                sampling[i_centroid] = [
+                    sampling[i_centroid][i_p]
+                    for i_p in range(len(sampling[i_centroid]))
+                    if i_p not in points_to_remove
+                ]
 
     s = []
     for points in sampling:
@@ -108,7 +122,7 @@ def calculate_surface_points(receptor, ligand, num_points, rec_translation, surf
     if len(s) > num_points:
         # Extremely important to set seed in order to get reproducible results
         np.random.seed(seed)
-        s_clusters = kmeans2(data=s, k=num_points, minit='points', iter=100)
+        s_clusters = kmeans2(data=s, k=num_points, minit="points", iter=100)
         s = s_clusters[0]
 
     for p in s:

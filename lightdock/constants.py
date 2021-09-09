@@ -5,41 +5,51 @@ DEFAULT_NUM_SWARMS = 400
 DEFAULT_NUM_GLOWWORMS = 200
 
 # GSO algorithm constants
-MAX_TRANSLATION = 30                # In Angstroms
-MAX_ROTATION = 1.0                  # Quaternion default value for its components
-DEFAULT_STEP_SIZE = 0.03            # Default generic GSO step (does only apply to J* functions
-DEFAULT_TRANSLATION_STEP = 0.5      # Normalized step
-DEFAULT_ROTATION_STEP = 0.5         # Normalized SLERP step. 1 means full jump, 0 means no movement
-GSO_SEED = 324324                   # Seed for the random number generator in the GSO algorithm
-STARTING_POINTS_SEED = 324324       # Seed for the random number generator used for calculating starting points
+MAX_TRANSLATION = 30  # In Angstroms
+MAX_ROTATION = 1.0  # Quaternion default value for its components
+DEFAULT_STEP_SIZE = 0.03  # Default generic GSO step (does only apply to J* functions
+DEFAULT_TRANSLATION_STEP = 0.5  # Normalized step
+DEFAULT_ROTATION_STEP = (
+    0.5  # Normalized SLERP step. 1 means full jump, 0 means no movement
+)
+GSO_SEED = 324324  # Seed for the random number generator in the GSO algorithm
+STARTING_POINTS_SEED = (
+    324324  # Seed for the random number generator used for calculating starting points
+)
 
 # Normal modes
-DEFAULT_NMODES_REC = 10              # Default number of normal modes to consider for receptor
-DEFAULT_NMODES_LIG = 10              # Default number of normal modes to consider for ligand
+DEFAULT_NMODES_REC = 10  # Default number of normal modes to consider for receptor
+DEFAULT_NMODES_LIG = 10  # Default number of normal modes to consider for ligand
 DEFAULT_EXTENT_MU = 4.0
 DEFAULT_EXTENT_SIGMA = 3.0
 MIN_EXTENT = 0.1
 MAX_EXTENT = 5.0
-STARTING_NM_SEED = 324324           # Seed for the random number generator used for calculating normal modes extent
+STARTING_NM_SEED = 324324  # Seed for the random number generator used for calculating normal modes extent
 DEFAULT_NMODES_STEP = 0.5
 DEFAULT_REC_NM_FILE = "lightdock_rec.nm"
 DEFAULT_LIG_NM_FILE = "lightdock_lig.nm"
 
 # Scoring function constants
-DEFAULT_SCORING_FUNCTION = "fastdfire"  # Lightdock default scoring function if none is specified
+DEFAULT_SCORING_FUNCTION = (
+    "fastdfire"  # Lightdock default scoring function if none is specified
+)
 DEFAULT_CONTACT_RESTRAINTS_CUTOFF = 3.9
 
 # Default file extensions
 DEFAULT_REFERENCE_POINTS_EXTENSION = ".vol"
 DEFAULT_LIST_EXTENSION = ".list"
-DEFAULT_RMSD_EXTENSION= ".rmsd"
+DEFAULT_RMSD_EXTENSION = ".rmsd"
 NUMPY_FILE_SAVE_EXTENSION = ".npy"
 DEFAULT_REPRESENTATIVES_EXTENSION = ".repr"
 
 # Default file names and folders
-DEFAULT_POSITIONS_FOLDER = "init"       # Folder which contains the initial_positions files for each cluster
+DEFAULT_POSITIONS_FOLDER = (
+    "init"  # Folder which contains the initial_positions files for each cluster
+)
 GSO_OUTPUT_FILE = "gso_%s.out"
-DEFAULT_SWARM_FOLDER = "swarm_"     # Folder where GSO execution for a given cluster will be stored
+DEFAULT_SWARM_FOLDER = (
+    "swarm_"  # Folder where GSO execution for a given cluster will be stored
+)
 DEFAULT_SETUP_FILE = "setup.json"
 DEFAULT_PDB_STARTING_PREFIX = "starting_positions"
 DEFAULT_BILD_STARTING_PREFIX = "starting_poses"

@@ -18,18 +18,38 @@ from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 class MJPotential(object):
     """Loads MJ potentials information"""
-    residues = {'LEU': 0, 'PHE': 1, 'ILE': 2, 'MET': 3, 'VAL': 4, 'TRP': 5, 'CYS': 6, 'TYR': 7, 'HIS': 8, 'ALA': 9,
-                'THR': 10, 'GLY': 11, 'PRO': 12, 'ARG': 13, 'GLN': 14, 'SER': 15, 'ASN': 16, 'GLU': 17, 'ASP': 18,
-                'LYS': 19}
 
-    def __init__(self, data_file='MJ_potentials.dat'):
-        data_path = os.path.dirname(os.path.realpath(__file__)) + '/data/'
+    residues = {
+        "LEU": 0,
+        "PHE": 1,
+        "ILE": 2,
+        "MET": 3,
+        "VAL": 4,
+        "TRP": 5,
+        "CYS": 6,
+        "TYR": 7,
+        "HIS": 8,
+        "ALA": 9,
+        "THR": 10,
+        "GLY": 11,
+        "PRO": 12,
+        "ARG": 13,
+        "GLN": 14,
+        "SER": 15,
+        "ASN": 16,
+        "GLU": 17,
+        "ASP": 18,
+        "LYS": 19,
+    }
+
+    def __init__(self, data_file="MJ_potentials.dat"):
+        data_path = os.path.dirname(os.path.realpath(__file__)) + "/data/"
         self.potentials = MJPotential._read_potentials(data_path + data_file)
 
     @staticmethod
     def _read_potentials(data_file_name):
         """Reads a given potentials file.
-        
+
         Identifies each potential matrix by '>' and '<'
         """
         data_file = open(data_file_name)
@@ -38,22 +58,26 @@ class MJPotential(object):
         potentials = {}
 
         try:
-            current_potential = ''
+            current_potential = ""
             for line in data:
                 line = line.rstrip()
                 if line:
-                    if line[0] == '<':
-                        current_potential = ''
+                    if line[0] == "<":
+                        current_potential = ""
 
                     if current_potential:
-                        potentials[current_potential].append([float(x) for x in line.split()])
+                        potentials[current_potential].append(
+                            [float(x) for x in line.split()]
+                        )
 
-                    if line[0] == '>':
+                    if line[0] == ">":
                         current_potential = line[1:]
                         potentials[current_potential] = []
 
         except Exception as e:
-            raise PotentialsParsingError('Error parsing %s file. Details: %s' % (data_file_name, str(e)))
+            raise PotentialsParsingError(
+                "Error parsing %s file. Details: %s" % (data_file_name, str(e))
+            )
 
         return potentials
 
@@ -66,7 +90,7 @@ class MJ3hAdapter(ModelAdapter):
     def _get_docking_model(self, molecule, restraints):
         """Builds a suitable docking model for this scoring function"""
         list_of_coordinates = []
-        not_considered_atoms = ['O', 'C', 'N', 'H']
+        not_considered_atoms = ["O", "C", "N", "H"]
         residues_to_remove = []
         residues = [residue for chain in molecule.chains for residue in chain.residues]
         parsed_restraints = {}
@@ -77,7 +101,7 @@ class MJ3hAdapter(ModelAdapter):
                 c_y = 0.0
                 c_z = 0.0
                 count = 0
-                chain_id = ''
+                chain_id = ""
                 for atom in residue.atoms:
                     if atom.name not in not_considered_atoms:
                         c_x += molecule.atom_coordinates[structure][atom.index][0]
@@ -95,8 +119,11 @@ class MJ3hAdapter(ModelAdapter):
                     residues_to_remove.append(res_index)
 
             if len(residues_to_remove):
-                residues = [residue for res_index, residue in enumerate(residues) if
-                            res_index not in residues_to_remove]
+                residues = [
+                    residue
+                    for res_index, residue in enumerate(residues)
+                    if res_index not in residues_to_remove
+                ]
 
             list_of_coordinates.append(SpacePoints(coordinates))
 
@@ -105,10 +132,29 @@ class MJ3hAdapter(ModelAdapter):
 
 class MJ3h(ScoringFunction):
     """Implements MJ3h potential"""
-    potentials_dict = {'LEU': 0, 'PHE': 1, 'ILE': 2, 'MET': 3, 'VAL': 4,
-                       'TRP': 5, 'CYS': 6, 'TYR': 7, 'HIS': 8, 'ALA': 9,
-                       'THR': 10, 'GLY': 11, 'PRO': 12, 'ARG': 13, 'GLN': 14,
-                       'SER': 15, 'ASN': 16, 'GLU': 17, 'ASP': 18, 'LYS': 19}
+
+    potentials_dict = {
+        "LEU": 0,
+        "PHE": 1,
+        "ILE": 2,
+        "MET": 3,
+        "VAL": 4,
+        "TRP": 5,
+        "CYS": 6,
+        "TYR": 7,
+        "HIS": 8,
+        "ALA": 9,
+        "THR": 10,
+        "GLY": 11,
+        "PRO": 12,
+        "ARG": 13,
+        "GLN": 14,
+        "SER": 15,
+        "ASN": 16,
+        "GLU": 17,
+        "ASP": 18,
+        "LYS": 19,
+    }
 
     max_distance_cutoff = 42.25  # 6.5^2
     min_distance_cutoff = 6.2  # 2.5^2
@@ -117,8 +163,10 @@ class MJ3h(ScoringFunction):
         super(MJ3h, self).__init__(weight, anm_support=False)
         self.penalization = penalization
         self.potential = MJPotential()
-        self.potentials = self.potential.potentials['MJ3h']
-        self.cutoff = DEFAULT_CONTACT_RESTRAINTS_CUTOFF * DEFAULT_CONTACT_RESTRAINTS_CUTOFF
+        self.potentials = self.potential.potentials["MJ3h"]
+        self.cutoff = (
+            DEFAULT_CONTACT_RESTRAINTS_CUTOFF * DEFAULT_CONTACT_RESTRAINTS_CUTOFF
+        )
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
         """Calculates the MJ3h potential taking into account the contacts between receptor
@@ -147,10 +195,16 @@ class MJ3h(ScoringFunction):
                         interface_ligand.append(index_lig)
         interface_receptor = set(interface_receptor)
         interface_ligand = set(interface_ligand)
-        energy *= -1.
-        perc_receptor_restraints = ScoringFunction.restraints_satisfied(receptor.restraints, interface_receptor)
-        perc_ligand_restraints = ScoringFunction.restraints_satisfied(ligand.restraints, interface_ligand)
-        return (energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy) * self.weight
+        energy *= -1.0
+        perc_receptor_restraints = ScoringFunction.restraints_satisfied(
+            receptor.restraints, interface_receptor
+        )
+        perc_ligand_restraints = ScoringFunction.restraints_satisfied(
+            ligand.restraints, interface_ligand
+        )
+        return (
+            energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
+        ) * self.weight
 
 
 # Needed to dynamically load the scoring functions from command line
