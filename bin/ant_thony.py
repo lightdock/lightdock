@@ -8,7 +8,7 @@ import logging
 from multiprocessing import Process, cpu_count
 
 logging.basicConfig(
-    format="[Ant-Thony] %(levelname)s: %(message)s", level=logging.DEBUG
+    format="[\U0001F41C-Thony] %(levelname)s: %(message)s", level=logging.DEBUG
 )
 
 
@@ -27,11 +27,12 @@ class Task:
 
 class Ant(Process):
     """Ant-Thony's buddies"""
-
+    created = 0
     def __init__(self, tasks):
-        super().__init__()
+        super().__init__(name=f"\U0001F41C-{Ant.created+1}")
         self.tasks = tasks
         logging.info(f"{self.name} ready with {len(self.tasks)} tasks")
+        Ant.created += 1
 
     def run(self):
         """Runs all the assigned tasks"""
@@ -54,7 +55,7 @@ class Ant_Thony:
             )
             self.num_processes = cpu_count()
 
-        logging.info(f"Ant-Thony will use {self.num_processes} cores")
+        logging.info(f"\U0001F41C-Thony will use {self.num_processes} cores")
 
         self.tasks = tasks
         self.num_tasks = len(tasks)
@@ -80,7 +81,7 @@ class Ant_Thony:
     def go_home(self):
         for ant in self.workers:
             ant.terminate()
-        logging.info("All ants back to the nest")
+        logging.info("All \U0001F41C back to the nest")
 
 
 if __name__ == "__main__":
@@ -112,3 +113,4 @@ if __name__ == "__main__":
         anthony = Ant_Thony(all_tasks, args.cores)
         anthony.release()
         anthony.go_home()
+
