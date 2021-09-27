@@ -103,8 +103,9 @@ def read_atom_line(line, line_type="", atoms_to_ignore=[], residues_to_ignore=[]
         )
 
 
-def parse_complex_from_file(input_file_name, atoms_to_ignore=[], residues_to_ignore=[],
-    verbose=False):
+def parse_complex_from_file(
+    input_file_name, atoms_to_ignore=[], residues_to_ignore=[], verbose=False
+):
     """Reads and parses a given input_file_name PDB file.
 
     TODO: Check if chain have been already created and insert it into the first one
@@ -132,7 +133,9 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], residues_to_ign
                     )
             elif line_type == "ATOM" or line_type == "HETATM":
                 try:
-                    atom = read_atom_line(line, line_type, atoms_to_ignore, residues_to_ignore)
+                    atom = read_atom_line(
+                        line, line_type, atoms_to_ignore, residues_to_ignore
+                    )
                     atoms.append(atom)
                 except PDBParsingWarning as warning:
                     if verbose:
@@ -149,7 +152,9 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], residues_to_ign
                 ):
                     last_residue_name = atom.residue_name
                     last_residue_number = atom.residue_number
-                    current_residue = Residue(atom.residue_name, atom.residue_number, atom.residue_insertion)
+                    current_residue = Residue(
+                        atom.residue_name, atom.residue_number, atom.residue_insertion
+                    )
                     residues.append(current_residue)
                     current_chain.residues.append(current_residue)
                 current_residue.atoms.append(atom)

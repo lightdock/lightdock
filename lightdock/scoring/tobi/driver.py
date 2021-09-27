@@ -216,7 +216,9 @@ class TOBIAdapter(ModelAdapter):
                     coordinates.append([cx, cy, cz])
                     tobi_residues.append(residue_index)
 
-                    res_id = "%s.%s.%s" % (chain_id, residue.name, str(residue.number))
+                    res_id = (
+                        f"{chain_id}.{residue.name}.{residue.number}{residue.insertion}"
+                    )
                     if restraints and res_id in restraints:
                         parsed_restraints[res_id] = []
 

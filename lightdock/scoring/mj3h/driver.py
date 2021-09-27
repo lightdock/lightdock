@@ -112,7 +112,9 @@ class MJ3hAdapter(ModelAdapter):
                 if count:
                     count = float(count)
                     coordinates.append([c_x / count, c_y / count, c_z / count])
-                    res_id = "%s.%s.%s" % (chain_id, residue.name, str(residue.number))
+                    res_id = (
+                        f"{chain_id}.{residue.name}.{residue.number}{residue.insertion}"
+                    )
                     if restraints and res_id in restraints:
                         parsed_restraints[res_id] = []
                 else:

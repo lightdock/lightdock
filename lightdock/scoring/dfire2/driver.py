@@ -222,11 +222,7 @@ class DFIRE2Adapter(ModelAdapter, DFIRE2Potential):
                     )
                     coordinates.append([rec_atom.x, rec_atom.y, rec_atom.z])
                     # Restraints support
-                    res_id = "%s.%s.%s" % (
-                        rec_atom.chain_id,
-                        residue.name,
-                        str(residue.number),
-                    )
+                    res_id = f"{rec_atom.chain_id}.{residue.name}.{residue.number}{residue.insertion}"
                     if restraints and res_id in restraints:
                         try:
                             parsed_restraints[res_id].append(atom_index)

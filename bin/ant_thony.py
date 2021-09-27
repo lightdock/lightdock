@@ -27,7 +27,9 @@ class Task:
 
 class Ant(Process):
     """Ant-Thony's buddies"""
+
     created = 0
+
     def __init__(self, tasks):
         super().__init__(name=f"\U0001F41C-{Ant.created+1}")
         self.tasks = tasks
@@ -113,4 +115,3 @@ if __name__ == "__main__":
         anthony = Ant_Thony(all_tasks, args.cores)
         anthony.release()
         anthony.go_home()
-

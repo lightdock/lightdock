@@ -17,9 +17,17 @@ class TestResidue:
         residue1 = Residue("ALA", 1)
         residue2 = residue1.clone()
 
-        assert residue1.name == residue2.name and residue1.number == residue2.number and residue1.insertion == residue2.insertion
+        assert (
+            residue1.name == residue2.name
+            and residue1.number == residue2.number
+            and residue1.insertion == residue2.insertion
+        )
         residue2.name = "MET"
-        assert residue1.name != residue2.name and residue1.number == residue2.number and residue1.insertion == residue2.insertion
+        assert (
+            residue1.name != residue2.name
+            and residue1.number == residue2.number
+            and residue1.insertion == residue2.insertion
+        )
 
     def test_is_standard(self):
         residue1 = Residue("ALA", 1)

@@ -278,9 +278,7 @@ class DockingLandscapePosition(LandscapePosition):
     def update_conformers(self, other, rnd_generator, current_scoring):
         """Updates the structures for receptor and ligand"""
         if self != other:
-            _ = rnd_generator.randint(
-                upper_limit=(len(self.receptor) - 1)
-            )
+            _ = rnd_generator.randint(upper_limit=(len(self.receptor) - 1))
             _ = rnd_generator.randint(upper_limit=(len(self.ligand) - 1))
             # Experimental, disabled
             # scoring = self.evaluate_objective_function(random_receptor_id, random_ligand_id)

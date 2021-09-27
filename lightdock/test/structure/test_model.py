@@ -18,7 +18,10 @@ class TestDockingModel:
             Atom(3, "CA", "", "A", "HIS", x=1.1, y=1.2, z=1.3),
             Atom(4, "N", "", "A", "HIS", x=2.9, y=2.8, z=2.7),
         ]
-        self.residues = [Residue("ALA", 1, "", self.atoms1), Residue("HIS", 2, "", self.atoms2)]
+        self.residues = [
+            Residue("ALA", 1, "", self.atoms1),
+            Residue("HIS", 2, "", self.atoms2),
+        ]
 
     def test_create_model(self):
         docking_model = DockingModel(

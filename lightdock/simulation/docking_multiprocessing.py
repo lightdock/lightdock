@@ -174,14 +174,18 @@ def run_simulation(parser):
             DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(args.receptor_pdb),
         )
         receptor = read_input_structure(
-            parsed_lightdock_receptor, args.noxt, args.noh, args.verbose_parser
+            parsed_lightdock_receptor,
+            args.noxt,
+            args.noh,
+            args.now,
+            args.verbose_parser,
         )
         parsed_lightdock_ligand = os.path.join(
             os.path.dirname(args.ligand_pdb),
             DEFAULT_LIGHTDOCK_PREFIX % os.path.basename(args.ligand_pdb),
         )
         ligand = read_input_structure(
-            parsed_lightdock_ligand, args.noxt, args.noh, args.verbose_parser
+            parsed_lightdock_ligand, args.noxt, args.noh, args.now, args.verbose_parser
         )
 
         # CRITICAL to not break compatibility with previous results

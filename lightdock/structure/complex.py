@@ -168,8 +168,11 @@ class Complex(object):
         for chain in self.chains:
             if chain_id == chain.cid:
                 for residue in chain.residues:
-                    if residue.name == residue_name and int(residue.number) == int(
-                        residue_number) and residue.insertion == residue_insertion:
+                    if (
+                        residue.name == residue_name
+                        and int(residue.number) == int(residue_number)
+                        and residue.insertion == residue_insertion
+                    ):
                         return residue
         return None
 

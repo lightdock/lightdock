@@ -76,7 +76,14 @@ class Residue(object):
 
     DUMMY_TYPES = ["MMB", "DUM"]
 
-    def __init__(self, residue_name, residue_number, residue_insertion="", atoms=None, residue_index=0):
+    def __init__(
+        self,
+        residue_name,
+        residue_number,
+        residue_insertion="",
+        atoms=None,
+        residue_index=0,
+    ):
         """Creates a new residue"""
         self.name = residue_name.upper()
         self.number = residue_number
@@ -93,7 +100,11 @@ class Residue(object):
     def clone(self):
         """Creates a copy of the current residue"""
         return Residue(
-            self.name, self.number, self.insertion, [atom.clone() for atom in self.atoms], self.index
+            self.name,
+            self.number,
+            self.insertion,
+            [atom.clone() for atom in self.atoms],
+            self.index,
         )
 
     def is_standard(self):
@@ -128,33 +139,34 @@ class Residue(object):
     def check(self):
         """Check if the residue has all the backbone and sidechain atoms, ignore dummy beads"""
         if self.is_standard():
-            backbone_correct = sorted([a.name for a in self.backbone]) == sorted(
-                backbone
-            )
+            backbone_correct = set([a.name for a in self.backbone]) == set(backbone)
             if not backbone_correct:
                 raise BackboneError(
-                    "Incomplete backbone for residue %s.%s" % (self.name, self.number)
+                    f"Incomplete backbone for residue {self.name}.{self.number}{self.insertion}"
                 )
 
-            sd_correct = sorted([a.name for a in self.sidechain]) == sorted(
+            sd_correct = set([a.name for a in self.sidechain]) == set(
                 sidechain[self.name]
             )
             if not sd_correct:
                 raise SideChainError(
-                    "Incomplete sidechain for residue %s.%s" % (self.name, self.number)
+                    f"Incomplete sidechain for residue {self.name}.{self.number}{self.insertion}"
                 )
 
             return True
         else:
             if not (self.is_dummy() or self.is_nucleic()):
                 raise ResidueNonStandardError(
-                    "Can not check non-standard residue %s.%s"
-                    % (self.name, self.number)
+                    f"Can not check non-standard residue {self.name}.{self.number}{self.insertion}"
                 )
 
     def __eq__(self, other):
         """Compares two residues for equality."""
-        return self.number == other.number and self.name == other.name and self.insertion == other.insertion
+        return (
+            self.number == other.number
+            and self.name == other.name
+            and self.insertion == other.insertion
+        )
 
     def __ne__(self, other):
         """Compares two residues for unequality"""
@@ -183,7 +195,9 @@ class Residue(object):
         if len(self.atoms):
             representation = []
             for atom in self.atoms:
-                representation.append(f"{self.name}.{self.number}{self.insertion}  {str(atom)}")
+                representation.append(
+                    f"{self.name}.{self.number}{self.insertion}  {str(atom)}"
+                )
             return "\n".join(representation)
         else:
             return f"{self.name}.{self.number}{self.insertion}"

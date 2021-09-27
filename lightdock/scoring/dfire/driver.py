@@ -419,7 +419,9 @@ class DFIREAdapter(ModelAdapter):
         atom_index = 0
         for chain in molecule.chains:
             for residue in chain.residues:
-                res_id = "%s.%s.%s" % (chain.cid, residue.name, str(residue.number))
+                res_id = (
+                    f"{chain.cid}.{residue.name}.{residue.number}{residue.insertion}"
+                )
                 in_restraint = False
                 if restraints and res_id in restraints:
                     parsed_restraints[res_id] = []

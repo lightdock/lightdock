@@ -64,11 +64,7 @@ class SDAdapter(ModelAdapter):
             res_name = atom.residue_name
             if res_name == "HIS":
                 res_name = "HID"
-            res_id = "%s.%s.%s" % (
-                atom.chain_id,
-                atom.residue_name,
-                str(atom.residue_number),
-            )
+            res_id = f"{atom.chain_id}.{atom.residue_name}.{atom.residue_number}{atom.residue_insertion}"
             if restraints and res_id in restraints:
                 try:
                     parsed_restraints[res_id].append(atom_index)

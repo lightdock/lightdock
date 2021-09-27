@@ -47,8 +47,11 @@ def get_pdb_files(input_file):
 
 
 def read_input_structure(
-    pdb_file_name, ignore_oxt=True, ignore_hydrogens=False, ignore_water=False,
-    verbose_parser=False
+    pdb_file_name,
+    ignore_oxt=True,
+    ignore_hydrogens=False,
+    ignore_water=False,
+    verbose_parser=False,
 ):
     """Reads the input structure.
 
@@ -337,7 +340,9 @@ def parse_restraints_file(restraints_file_name):
                         # Possible residue insertion
                         residue_number = int(residue_identifier[2][:-1])
                         residue_insertion = residue_identifier[2][-1].upper()
-                    parsed_restraint = f"{chain_id}.{residue}.{residue_number}{residue_insertion}"
+                    parsed_restraint = (
+                        f"{chain_id}.{residue}.{residue_number}{residue_insertion}"
+                    )
                     # Check type of restraint:
                     active = passive = blocked = False
                     try:
@@ -400,7 +405,9 @@ def get_restraints(structure, restraints):
                 residue_number = residue_number[:-1]
             else:
                 residue_insertion = ""
-            residue = structure.get_residue(chain_id, residue_name, residue_number, residue_insertion)
+            residue = structure.get_residue(
+                chain_id, residue_name, residue_number, residue_insertion
+            )
             if not residue:
                 raise LightDockError(f"Restraint {restraint} not found in structure")
             residues[restraint_type].append(residue)

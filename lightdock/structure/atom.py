@@ -53,7 +53,7 @@ class Atom(object):
         self.chain_id = chain_id
         self.residue_name = residue_name
         self.residue_number = residue_number
-        self.residue_insertion = residue_insertion
+        self.residue_insertion = residue_insertion.strip()
         self.x = x
         self.y = y
         self.z = z
