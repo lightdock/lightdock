@@ -76,10 +76,11 @@ class Residue(object):
 
     DUMMY_TYPES = ["MMB", "DUM"]
 
-    def __init__(self, residue_name, residue_number, atoms=None, residue_index=0):
+    def __init__(self, residue_name, residue_number, residue_insertion="", atoms=None, residue_index=0):
         """Creates a new residue"""
         self.name = residue_name.upper()
         self.number = residue_number
+        self.insertion = residue_insertion.upper().strip()
         if atoms:
             self.atoms = atoms
             self.set_backbone_and_sidechain()
@@ -92,7 +93,7 @@ class Residue(object):
     def clone(self):
         """Creates a copy of the current residue"""
         return Residue(
-            self.name, self.number, [atom.clone() for atom in self.atoms], self.index
+            self.name, self.number, self.insertion, [atom.clone() for atom in self.atoms], self.index
         )
 
     def is_standard(self):
@@ -153,7 +154,7 @@ class Residue(object):
 
     def __eq__(self, other):
         """Compares two residues for equality."""
-        return self.number == other.number and self.name == other.name
+        return self.number == other.number and self.name == other.name and self.insertion == other.insertion
 
     def __ne__(self, other):
         """Compares two residues for unequality"""
@@ -182,10 +183,10 @@ class Residue(object):
         if len(self.atoms):
             representation = []
             for atom in self.atoms:
-                representation.append("%s.%s  %s" % (self.name, self.number, str(atom)))
+                representation.append(f"{self.name}.{self.number}{self.insertion}  {str(atom)}")
             return "\n".join(representation)
         else:
-            return "%s.%s" % (self.name, self.number)
+            return f"{self.name}.{self.number}{self.insertion}"
 
 
 class AminoAcid(Residue):

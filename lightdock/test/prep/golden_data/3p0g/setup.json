@@ -13,6 +13,7 @@
     },
     "membrane": true,
     "noh": false,
+    "now": false,
     "noxt": false,
     "receptor_pdb": "receptor_membrane.pdb",
     "receptor_restraints": {

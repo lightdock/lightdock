@@ -15,7 +15,7 @@ def cstrip(string):
     return string.strip(" \t\n\r")
 
 
-def read_atom_line(line, line_type="", atoms_to_ignore=[]):
+def read_atom_line(line, line_type="", atoms_to_ignore=[], residues_to_ignore=[]):
     """Parses a PDB file line starting with 'ATOM' or 'HETATM'"""
     element = cstrip(line[76:78])
     try:
@@ -37,12 +37,18 @@ def read_atom_line(line, line_type="", atoms_to_ignore=[]):
     atom_alternative = cstrip(line[16])
     residue_name = cstrip(line[17:21])
     chain_id = cstrip(line[21])
-    residue_ext = line[26]
+    residue_insertion = line[26]
 
     try:
         residue_number = int(line[22:26])
     except ValueError:
         raise PDBParsingError("Wrong residue number in '%s'" % line)
+
+    if residue_name in residues_to_ignore:
+        raise PDBParsingWarning(
+            "Ignored atom %s.%s.%s %s"
+            % (chain_id, residue_name, residue_number, atom_name)
+        )
 
     if ("H" in atoms_to_ignore and atom_name[0] == "H") or atom_name in atoms_to_ignore:
         raise PDBParsingWarning(
@@ -71,7 +77,7 @@ def read_atom_line(line, line_type="", atoms_to_ignore=[]):
             chain_id,
             residue_name,
             residue_number,
-            residue_ext,
+            residue_insertion,
             x,
             y,
             z,
@@ -87,7 +93,7 @@ def read_atom_line(line, line_type="", atoms_to_ignore=[]):
             chain_id,
             residue_name,
             residue_number,
-            residue_ext,
+            residue_insertion,
             x,
             y,
             z,
@@ -97,7 +103,8 @@ def read_atom_line(line, line_type="", atoms_to_ignore=[]):
         )
 
 
-def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
+def parse_complex_from_file(input_file_name, atoms_to_ignore=[], residues_to_ignore=[],
+    verbose=False):
     """Reads and parses a given input_file_name PDB file.
 
     TODO: Check if chain have been already created and insert it into the first one
@@ -125,7 +132,7 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
                     )
             elif line_type == "ATOM" or line_type == "HETATM":
                 try:
-                    atom = read_atom_line(line, line_type, atoms_to_ignore)
+                    atom = read_atom_line(line, line_type, atoms_to_ignore, residues_to_ignore)
                     atoms.append(atom)
                 except PDBParsingWarning as warning:
                     if verbose:
@@ -142,7 +149,7 @@ def parse_complex_from_file(input_file_name, atoms_to_ignore=[], verbose=False):
                 ):
                     last_residue_name = atom.residue_name
                     last_residue_number = atom.residue_number
-                    current_residue = Residue(atom.residue_name, atom.residue_number)
+                    current_residue = Residue(atom.residue_name, atom.residue_number, atom.residue_insertion)
                     residues.append(current_residue)
                     current_chain.residues.append(current_residue)
                 current_residue.atoms.append(atom)
@@ -180,7 +187,7 @@ def write_atom_line(atom, atom_coordinates, output):
         atom.residue_name,
         atom.chain_id,
         atom.residue_number,
-        atom.residue_ext,
+        atom.residue_insertion,
         atom_coordinates[atom.index][0],
         atom_coordinates[atom.index][1],
         atom_coordinates[atom.index][2],

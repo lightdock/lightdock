@@ -180,6 +180,7 @@ class TestSimulation:
             "ligand_pdb": "2UUY_lig.pdb",
             "membrane": False,
             "noh": False,
+            "now": False,
             "noxt": True,
             "receptor_pdb": "2UUY_rec.pdb",
             "restraints": None,

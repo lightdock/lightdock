@@ -6,6 +6,7 @@
     "ligand_pdb": "1PPE_lig.pdb.H",
     "membrane": false,
     "noh": false,
+    "now": false,
     "noxt": false,
     "receptor_pdb": "1PPE_rec.pdb.H",
     "restraints": null,

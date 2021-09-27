@@ -10,16 +10,16 @@ class TestResidue:
         assert residue.name == "ALA" and residue.number == 1 and len(residue.atoms) == 0
 
     def test_create_residue_with_atoms(self):
-        residue = Residue("ALA", 1, [Atom(), Atom()])
+        residue = Residue("ALA", 1, "", [Atom(), Atom()])
         assert residue.name == "ALA" and residue.number == 1 and len(residue.atoms) == 2
 
     def test_clone(self):
         residue1 = Residue("ALA", 1)
         residue2 = residue1.clone()
 
-        assert residue1.name == residue2.name and residue2.number == residue2.number
+        assert residue1.name == residue2.name and residue1.number == residue2.number and residue1.insertion == residue2.insertion
         residue2.name = "MET"
-        assert residue1.name != residue2.name and residue2.number == residue2.number
+        assert residue1.name != residue2.name and residue1.number == residue2.number and residue1.insertion == residue2.insertion
 
     def test_is_standard(self):
         residue1 = Residue("ALA", 1)
@@ -44,7 +44,7 @@ class TestResidue:
 
     def test_to_string(self):
         atoms = [Atom(1, "CA", "", "A", "ALA"), Atom(2, "N", "", "A", "ALA")]
-        residue = Residue("ALA", 1, atoms)
+        residue = Residue("ALA", 1, "", atoms)
         assert (
             str(residue)
             == "ALA.1    CA   0.000   0.000   0.000\nALA.1     N   0.000   0.000   0.000"
@@ -52,7 +52,7 @@ class TestResidue:
 
     def test_get_atom(self):
         atoms = [Atom(1, "CA", "", "A", "ALA"), Atom(2, "N", "", "A", "ALA")]
-        residue = Residue("ALA", 1, atoms)
+        residue = Residue("ALA", 1, "", atoms)
 
         atom1 = residue.get_atom("CA")
         atom2 = residue.get_atom("N")
@@ -64,14 +64,14 @@ class TestResidue:
 
     def test_get_calpha(self):
         atoms = [Atom(1, "CA", "", "A", "ALA"), Atom(2, "N", "", "A", "ALA")]
-        residue = Residue("ALA", 1, atoms)
+        residue = Residue("ALA", 1, "", atoms)
 
         atom = residue.get_calpha()
 
         assert atom.name == "CA"
 
         atoms = [Atom(1, "CB", "", "A", "ALA"), Atom(2, "N", "", "A", "ALA")]
-        residue = Residue("ALA", 1, atoms)
+        residue = Residue("ALA", 1, "", atoms)
 
         atom = residue.get_calpha()
 
@@ -83,7 +83,7 @@ class TestResidue:
             Atom(2, "N", "", "A", "ALA"),
             Atom(3, "H", "", "A", "ALA"),
         ]
-        residue = Residue("ALA", 1, atoms)
+        residue = Residue("ALA", 1, "", atoms)
 
         no_h = residue.get_non_hydrogen_atoms()
 
@@ -99,7 +99,7 @@ class TestResidue:
             Atom(4, "O", "", "A", "ALA"),
             Atom(5, "CB", "", "A", "ALA"),
         ]
-        residue = Residue("ALA", 1, atoms)
+        residue = Residue("ALA", 1, "", atoms)
 
         assert len(residue.sidechain) == 1
         assert residue.sidechain[0].name == "CB"

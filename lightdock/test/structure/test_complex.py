@@ -24,7 +24,7 @@ class TestComplex:
             Atom(3, "CA", "", "A", "HIS", x=1.1, y=1.2, z=1.3),
             Atom(4, "N", "", "A", "HIS", x=2.9, y=2.8, z=2.7),
         ]
-        self.residues = [Residue("ALA", 1, self.atoms1), Residue("HIS", 2, self.atoms2)]
+        self.residues = [Residue("ALA", 1, "", self.atoms1), Residue("HIS", 2, "", self.atoms2)]
         self.chains = [Chain("A", self.residues)]
 
         self.atoms3 = [
@@ -46,8 +46,8 @@ class TestComplex:
             Atom(13, "CD", "", "A", "PRO", 4, x=2.797, y=9.351, z=10.427),
         ]
         self.residues2 = [
-            Residue("CYS", 1, self.atoms3),
-            Residue("PRO", 2, self.atoms4),
+            Residue("CYS", 1, "", self.atoms3),
+            Residue("PRO", 2, "", self.atoms4),
         ]
         self.chains2 = [Chain("A", self.residues2)]
 
@@ -137,7 +137,7 @@ class TestComplex:
     def test_translate(self):
         atom1 = Atom(2, "C", "", "A", "ALA", x=2.0, y=2.0, z=2.0)
         atom2 = Atom(2, "C", "", "A", "ALA", x=0.0, y=0.0, z=0.0)
-        residue = Residue("ALA", 1, [atom1, atom2])
+        residue = Residue("ALA", 1, "", [atom1, atom2])
         chains = [Chain("A", [residue])]
         protein = Complex(chains)
 
@@ -152,7 +152,7 @@ class TestComplex:
         atom1 = Atom(2, "C", "", "A", "ALA", x=0.0, y=0.0, z=0.0)
         atom2 = Atom(2, "C", "", "A", "ALA", x=2.0, y=2.0, z=2.0)
         atom3 = Atom(2, "C", "", "A", "ALA", x=4.0, y=4.0, z=4.0)
-        residue = Residue("ALA", 1, [atom1, atom2, atom3])
+        residue = Residue("ALA", 1, "", [atom1, atom2, atom3])
         chains = [Chain("A", [residue])]
         protein = Complex(chains)
 

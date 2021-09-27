@@ -43,10 +43,10 @@ if __name__ == "__main__":
 
         # Read input structures
         receptor = read_input_structure(
-            args.receptor_pdb, args.noxt, args.noh, args.verbose_parser
+            args.receptor_pdb, args.noxt, args.noh, args.now, args.verbose_parser
         )
         ligand = read_input_structure(
-            args.ligand_pdb, args.noxt, args.noh, args.verbose_parser
+            args.ligand_pdb, args.noxt, args.noh, args.now, args.verbose_parser
         )
 
         # Move structures to origin

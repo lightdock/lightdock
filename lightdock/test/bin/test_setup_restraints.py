@@ -28,7 +28,7 @@ class TestSetupWithRestraints(RegressionTest):
 
         num_glowworms = 100
 
-        command = f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm --noxt --noh "
+        command = f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm --noxt --noh --now "
         command += "-rst restraints.list -sp >> test_lightdock.out"
         os.system(command)
 

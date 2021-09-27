@@ -56,7 +56,12 @@ def calculate_membrane_height(parsed_receptor_file, restraints):
     z_coord = []
     for restraint in restraints:
         chain_id, residue_name, residue_number = restraint.split(".")
-        residue = receptor.get_residue(chain_id, residue_name, residue_number)
+        if residue_number[-1].isalpha():
+            residue_insertion = residue_number[-1]
+            residue_number = residue_number[:-1]
+        else:
+            residue_insertion = ""
+        residue = receptor.get_residue(chain_id, residue_name, residue_number, residue_insertion)
         ca = residue.get_calpha()
         z_coord.append(ca.z)
     return min(z_coord)

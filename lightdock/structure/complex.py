@@ -164,13 +164,12 @@ class Complex(object):
         self.translate(translation)
         return translation
 
-    def get_residue(self, chain_id, residue_name, residue_number):
+    def get_residue(self, chain_id, residue_name, residue_number, residue_insertion=""):
         for chain in self.chains:
             if chain_id == chain.cid:
                 for residue in chain.residues:
                     if residue.name == residue_name and int(residue.number) == int(
-                        residue_number
-                    ):
+                        residue_number) and residue.insertion == residue_insertion:
                         return residue
         return None
 

@@ -6,6 +6,7 @@
     "ligand_pdb": "2UUY_lig.pdb",
     "membrane": false,
     "noh": true,
+    "now": false,
     "noxt": true,
     "receptor_pdb": "2UUY_rec.pdb",
     "restraints": null,

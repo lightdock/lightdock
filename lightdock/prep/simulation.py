@@ -47,7 +47,8 @@ def get_pdb_files(input_file):
 
 
 def read_input_structure(
-    pdb_file_name, ignore_oxt=True, ignore_hydrogens=False, verbose_parser=False
+    pdb_file_name, ignore_oxt=True, ignore_hydrogens=False, ignore_water=False,
+    verbose_parser=False
 ):
     """Reads the input structure.
 
@@ -57,12 +58,16 @@ def read_input_structure(
     ignore_oxt flag avoids saving OXT atoms.
     """
     atoms_to_ignore = []
+    residues_to_ignore = []
     if ignore_oxt:
         atoms_to_ignore.append("OXT")
         log.info("Ignoring OXT atoms")
     if ignore_hydrogens:
         atoms_to_ignore.append("H")
         log.info("Ignoring Hydrogen atoms")
+    if ignore_water:
+        residues_to_ignore.append("HOH")
+        log.info("Ignoring water")
 
     structures = []
     file_names = []
@@ -74,7 +79,7 @@ def read_input_structure(
     for file_name in file_names:
         log.info(f"Reading structure from {file_name} PDB file...")
         atoms, residues, chains = parse_complex_from_file(
-            file_name, atoms_to_ignore, verbose_parser
+            file_name, atoms_to_ignore, residues_to_ignore, verbose_parser
         )
         structures.append(
             {
@@ -325,8 +330,14 @@ def parse_restraints_file(restraints_file_name):
                     # Only considering 3 chars if many
                     residue = residue_identifier[1][0:3].upper()
                     # Check for integer
-                    residue_number = int(residue_identifier[2])
-                    parsed_restraint = f"{chain_id}.{residue}.{residue_number}"
+                    try:
+                        residue_number = int(residue_identifier[2])
+                        residue_insertion = ""
+                    except ValueError:
+                        # Possible residue insertion
+                        residue_number = int(residue_identifier[2][:-1])
+                        residue_insertion = residue_identifier[2][-1].upper()
+                    parsed_restraint = f"{chain_id}.{residue}.{residue_number}{residue_insertion}"
                     # Check type of restraint:
                     active = passive = blocked = False
                     try:
@@ -384,7 +395,12 @@ def get_restraints(structure, restraints):
     for restraint_type in ["active", "passive", "blocked"]:
         for restraint in restraints[restraint_type]:
             chain_id, residue_name, residue_number = restraint.split(".")
-            residue = structure.get_residue(chain_id, residue_name, residue_number)
+            if residue_number[-1].isalpha():
+                residue_insertion = residue_number[-1]
+                residue_number = residue_number[:-1]
+            else:
+                residue_insertion = ""
+            residue = structure.get_residue(chain_id, residue_name, residue_number, residue_insertion)
             if not residue:
                 raise LightDockError(f"Restraint {restraint} not found in structure")
             residues[restraint_type].append(residue)

@@ -151,6 +151,15 @@ class SetupCommandLineParser(object):
             action="store_true",
             default=False,
         )
+        # Dealing with hydrogen atoms
+        parser.add_argument(
+            "--now",
+            "-now",
+            help="Remove H2O",
+            dest="now",
+            action="store_true",
+            default=False,
+        )
         # Verbose PDB parser
         parser.add_argument(
             "--verbose_parser",

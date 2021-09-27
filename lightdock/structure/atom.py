@@ -31,7 +31,7 @@ class Atom(object):
         chain_id="",
         residue_name="",
         residue_number=9999,
-        residue_ext="",
+        residue_insertion="",
         x=0.0,
         y=0.0,
         z=0.0,
@@ -53,7 +53,7 @@ class Atom(object):
         self.chain_id = chain_id
         self.residue_name = residue_name
         self.residue_number = residue_number
-        self.residue_ext = residue_ext
+        self.residue_insertion = residue_insertion
         self.x = x
         self.y = y
         self.z = z
@@ -116,7 +116,7 @@ class Atom(object):
             self.chain_id,
             self.residue_name,
             self.residue_number,
-            self.residue_ext,
+            self.residue_insertion,
             self.x,
             self.y,
             self.z,
@@ -158,7 +158,7 @@ class HetAtom(Atom):
         chain_id="",
         residue_name=None,
         residue_number=9999,
-        residue_ext=None,
+        residue_insertion="",
         x=0.0,
         y=0.0,
         z=0.0,
@@ -176,7 +176,7 @@ class HetAtom(Atom):
             chain_id,
             residue_name,
             residue_number,
-            residue_ext,
+            residue_insertion,
             x,
             y,
             z,

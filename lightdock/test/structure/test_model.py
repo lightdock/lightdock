@@ -18,7 +18,7 @@ class TestDockingModel:
             Atom(3, "CA", "", "A", "HIS", x=1.1, y=1.2, z=1.3),
             Atom(4, "N", "", "A", "HIS", x=2.9, y=2.8, z=2.7),
         ]
-        self.residues = [Residue("ALA", 1, self.atoms1), Residue("HIS", 2, self.atoms2)]
+        self.residues = [Residue("ALA", 1, "", self.atoms1), Residue("HIS", 2, "", self.atoms2)]
 
     def test_create_model(self):
         docking_model = DockingModel(
@@ -53,7 +53,7 @@ class TestDockingModel:
     def test_translate(self):
         atom1 = Atom(1, "CA", "", "A", "ALA", x=2.0, y=2.0, z=2.0)
         atom2 = Atom(2, "CB", "", "A", "ALA", x=0.0, y=0.0, z=0.0)
-        residues = [Residue("ALA", 1, [atom1, atom2])]
+        residues = [Residue("ALA", 1, "", [atom1, atom2])]
         docking_model = DockingModel(
             residues, SpacePoints([[2.0, 2.0, 2.0], [0, 0, 0]])
         )
