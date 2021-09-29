@@ -13,11 +13,10 @@ from lightdock.mathutil.constants import ERROR_TOLERANCE
 
 
 class TestEllipsoid:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_ellipsoid'
-        self.golden_data_path = self.path / 'golden_data'
+        self.test_path = self.path / "scratch_ellipsoid"
+        self.golden_data_path = self.path / "golden_data"
 
     def setup(self):
         try:
@@ -33,7 +32,9 @@ class TestEllipsoid:
             pass
 
     def test_calculate_min_volume_ellipsoid(self):
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPE_l_u.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1PPE_l_u.pdb"
+        )
         protein = Complex(chains, atoms)
 
         ellipsoid = MinimumVolumeEllipsoid(protein.atom_coordinates[0].coordinates)
@@ -56,18 +57,20 @@ class TestEllipsoid:
         assert_almost_equal(0.75494384, ellipsoid.rotation[2][1])
         assert_almost_equal(0.64535903, ellipsoid.rotation[2][2])
 
-        expected_poles = [[13.266157381855532, 18.303842059830465, -0.91039204503235993],
-                          [-1.6665744987943629, 8.3083434397316651, 13.477965942387469],
-                          [-7.296322648355452, 21.863699498711949, -1.3628961564119457],
-                          [18.89590553141662, 4.7484860008501819, 13.930470053767054],
-                          [2.8720188105117521, -5.6669806736857815, -9.9352265853089641],
-                          [8.7275640725494164, 32.279166173247916, 22.502800482664075]]
+        expected_poles = [
+            [13.266157381855532, 18.303842059830465, -0.91039204503235993],
+            [-1.6665744987943629, 8.3083434397316651, 13.477965942387469],
+            [-7.296322648355452, 21.863699498711949, -1.3628961564119457],
+            [18.89590553141662, 4.7484860008501819, 13.930470053767054],
+            [2.8720188105117521, -5.6669806736857815, -9.9352265853089641],
+            [8.7275640725494164, 32.279166173247916, 22.502800482664075],
+        ]
 
         assert np.allclose(expected_poles, ellipsoid.poles, ERROR_TOLERANCE)
 
     @raises(MinimumVolumeEllipsoidError)
     def test_exception_singular_matrix(self):
-        coordinates = np.array([[2., 2., 2.], [0., 0., 0.]])
+        coordinates = np.array([[2.0, 2.0, 2.0], [0.0, 0.0, 0.0]])
 
         ellipsoid = MinimumVolumeEllipsoid(coordinates)
 

@@ -15,20 +15,23 @@ from lightdock.scoring.mj3h.driver import MJ3h, MJ3hAdapter
 
 
 class TestLightDockGSOBuilder:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_lightdockbuilder'
-        self.golden_data_path = self.path / 'golden_data'
+        self.test_path = self.path / "scratch_lightdockbuilder"
+        self.golden_data_path = self.path / "golden_data"
         self.gso_parameters = GSOParameters()
 
-        self.bounding_box = BoundingBox([Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
-                                         Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
-                                         Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
-                                         Boundary(-MAX_ROTATION, MAX_ROTATION),
-                                         Boundary(-MAX_ROTATION, MAX_ROTATION),
-                                         Boundary(-MAX_ROTATION, MAX_ROTATION),
-                                         Boundary(-MAX_ROTATION, MAX_ROTATION)])
+        self.bounding_box = BoundingBox(
+            [
+                Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
+                Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
+                Boundary(-MAX_TRANSLATION, MAX_TRANSLATION),
+                Boundary(-MAX_ROTATION, MAX_ROTATION),
+                Boundary(-MAX_ROTATION, MAX_ROTATION),
+                Boundary(-MAX_ROTATION, MAX_ROTATION),
+                Boundary(-MAX_ROTATION, MAX_ROTATION),
+            ]
+        )
         self.random_number_generator = MTGenerator(324324)
 
     def setup(self):
@@ -47,19 +50,36 @@ class TestLightDockGSOBuilder:
     def test_LightDockGSOBuilder_using_FromFileInitializer(self):
         builder = LightdockGSOBuilder()
         number_of_glowworms = 5
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPErec.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1PPErec.pdb"
+        )
         receptor = Complex(chains, atoms)
-        atoms, _, chains = parse_complex_from_file(self.golden_data_path / '1PPElig.pdb')
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1PPElig.pdb"
+        )
         ligand = Complex(chains, atoms)
         adapter = MJ3hAdapter(receptor, ligand)
         scoring_function = MJ3h()
-        gso = builder.create_from_file(number_of_glowworms, self.random_number_generator,
-                                       self.gso_parameters, [adapter], [scoring_function], self.bounding_box,
-                                       self.golden_data_path / 'initial_positions_1PPE.txt',
-                                       0.5, 0.5, 0.5, False, 10, 10)
+        gso = builder.create_from_file(
+            number_of_glowworms,
+            self.random_number_generator,
+            self.gso_parameters,
+            [adapter],
+            [scoring_function],
+            self.bounding_box,
+            self.golden_data_path / "initial_positions_1PPE.txt",
+            0.5,
+            0.5,
+            0.5,
+            False,
+            10,
+            10,
+        )
 
         assert gso.swarm.get_size() == 5
 
-        gso.report(self.test_path / 'report.out')
-        assert filecmp.cmp(self.golden_data_path / 'report_lightdockbuilder.out',
-                           self.test_path / 'report.out')
+        gso.report(self.test_path / "report.out")
+        assert filecmp.cmp(
+            self.golden_data_path / "report_lightdockbuilder.out",
+            self.test_path / "report.out",
+        )

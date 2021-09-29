@@ -16,6 +16,7 @@
     },
     "membrane": false,
     "noh": true,
+    "now": true,
     "noxt": true,
     "receptor_pdb": "2UUY_rec.pdb",
     "receptor_restraints": {

@@ -11,18 +11,28 @@ optimization vector.
 from pathlib import Path
 import numpy as np
 from lightdock.util.parser import SetupCommandLineParser
-from lightdock.prep.simulation import read_input_structure, save_lightdock_structure, \
-                                      calculate_starting_positions, prepare_results_environment, \
-                                      create_setup_file, calculate_anm, parse_restraints_file, \
-                                      get_restraints
-from lightdock.constants import DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_ELLIPSOID_DATA_EXTENSION, \
-                                DEFAULT_REC_NM_FILE, DEFAULT_LIG_NM_FILE
+from lightdock.prep.simulation import (
+    read_input_structure,
+    save_lightdock_structure,
+    calculate_starting_positions,
+    prepare_results_environment,
+    create_setup_file,
+    calculate_anm,
+    parse_restraints_file,
+    get_restraints,
+)
+from lightdock.constants import (
+    DEFAULT_LIGHTDOCK_PREFIX,
+    DEFAULT_ELLIPSOID_DATA_EXTENSION,
+    DEFAULT_REC_NM_FILE,
+    DEFAULT_LIG_NM_FILE,
+)
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
 from lightdock.util.logger import LoggingManager
 from lightdock.error.lightdock_errors import LightDockError
 
 
-log = LoggingManager.get_logger('lightdock3_setup')
+log = LoggingManager.get_logger("lightdock3_setup")
 
 
 if __name__ == "__main__":
@@ -32,8 +42,12 @@ if __name__ == "__main__":
         args = parser.args
 
         # Read input structures
-        receptor = read_input_structure(args.receptor_pdb, args.noxt, args.noh, args.verbose_parser)
-        ligand = read_input_structure(args.ligand_pdb, args.noxt, args.noh, args.verbose_parser)
+        receptor = read_input_structure(
+            args.receptor_pdb, args.noxt, args.noh, args.now, args.verbose_parser
+        )
+        ligand = read_input_structure(
+            args.ligand_pdb, args.noxt, args.noh, args.now, args.verbose_parser
+        )
 
         # Move structures to origin
         rec_translation = receptor.move_to_origin()
@@ -41,19 +55,25 @@ if __name__ == "__main__":
 
         # Calculate reference points for receptor
         log.info(f"Calculating reference points for receptor {args.receptor_pdb}...")
-        ellipsoid_data_file = "%s%s" % (DEFAULT_LIGHTDOCK_PREFIX % receptor.structure_file_names[0],
-                                        DEFAULT_ELLIPSOID_DATA_EXTENSION)
+        ellipsoid_data_file = "%s%s" % (
+            DEFAULT_LIGHTDOCK_PREFIX % receptor.structure_file_names[0],
+            DEFAULT_ELLIPSOID_DATA_EXTENSION,
+        )
         if not Path(ellipsoid_data_file).exists():
             log.info("Reference points for receptor found, skipping")
         else:
-            rec_ellipsoid = MinimumVolumeEllipsoid(receptor.representative().coordinates)
+            rec_ellipsoid = MinimumVolumeEllipsoid(
+                receptor.representative().coordinates
+            )
             np.save(ellipsoid_data_file, np.array([rec_ellipsoid.center.copy()]))
         log.info("Done.")
 
         # Calculate reference points for ligand
         log.info("Calculating reference points for ligand %s..." % args.ligand_pdb)
-        ellipsoid_data_file = "%s%s" % (DEFAULT_LIGHTDOCK_PREFIX % ligand.structure_file_names[0],
-                                        DEFAULT_ELLIPSOID_DATA_EXTENSION)
+        ellipsoid_data_file = "%s%s" % (
+            DEFAULT_LIGHTDOCK_PREFIX % ligand.structure_file_names[0],
+            DEFAULT_ELLIPSOID_DATA_EXTENSION,
+        )
         if not Path(ellipsoid_data_file).exists():
             log.info("Reference points for ligand found, skipping")
         else:
@@ -81,43 +101,63 @@ if __name__ == "__main__":
             restraints = parse_restraints_file(args.restraints)
 
             # Calculate number of restraints in order to check them
-            num_rec_active = len(restraints['receptor']['active'])
-            num_rec_passive = len(restraints['receptor']['passive'])
-            num_rec_blocked = len(restraints['receptor']['blocked'])
-            num_lig_active = len(restraints['ligand']['active'])
-            num_lig_passive = len(restraints['ligand']['passive'])
+            num_rec_active = len(restraints["receptor"]["active"])
+            num_rec_passive = len(restraints["receptor"]["passive"])
+            num_rec_blocked = len(restraints["receptor"]["blocked"])
+            num_lig_active = len(restraints["ligand"]["active"])
+            num_lig_passive = len(restraints["ligand"]["passive"])
 
             # Complain if not a single restraint has been defined, but restraints are enabled
-            if not num_rec_active and not num_rec_passive and not num_rec_blocked \
-                and not num_lig_active and not num_lig_passive:
-                raise LightDockError("Restraints file specified, but not a single restraint found")
+            if (
+                not num_rec_active
+                and not num_rec_passive
+                and not num_rec_blocked
+                and not num_lig_active
+                and not num_lig_passive
+            ):
+                raise LightDockError(
+                    "Restraints file specified, but not a single restraint found"
+                )
 
             # Check if restraints correspond with real residues
-            receptor_restraints = get_restraints(receptor, restraints['receptor'])
-            args.receptor_restraints = restraints['receptor']
-            ligand_restraints = get_restraints(ligand, restraints['ligand'])
-            args.ligand_restraints = restraints['ligand']
+            receptor_restraints = get_restraints(receptor, restraints["receptor"])
+            args.receptor_restraints = restraints["receptor"]
+            ligand_restraints = get_restraints(ligand, restraints["ligand"])
+            args.ligand_restraints = restraints["ligand"]
 
-            log.info(f"Number of receptor restraints is: {num_rec_active} (active), {num_rec_passive} (passive)")
-            log.info(f"Number of ligand restraints is: {num_lig_active} (active), {num_lig_passive} (passive)")
+            log.info(
+                f"Number of receptor restraints is: {num_rec_active} (active), {num_rec_passive} (passive)"
+            )
+            log.info(
+                f"Number of ligand restraints is: {num_lig_active} (active), {num_lig_passive} (passive)"
+            )
 
         try:
-            lig_restraints = ligand_restraints['active'] + ligand_restraints['passive']
+            lig_restraints = ligand_restraints["active"] + ligand_restraints["passive"]
         except (KeyError, TypeError):
             lig_restraints = None
 
         # Calculate surface points (swarm centers) over receptor structure
-        starting_points_files = calculate_starting_positions(receptor, ligand,
-                                                             args.swarms, args.glowworms,
-                                                             args.starting_points_seed,
-                                                             receptor_restraints, lig_restraints,
-                                                             rec_translation, lig_translation,
-                                                             args.surface_density,
-                                                             args.use_anm, args.anm_seed,
-                                                             args.anm_rec, args.anm_lig,
-                                                             args.membrane, args.transmembrane,
-                                                             args.write_starting_positions,
-                                                             args.swarm_radius)
+        starting_points_files = calculate_starting_positions(
+            receptor,
+            ligand,
+            args.swarms,
+            args.glowworms,
+            args.starting_points_seed,
+            receptor_restraints,
+            lig_restraints,
+            rec_translation,
+            lig_translation,
+            args.surface_density,
+            args.use_anm,
+            args.anm_seed,
+            args.anm_rec,
+            args.anm_lig,
+            args.membrane,
+            args.transmembrane,
+            args.write_starting_positions,
+            args.swarm_radius,
+        )
         if len(starting_points_files) != args.swarms:
             args.swarms = len(starting_points_files)
             log.info(f"Number of calculated swarms is {args.swarms}")

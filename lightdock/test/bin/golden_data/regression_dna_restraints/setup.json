@@ -11,6 +11,7 @@
     },
     "membrane": false,
     "noh": false,
+    "now": false,
     "noxt": false,
     "receptor_pdb": "1DIZ_rec.pdb.H",
     "receptor_restraints": {

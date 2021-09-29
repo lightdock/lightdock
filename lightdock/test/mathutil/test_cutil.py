@@ -5,7 +5,6 @@ from nose.tools import assert_almost_equals
 
 
 class TestCutil:
-
     def __init__(self):
         self.values = list(range(1000))
 

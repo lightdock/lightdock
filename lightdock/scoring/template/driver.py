@@ -18,13 +18,19 @@ class TemplateAdapter(ModelAdapter):
             for rec_atom in residue.atoms:
                 model_objects.append(rec_atom)
         try:
-            return DockingModel(model_objects, molecule.copy_coordinates(), restraints, n_modes=molecule.n_modes.copy())
+            return DockingModel(
+                model_objects,
+                molecule.copy_coordinates(),
+                restraints,
+                n_modes=molecule.n_modes.copy(),
+            )
         except AttributeError:
             return DockingModel(model_objects, molecule.copy_coordinates(), restraints)
 
 
 class TemplateScoringFunction(ScoringFunction):
     """Implements the 'Template' scoring function"""
+
     def __init__(self, weight=1.0):
         super(TemplateScoringFunction, self).__init__(weight)
 

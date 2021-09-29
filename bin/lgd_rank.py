@@ -4,24 +4,54 @@
 
 import os
 import argparse
-from lightdock.constants import DEFAULT_SWARM_FOLDER, GSO_OUTPUT_FILE, EVALUATION_FILE, SCORING_FILE, \
-    LIGHTDOCK_PDB_FILE, CLUSTER_REPRESENTATIVES_FILE
+from lightdock.constants import (
+    DEFAULT_SWARM_FOLDER,
+    GSO_OUTPUT_FILE,
+    EVALUATION_FILE,
+    SCORING_FILE,
+    LIGHTDOCK_PDB_FILE,
+    CLUSTER_REPRESENTATIVES_FILE,
+)
 from lightdock.util.logger import LoggingManager
-from lightdock.util.analysis import read_rmsd_and_contacts_data, read_lightdock_output, write_ranking_to_file, \
-    read_cluster_representatives_file
+from lightdock.util.analysis import (
+    read_rmsd_and_contacts_data,
+    read_lightdock_output,
+    write_ranking_to_file,
+    read_cluster_representatives_file,
+)
 
 
-log = LoggingManager.get_logger('lgd_rank')
+log = LoggingManager.get_logger("lgd_rank")
 
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(prog='lgd_rank')
-    parser.add_argument("num_swarms", help="number of swarms to consider", type=int, metavar="num_swarms")
+    parser = argparse.ArgumentParser(prog="lgd_rank")
+    parser.add_argument(
+        "num_swarms",
+        help="number of swarms to consider",
+        type=int,
+        metavar="num_swarms",
+    )
     parser.add_argument("steps", help="steps to consider", type=int, metavar="steps")
-    parser.add_argument("-c", "--clashes_cutoff", help="clashes cutoff", dest="clashes_cutoff", type=float)
-    parser.add_argument("-f", "--file_name", help="lightdock output file to consider", dest="result_file")
-    parser.add_argument("--ignore_clusters", help="Ignore cluster information", dest="ignore_clusters",
-                        action="store_true")
+    parser.add_argument(
+        "-c",
+        "--clashes_cutoff",
+        help="clashes cutoff",
+        dest="clashes_cutoff",
+        type=float,
+    )
+    parser.add_argument(
+        "-f",
+        "--file_name",
+        help="lightdock output file to consider",
+        dest="result_file",
+    )
+    parser.add_argument(
+        "--ignore_clusters",
+        help="Ignore cluster information",
+        dest="ignore_clusters",
+        action="store_true",
+    )
     return parser.parse_args()
 
 
@@ -39,18 +69,29 @@ if __name__ == "__main__":
         num_swarms_found = 0
         for swarm_id in range(args.num_swarms):
             if args.result_file:
-                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), args.result_file)
+                result_file_name = os.path.join(
+                    DEFAULT_SWARM_FOLDER + str(swarm_id), args.result_file
+                )
             else:
-                result_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id),
-                                                (GSO_OUTPUT_FILE % args.steps))
+                result_file_name = os.path.join(
+                    DEFAULT_SWARM_FOLDER + str(swarm_id), (GSO_OUTPUT_FILE % args.steps)
+                )
 
-            cluster_representatives_file = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id),
-                                                        CLUSTER_REPRESENTATIVES_FILE)
+            cluster_representatives_file = os.path.join(
+                DEFAULT_SWARM_FOLDER + str(swarm_id), CLUSTER_REPRESENTATIVES_FILE
+            )
             clusters = []
-            if os.path.isfile(cluster_representatives_file) and not args.ignore_clusters:
-                clusters = read_cluster_representatives_file(cluster_representatives_file)
+            if (
+                os.path.isfile(cluster_representatives_file)
+                and not args.ignore_clusters
+            ):
+                clusters = read_cluster_representatives_file(
+                    cluster_representatives_file
+                )
 
-            scoring_file_name = os.path.join(DEFAULT_SWARM_FOLDER + str(swarm_id), SCORING_FILE)
+            scoring_file_name = os.path.join(
+                DEFAULT_SWARM_FOLDER + str(swarm_id), SCORING_FILE
+            )
             try:
                 results = read_lightdock_output(result_file_name)
                 num_swarms_found += 1

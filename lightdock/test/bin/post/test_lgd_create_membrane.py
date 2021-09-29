@@ -8,12 +8,11 @@ from lightdock.test.bin.regression import RegressionTest
 
 
 class TestCreateMembrane(RegressionTest):
-
     def __init__(self):
         super().__init__()
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_lgd_create_membrane'
-        self.golden_data_path = self.path / 'golden_data' / 'create_membrane'
+        self.test_path = self.path / "scratch_lgd_create_membrane"
+        self.golden_data_path = self.path / "golden_data" / "create_membrane"
 
     def setup(self):
         self.ini_path()
@@ -27,9 +26,13 @@ class TestCreateMembrane(RegressionTest):
         # Prepare folder structure for this test
         os.chdir(self.test_path)
 
-        shutil.copyfile(self.golden_data_path / 'receptor.pdb', self.test_path / 'receptor.pdb')
+        shutil.copyfile(
+            self.golden_data_path / "receptor.pdb", self.test_path / "receptor.pdb"
+        )
 
-        command = f'lgd_create_membrane.py receptor.pdb {anchor_residue} > test.out'
+        command = f"lgd_create_membrane.py receptor.pdb {anchor_residue} > test.out"
         os.system(command)
 
-        assert filecmp.cmp(self.golden_data_path / 'membrane.pdb', self.test_path / 'membrane.pdb')
+        assert filecmp.cmp(
+            self.golden_data_path / "membrane.pdb", self.test_path / "membrane.pdb"
+        )

@@ -4,22 +4,24 @@
 
 import argparse
 from pathlib import Path
-from prody import parsePDB, confProDy, calcRMSD, matchChains
+from prody import parsePDB, confProDy, calcRMSD
 from lightdock.util.analysis import read_lightdock_output
 from lightdock.util.logger import LoggingManager
 from lightdock.constants import CLUSTER_REPRESENTATIVES_FILE
 
 # Disable ProDy output
-confProDy(verbosity='info')
+confProDy(verbosity="info")
 
-log = LoggingManager.get_logger('lgd_cluster_bsas')
+log = LoggingManager.get_logger("lgd_cluster_bsas")
 
 
 def parse_command_line():
     """Parses command line arguments"""
-    parser = argparse.ArgumentParser(prog='lgd_cluster_bsas')
+    parser = argparse.ArgumentParser(prog="lgd_cluster_bsas")
 
-    parser.add_argument("gso_output_file", help="LightDock output file", metavar="gso_output_file")
+    parser.add_argument(
+        "gso_output_file", help="LightDock output file", metavar="gso_output_file"
+    )
 
     return parser.parse_args()
 
@@ -32,14 +34,16 @@ def get_backbone_atoms(ids_list, swarm_path):
     ca_atoms = {}
     try:
         for struct_id in ids_list:
-            pdb_file = swarm_path / f'lightdock_{struct_id}.pdb'
-            log.info(f'Reading CA from {pdb_file}')
+            pdb_file = swarm_path / f"lightdock_{struct_id}.pdb"
+            log.info(f"Reading CA from {pdb_file}")
             structure = parsePDB(pdb_file)
-            selection = structure.select('name CA P')
+            selection = structure.select("name CA P")
             ca_atoms[struct_id] = selection
     except IOError as e:
-        log.error(f'Error found reading a structure: {e}')
-        log.error('Did you generate the LightDock structures corresponding to this output file?')
+        log.error(f"Error found reading a structure: {e}")
+        log.error(
+            "Did you generate the LightDock structures corresponding to this output file?"
+        )
         raise SystemExit()
     return ca_atoms
 
@@ -59,8 +63,10 @@ def clusterize(sorted_ids, swarm_path):
         for cluster_id in list(clusters.keys()):
             # For each cluster representative
             representative_id = clusters[cluster_id][0]
-            rmsd = calcRMSD(backbone_atoms[representative_id], backbone_atoms[j]).round(4)
-            log.info('RMSD between %d and %d is %5.3f' % (representative_id, j, rmsd))
+            rmsd = calcRMSD(backbone_atoms[representative_id], backbone_atoms[j]).round(
+                4
+            )
+            log.info("RMSD between %d and %d is %5.3f" % (representative_id, j, rmsd))
             if rmsd <= 4.0:
                 clusters[cluster_id].append(j)
                 log.info("Glowworm %d goes into cluster %d" % (j, cluster_id))
@@ -77,14 +83,22 @@ def clusterize(sorted_ids, swarm_path):
 def write_cluster_info(clusters, gso_data, swarm_path):
     """Writes the clustering result"""
     file_name = swarm_path / CLUSTER_REPRESENTATIVES_FILE
-    with open(file_name, 'w') as output:
+    with open(file_name, "w") as output:
         for id_cluster, ids in clusters.items():
-            output.write("%d:%d:%8.5f:%d:%s\n" % (id_cluster, len(ids), gso_data[ids[0]].scoring,
-                                                  ids[0], 'lightdock_%d.pdb' % ids[0]))
+            output.write(
+                "%d:%d:%8.5f:%d:%s\n"
+                % (
+                    id_cluster,
+                    len(ids),
+                    gso_data[ids[0]].scoring,
+                    ids[0],
+                    "lightdock_%d.pdb" % ids[0],
+                )
+            )
         log.info(f"Cluster result written to {file_name} file")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     try:
         # Parse command line
@@ -107,5 +121,5 @@ if __name__ == '__main__':
         write_cluster_info(clusters, gso_data, swarm_path)
 
     except Exception as e:
-        log.error('Clustering has failed. Please see error:')
+        log.error("Clustering has failed. Please see error:")
         log.error(str(e))

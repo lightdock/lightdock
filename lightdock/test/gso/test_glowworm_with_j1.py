@@ -10,29 +10,36 @@ from lightdock.gso.glowworm import Glowworm
 
 
 class TestGlowwormWithJ1:
-
     def __init__(self):
         self.gso_parameters = GSOParameters()
         self.objective_function = J1()
-        self.landscape_position1 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([0.0, 0.0]))]
-        self.landscape_position2 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([1.0, 1.0]))]
-        self.landscape_position3 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([2.0, 2.0]))]
-        self.landscape_position4 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([0.5, 0.5]))]
-        self.landscape_position5 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([5.0, 5.0]))]
-        self.landscape_position6 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([0.0, 1.0]))]
-        self.landscape_position7 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([0.1, 0.0]))]
-        self.landscape_position8 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([0.0, 0.1]))]
-        self.landscape_position9 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([0.2, 0.0]))]
-
+        self.landscape_position1 = [
+            LandscapePosition(self.objective_function, Coordinates([0.0, 0.0]))
+        ]
+        self.landscape_position2 = [
+            LandscapePosition(self.objective_function, Coordinates([1.0, 1.0]))
+        ]
+        self.landscape_position3 = [
+            LandscapePosition(self.objective_function, Coordinates([2.0, 2.0]))
+        ]
+        self.landscape_position4 = [
+            LandscapePosition(self.objective_function, Coordinates([0.5, 0.5]))
+        ]
+        self.landscape_position5 = [
+            LandscapePosition(self.objective_function, Coordinates([5.0, 5.0]))
+        ]
+        self.landscape_position6 = [
+            LandscapePosition(self.objective_function, Coordinates([0.0, 1.0]))
+        ]
+        self.landscape_position7 = [
+            LandscapePosition(self.objective_function, Coordinates([0.1, 0.0]))
+        ]
+        self.landscape_position8 = [
+            LandscapePosition(self.objective_function, Coordinates([0.0, 0.1]))
+        ]
+        self.landscape_position9 = [
+            LandscapePosition(self.objective_function, Coordinates([0.2, 0.0]))
+        ]
 
     def test_create_glowworm(self):
         glowworm = Glowworm(self.landscape_position1, self.gso_parameters)
@@ -40,7 +47,9 @@ class TestGlowwormWithJ1:
 
     def test_compute_luciferin(self):
         glowworm = Glowworm(self.landscape_position1, self.gso_parameters)
-        assert_almost_equals((1.0-0.4)*5.0 + 0.6 * 0.9810118431238463, glowworm.compute_luciferin())
+        assert_almost_equals(
+            (1.0 - 0.4) * 5.0 + 0.6 * 0.9810118431238463, glowworm.compute_luciferin()
+        )
 
     def check_compare_glowworms(self):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
@@ -125,9 +134,9 @@ class TestGlowwormWithJ1:
 
         glowworm1.compute_probability_moving_toward_neighbor()
 
-        assert_almost_equals(1.0/6.0 , glowworm1.probabilities[0])
-        assert_almost_equals(2.0/6.0 , glowworm1.probabilities[1])
-        assert_almost_equals(3.0/6.0 , glowworm1.probabilities[2])
+        assert_almost_equals(1.0 / 6.0, glowworm1.probabilities[0])
+        assert_almost_equals(2.0 / 6.0, glowworm1.probabilities[1])
+        assert_almost_equals(3.0 / 6.0, glowworm1.probabilities[2])
 
     def test_select_a_glowworm_by_random_number(self):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
@@ -145,13 +154,15 @@ class TestGlowwormWithJ1:
 
         glowworm1.neighbors = [glowworm2, glowworm3, glowworm4]
 
-        glowworm1.probabilities = [1.0/6.0, 2.0/6.0, 3.0/6.0]
+        glowworm1.probabilities = [1.0 / 6.0, 2.0 / 6.0, 3.0 / 6.0]
 
         assert glowworm4 == glowworm1.select_random_neighbor(0.55)
         assert glowworm2 == glowworm1.select_random_neighbor(0.1)
         assert glowworm3 == glowworm1.select_random_neighbor(0.2)
 
-    def test_update_visio_range_when_number_neighbors_is_less_than_maximum_neighbors(self):
+    def test_update_visio_range_when_number_neighbors_is_less_than_maximum_neighbors(
+        self,
+    ):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
         glowworm2 = Glowworm(self.landscape_position7, self.gso_parameters)
         glowworm3 = Glowworm(self.landscape_position8, self.gso_parameters)
@@ -171,7 +182,9 @@ class TestGlowwormWithJ1:
 
         assert_almost_equals(1.0, glowworm1.vision_range)
 
-    def test_update_visio_range_when_number_neighbors_is_greater_than_maximum_neighbors(self):
+    def test_update_visio_range_when_number_neighbors_is_greater_than_maximum_neighbors(
+        self,
+    ):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
         glowworm2 = Glowworm(self.landscape_position7, self.gso_parameters)
         glowworm1.luciferin = 5.0
@@ -191,10 +204,12 @@ class TestGlowwormWithJ1:
         assert_almost_equals(1.5600000000000001, glowworm1.vision_range)
 
     def test_move_different_coordinates(self):
-        landscape_position1 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([1.0, 2.0]))]
-        landscape_position2 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([0.0, 1.0]))]
+        landscape_position1 = [
+            LandscapePosition(self.objective_function, Coordinates([1.0, 2.0]))
+        ]
+        landscape_position2 = [
+            LandscapePosition(self.objective_function, Coordinates([0.0, 1.0]))
+        ]
 
         glowworm1 = Glowworm(landscape_position1, self.gso_parameters)
         glowworm2 = Glowworm(landscape_position2, self.gso_parameters)
@@ -207,15 +222,20 @@ class TestGlowwormWithJ1:
 
         glowworm1.move(glowworm2)
 
-        expected = LandscapePosition(self.objective_function, Coordinates([-0.03/sqrt(2.0)+1.0,-0.03/sqrt(2.0)+2.0]))
+        expected = LandscapePosition(
+            self.objective_function,
+            Coordinates([-0.03 / sqrt(2.0) + 1.0, -0.03 / sqrt(2.0) + 2.0]),
+        )
 
         assert expected == glowworm1.landscape_positions[0]
 
     def test_move_same_coordinates(self):
-        landscape_position1 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([1.0, 2.0]))]
-        landscape_position2 = [LandscapePosition(self.objective_function,
-                                                     Coordinates([1.0, 2.0]))]
+        landscape_position1 = [
+            LandscapePosition(self.objective_function, Coordinates([1.0, 2.0]))
+        ]
+        landscape_position2 = [
+            LandscapePosition(self.objective_function, Coordinates([1.0, 2.0]))
+        ]
 
         glowworm1 = Glowworm(landscape_position1, self.gso_parameters)
         glowworm2 = Glowworm(landscape_position2, self.gso_parameters)

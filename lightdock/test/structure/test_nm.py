@@ -10,11 +10,10 @@ from lightdock.structure.nm import calculate_nmodes, write_nmodes, read_nmodes
 
 
 class TestNM:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_nm'
-        self.golden_data_path = self.path / 'golden_data'
+        self.test_path = self.path / "scratch_nm"
+        self.golden_data_path = self.path / "golden_data"
 
     def setup(self):
         try:
@@ -30,47 +29,55 @@ class TestNM:
             pass
 
     def test_calculate_anm_protein_1(self):
-        pdb_file = self.golden_data_path / 'nm_prot' / '2UUY_lig.pdb'
+        pdb_file = self.golden_data_path / "nm_prot" / "2UUY_lig.pdb"
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
         nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
 
-        expected_nmodes = read_nmodes(self.golden_data_path / 'nm_prot' / 'lightdock_lig.nm.npy')
+        expected_nmodes = read_nmodes(
+            self.golden_data_path / "nm_prot" / "lightdock_lig.nm.npy"
+        )
 
         assert np.allclose(expected_nmodes, nmodes)
 
     def test_calculate_anm_protein_2(self):
-        pdb_file = self.golden_data_path / 'nm_prot' / '2UUY_rec.pdb'
+        pdb_file = self.golden_data_path / "nm_prot" / "2UUY_rec.pdb"
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
         nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
 
-        expected_nmodes = read_nmodes(self.golden_data_path / 'nm_prot' / 'lightdock_rec.nm.npy')
+        expected_nmodes = read_nmodes(
+            self.golden_data_path / "nm_prot" / "lightdock_rec.nm.npy"
+        )
 
         assert np.allclose(expected_nmodes, nmodes)
 
     def test_calculate_anm_dna(self):
-        pdb_file = self.golden_data_path / 'nm_dna' / '1DIZ_lig.pdb.H'
+        pdb_file = self.golden_data_path / "nm_dna" / "1DIZ_lig.pdb.H"
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
         nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
 
-        expected_nmodes = read_nmodes(self.golden_data_path / 'nm_dna' / 'lightdock_lig.nm.npy')
+        expected_nmodes = read_nmodes(
+            self.golden_data_path / "nm_dna" / "lightdock_lig.nm.npy"
+        )
 
         assert np.allclose(expected_nmodes, nmodes)
 
     def test_read_write(self):
-        pdb_file = self.golden_data_path / 'nm_dna' / '1DIZ_lig.pdb.H'
+        pdb_file = self.golden_data_path / "nm_dna" / "1DIZ_lig.pdb.H"
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
         nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
-        write_nmodes(nmodes, self.test_path / 'test_nm')
+        write_nmodes(nmodes, self.test_path / "test_nm")
 
-        expected_nmodes = read_nmodes(self.golden_data_path / 'nm_dna' / 'lightdock_lig.nm.npy')
-        other_nmodes = read_nmodes(self.test_path / 'test_nm.npy')
+        expected_nmodes = read_nmodes(
+            self.golden_data_path / "nm_dna" / "lightdock_lig.nm.npy"
+        )
+        other_nmodes = read_nmodes(self.test_path / "test_nm.npy")
 
         assert np.allclose(expected_nmodes, other_nmodes)

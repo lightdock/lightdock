@@ -1,10 +1,8 @@
 import shutil
 import os
-from pathlib import Path
 
 
 class RegressionTest(object):
-
     def __init__(self):
         self.path = None
         self.test_path = None

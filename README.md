@@ -50,19 +50,11 @@ Optional dependencies are:
 
 * MPI4py (if you plan to use MPI support which is experimental at the moment, <http://pythonhosted.org/mpi4py/>)
 
-
-#### 3.1.1. Installing NumPy, Scipy, Cython, Biopython and ProDy
-
-```bash
-pip3 install numpy, scipy, cython, biopython, pyparsing, prody
-```
-
-
 ### 3.2. Install LightDock
 The fastest way to install LightDock is to use `pip`:
 
 ```bash
-pip3 install lightdock
+pip install lightdock
 ```
 
 ## 4. Development
@@ -87,7 +79,16 @@ Please make sure dependencies are already installed (via pip, package manager, e
 * prody>=1.10.11
 * freesasa>=2.0.3
 
-There is as bash script to compile all the extensions:
+It is recommended to create a virtual environment and install it:
+
+```bash
+virtualenv venv
+source venv/bin/activate
+cd lightdock
+pip install -e .
+```
+
+If not using pip or setuptools for development, there is as bash script to compile all the extensions:
 
 ```bash
 cd lightdock
@@ -117,7 +118,7 @@ You can run LightDock tests:
 
 ```bash
 cd lightdock
-nosetests-3.8 
+nosetests
 ```
 
 ## 5. Documentation
@@ -131,8 +132,9 @@ LightDock is being actively developed and some issues may arise or you may need 
 
 1. Read the [FAQ](https://lightdock.org/tutorials/faq) in case your problem is known
 2. Open a [new issue in this repository](https://github.com/lightdock/lightdock/issues/new)
-3. Or write an email to <b.jimenezgarcia@uu.nl>
+3. Or write an email to <lightdocking@gmail.com>
 
 ## 7. LICENSE
 
 LightDock is available under GPLv3 License. See [LICENSE](LICENSE) document for more details.
+

@@ -5,7 +5,6 @@ from nose.tools import raises
 
 
 class TestLightDockError:
-
     def test_create_lightdock_exception(self):
         e = LightDockError("Testing")
 

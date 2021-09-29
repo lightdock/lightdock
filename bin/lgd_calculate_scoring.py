@@ -9,11 +9,11 @@ from lightdock.structure.complex import Complex
 from lightdock.util.logger import LoggingManager
 
 
-log = LoggingManager.get_logger('calculate_scoring')
+log = LoggingManager.get_logger("calculate_scoring")
 
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(prog='calculate_scoring')
+    parser = argparse.ArgumentParser(prog="calculate_scoring")
     parser.add_argument("scoring_function", help="scoring function")
     parser.add_argument("receptor", help="PDB receptor")
     parser.add_argument("ligand", help="PDB ligand")
@@ -41,6 +41,10 @@ if __name__ == "__main__":
     adapter = CurrentModelAdapter(receptor, ligand)
     scoring_function = CurrentScoringFunction()
 
-    energy = scoring_function(adapter.receptor_model,  adapter.receptor_model.coordinates[0],
-                              adapter.ligand_model, adapter.ligand_model.coordinates[0])
+    energy = scoring_function(
+        adapter.receptor_model,
+        adapter.receptor_model.coordinates[0],
+        adapter.ligand_model,
+        adapter.ligand_model.coordinates[0],
+    )
     print(energy)

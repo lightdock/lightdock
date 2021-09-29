@@ -11,6 +11,7 @@
     },
     "membrane": true,
     "noh": true,
+    "now": false,
     "noxt": true,
     "receptor_pdb": "3x29_receptor_membrane.pdb",
     "receptor_restraints": {

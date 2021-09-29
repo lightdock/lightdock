@@ -13,11 +13,10 @@ from lightdock.mathutil.lrandom import MTGenerator
 
 
 class TestGSOBuilderInJ1:
-
     def __init__(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / 'scratch_gso'
-        self.golden_data_path = self.path / 'golden_data'
+        self.test_path = self.path / "scratch_gso"
+        self.golden_data_path = self.path / "golden_data"
         self.gso_parameters = GSOParameters()
         self.gso_parameters.initial_vision_range = 3.0
         self.gso_parameters.max_vision_range = 3.0
@@ -35,7 +34,9 @@ class TestGSOBuilderInJ1:
         except OSError:
             pass
 
-    def found_peaks(self, peak_coordinates, dimension, glowworms, minimum_matches=3, tolerance=0.05):
+    def found_peaks(
+        self, peak_coordinates, dimension, glowworms, minimum_matches=3, tolerance=0.05
+    ):
         peaks_found = [False for _ in range(len(peak_coordinates))]
         for i_peak, peak in enumerate(peak_coordinates):
             for glowworm in glowworms:
@@ -53,11 +54,13 @@ class TestGSOBuilderInJ1:
         number_of_glowworms = 50
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create(number_of_glowworms,
-                             random_number_generator,
-                             self.gso_parameters,
-                             objective_function,
-                             bounding_box)
+        gso = builder.create(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+        )
 
         gso.run(200)
 
@@ -73,12 +76,14 @@ class TestGSOBuilderInJ1:
         number_of_glowworms = 50
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create_from_file(number_of_glowworms,
-                                        random_number_generator,
-                                        self.gso_parameters,
-                                        objective_function,
-                                        bounding_box,
-                                        self.golden_data_path / 'initial_positions.txt')
+        gso = builder.create_from_file(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+            self.golden_data_path / "initial_positions.txt",
+        )
 
         gso.run(200)
 
@@ -96,11 +101,13 @@ class TestGSOBuilderInJ1:
         number_of_glowworms = 70
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create(number_of_glowworms,
-                             random_number_generator,
-                             self.gso_parameters,
-                             objective_function,
-                             bounding_box)
+        gso = builder.create(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+        )
 
         gso.run(200)
 
@@ -118,18 +125,22 @@ class TestGSOBuilderInJ1:
         number_of_glowworms = 70
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create(number_of_glowworms,
-                             random_number_generator,
-                             self.gso_parameters,
-                             objective_function,
-                             bounding_box)
+        gso = builder.create(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+        )
 
         gso.run(50)
 
         # Save last step
-        gso.swarm.save(50, self.test_path, 'gso_j3_50.out')
+        gso.swarm.save(50, self.test_path, "gso_j3_50.out")
 
-        assert filecmp.cmp(self.test_path / 'gso_j3_50.out', self.golden_data_path / 'gso_j3_50.out')
+        assert filecmp.cmp(
+            self.test_path / "gso_j3_50.out", self.golden_data_path / "gso_j3_50.out"
+        )
 
     def test_GSO_with_J4(self):
         objective_function = J4()
@@ -139,77 +150,100 @@ class TestGSOBuilderInJ1:
         number_of_glowworms = 100
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create(number_of_glowworms,
-                             random_number_generator,
-                             self.gso_parameters,
-                             objective_function,
-                             bounding_box)
+        gso = builder.create(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+        )
 
         gso.run(50)
 
         # Save last step
-        gso.swarm.save(50, self.test_path, 'gso_j4_50.out')
+        gso.swarm.save(50, self.test_path, "gso_j4_50.out")
 
-        assert filecmp.cmp(self.test_path / 'gso_j4_50.out', self.golden_data_path / 'gso_j4_50.out')
+        assert filecmp.cmp(
+            self.test_path / "gso_j4_50.out", self.golden_data_path / "gso_j4_50.out"
+        )
 
     def test_GSO_with_J5(self):
         objective_function = J5()
         self.gso_parameters.initial_vision_range = 3.0
         self.gso_parameters.max_vision_range = 3.0
-        bounding_box = BoundingBox([Boundary(-2.0*pi, 2.0*pi), Boundary(-2.0*pi, 2.0*pi)])
+        bounding_box = BoundingBox(
+            [Boundary(-2.0 * pi, 2.0 * pi), Boundary(-2.0 * pi, 2.0 * pi)]
+        )
         number_of_glowworms = 100
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create(number_of_glowworms,
-                             random_number_generator,
-                             self.gso_parameters,
-                             objective_function,
-                             bounding_box)
+        gso = builder.create(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+        )
 
         gso.run(70)
 
         # Save last step
-        gso.swarm.save(70, self.test_path, 'gso_j5_70.out')
+        gso.swarm.save(70, self.test_path, "gso_j5_70.out")
 
-        assert filecmp.cmp(self.test_path / 'gso_j5_70.out', self.golden_data_path / 'gso_j5_70.out')
+        assert filecmp.cmp(
+            self.test_path / "gso_j5_70.out", self.golden_data_path / "gso_j5_70.out"
+        )
 
     def test_GSO_with_report_in_file_and_saving_intermediary_files(self):
         objective_function = J5()
         self.gso_parameters.initial_vision_range = 3.0
         self.gso_parameters.max_vision_range = 3.0
-        bounding_box = BoundingBox([Boundary(-2.0*pi, 2.0*pi), Boundary(-2.0*pi, 2.0*pi)])
+        bounding_box = BoundingBox(
+            [Boundary(-2.0 * pi, 2.0 * pi), Boundary(-2.0 * pi, 2.0 * pi)]
+        )
         number_of_glowworms = 5
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create_from_file(number_of_glowworms,
-                                       random_number_generator,
-                                       self.gso_parameters,
-                                       objective_function,
-                                       bounding_box,
-                                       self.golden_data_path / 'initial_positions_redux.txt')
+        gso = builder.create_from_file(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+            self.golden_data_path / "initial_positions_redux.txt",
+        )
 
-        gso.run(5, saving_path=self.test_path, save_intermediary=True, save_all_intermediary=True)
+        gso.run(
+            5,
+            saving_path=self.test_path,
+            save_intermediary=True,
+            save_all_intermediary=True,
+        )
 
         for i in range(5):
-            assert (self.test_path / f'gso_{i+1}.out').exists()
+            assert (self.test_path / f"gso_{i+1}.out").exists()
 
-        gso.report(self.test_path / 'report.out')
-        lines = open(self.test_path / 'report.out').readlines()
+        gso.report(self.test_path / "report.out")
+        lines = open(self.test_path / "report.out").readlines()
         assert len(lines) == 14
 
     def test_GSO_with_report(self):
         objective_function = J5()
         self.gso_parameters.initial_vision_range = 3.0
         self.gso_parameters.max_vision_range = 3.0
-        bounding_box = BoundingBox([Boundary(-2.0*pi, 2.0*pi), Boundary(-2.0*pi, 2.0*pi)])
+        bounding_box = BoundingBox(
+            [Boundary(-2.0 * pi, 2.0 * pi), Boundary(-2.0 * pi, 2.0 * pi)]
+        )
         number_of_glowworms = 5
         random_number_generator = MTGenerator(324324)
         builder = GSOBuilder()
-        gso = builder.create(number_of_glowworms,
-                             random_number_generator,
-                             self.gso_parameters,
-                             objective_function,
-                             bounding_box)
+        gso = builder.create(
+            number_of_glowworms,
+            random_number_generator,
+            self.gso_parameters,
+            objective_function,
+            bounding_box,
+        )
 
         gso.run(5)
 

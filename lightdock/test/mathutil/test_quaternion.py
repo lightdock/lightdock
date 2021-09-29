@@ -6,7 +6,6 @@ from nose.tools import assert_almost_equals
 
 
 class TestQuaternion:
-
     def test_create_identity_quaternion(self):
         q = Quaternion()
         assert_almost_equals(1.0, q.w)
@@ -40,7 +39,7 @@ class TestQuaternion:
 
         expected = Quaternion(2.0, 2.0, 2.0, 2.0)
 
-        assert expected == (q1+q2)
+        assert expected == (q1 + q2)
 
     def test_subtract_quaternions(self):
         q1 = Quaternion(3.0, 1.0, -1.0, 0.0)
@@ -48,7 +47,7 @@ class TestQuaternion:
 
         expected = Quaternion()
 
-        assert expected == (q1-q2)
+        assert expected == (q1 - q2)
 
     def test_negate_quaternion(self):
         q1 = Quaternion(3.0, 1.0, -1.0, 0.0)
@@ -58,18 +57,18 @@ class TestQuaternion:
         assert expected == -q1
 
     def test_rmul(self):
-        q1 = Quaternion(1,1,-1,2)
+        q1 = Quaternion(1, 1, -1, 2)
 
         expected = Quaternion(3, 3, -3, 6)
 
-        assert expected == 3*q1
+        assert expected == 3 * q1
 
     def test_division_by_scalar(self):
-        q1 = Quaternion(1,1,-1,2)
+        q1 = Quaternion(1, 1, -1, 2)
 
-        expected = Quaternion(1/2.0, 1/2.0, -1/2.0, 1)
+        expected = Quaternion(1 / 2.0, 1 / 2.0, -1 / 2.0, 1)
 
-        assert expected == q1/2.0
+        assert expected == q1 / 2.0
 
     def test_conjugate(self):
         q1 = Quaternion(1, 3, 4, 3)
@@ -84,15 +83,15 @@ class TestQuaternion:
     def test_multiply_quaternions(self):
         q1 = Quaternion(1, 0, 0, 2)
         q2 = Quaternion(3, -1, 4, 3)
-        q3 = Quaternion(1/2.0, -3, 2, 9)
+        q3 = Quaternion(1 / 2.0, -3, 2, 9)
 
         expected1 = Quaternion(-3, -9, 2, 9)
         expected2 = Quaternion(-3, 7, 6, 9)
-        expected3 = Quaternion(-147.0/2, 97.0/2, -93.0, 19.0/2)
+        expected3 = Quaternion(-147.0 / 2, 97.0 / 2, -93.0, 19.0 / 2)
 
-        assert expected1 == q1*q2
-        assert expected2 == q2*q1
-        assert expected3 == q2*q1*q3
+        assert expected1 == q1 * q2
+        assert expected2 == q2 * q1
+        assert expected3 == q2 * q1 * q3
 
     def test_conjugate_and_multiplication(self):
         q1 = Quaternion(1, 0, 0, 2)
@@ -100,23 +99,23 @@ class TestQuaternion:
 
         expected = Quaternion(35, 0, 0, 0)
 
-        assert (q1*q2).conjugate() == q2.conjugate() * q1.conjugate()
-        assert expected == q2.conjugate()*q2
+        assert (q1 * q2).conjugate() == q2.conjugate() * q1.conjugate()
+        assert expected == q2.conjugate() * q2
 
     def test_norm(self):
         q1 = Quaternion(1, -3, 4, 3)
         q2 = Quaternion(3, -1, 4, 3)
 
         assert_almost_equals(5.91607978, q1.norm())
-        assert_almost_equals((q1*q2).norm(), q1.norm()*q2.norm())
+        assert_almost_equals((q1 * q2).norm(), q1.norm() * q2.norm())
 
     def test_inverse(self):
         q1 = Quaternion(1, 0, 0, 2)
         q2 = Quaternion(3, -1, 4, 3)
 
-        expected = Quaternion(-3.0/175, 9.0/175, -2.0/175, -9.0/175)
+        expected = Quaternion(-3.0 / 175, 9.0 / 175, -2.0 / 175, -9.0 / 175)
 
-        assert expected == (q1*q2).inverse()
+        assert expected == (q1 * q2).inverse()
 
     def test_rotation(self):
         q = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)
@@ -131,7 +130,7 @@ class TestQuaternion:
     def test_dot_product(self):
         q = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)
 
-        assert_almost_equals(1., q.dot(q))
+        assert_almost_equals(1.0, q.dot(q))
 
     def test_lerp_t_0(self):
         q1 = Quaternion(1, 0, 0, 2)
