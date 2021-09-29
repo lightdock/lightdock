@@ -115,32 +115,6 @@ class TOBIPotential(object):
         ["CYSSG"],
     ]
 
-    # VdW radii (in the same order as recognized_residues array
-    vdw_radii = [
-        2.287,
-        3.411,
-        2.797,
-        2.707,
-        2.426,
-        3.01,
-        2.968,
-        1.95,
-        3.078,
-        2.939,
-        2.928,
-        3.143,
-        2.999,
-        3.33,
-        2.669,
-        2.334,
-        2.675,
-        3.67,
-        3.382,
-        2.880,
-        1.7,
-        1.4,
-    ]
-
     def __init__(self):
         data_path = os.path.dirname(os.path.realpath(__file__)) + "/data/"
         self.tobi_sc_1 = self._read_potentials(data_path + "TOBI_SC_step1.dat")
@@ -236,8 +210,6 @@ class TOBI(ScoringFunction):
 
     def __init__(self, weight=1.0):
         super(TOBI, self).__init__(weight, anm_support=False)
-        self.vdw_coef = 0.6
-        self.penalty = 1.0
         self.function = self._default
         self.potential = TOBIPotential()
         self.cutoff = DEFAULT_CONTACT_RESTRAINTS_CUTOFF
@@ -301,56 +273,6 @@ class TOBI(ScoringFunction):
         return (
             energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy
         ) * self.weight
-
-    def _vdw_in_search(
-        self, receptor, receptor_coordinates, ligand, ligand_coordinates
-    ):
-        """Calculates the TOBI potential taking into account the contacts between receptor
-        and ligand. Receptor and ligand are DockingModel objects.
-        """
-        energy = 0.0
-        dist_matrix = scipy.spatial.distance.cdist(
-            receptor_coordinates, ligand_coordinates
-        )
-
-        for rec_index, rec_tobi in enumerate(receptor.objects):
-            for lig_index, lig_tobi in enumerate(ligand.objects):
-                d = dist_matrix[rec_index][lig_index]
-                vdw_dist = self.vdw_coef * (
-                    TOBIPotential.vdw_radii[rec_tobi]
-                    + TOBIPotential.vdw_radii[lig_tobi]
-                )
-
-                if d <= 8.0:
-                    if rec_tobi >= 20 and lig_tobi >= 20:
-                        # Small distance, backbone-backbone
-                        if d <= 4.5:
-                            energy += self.potential.tobi_sc_1[rec_tobi][lig_tobi]
-                        else:
-                            if d <= 6.0:
-                                energy += self.potential.tobi_sc_2[rec_tobi][lig_tobi]
-                    else:
-                        # Medium distance, backbone-sidechain
-                        if rec_tobi >= 20 or lig_tobi >= 20:
-                            if d <= 5.5:
-                                energy += self.potential.tobi_sc_1[rec_tobi][lig_tobi]
-                            else:
-                                if d <= 7.0:
-                                    energy += self.potential.tobi_sc_2[rec_tobi][
-                                        lig_tobi
-                                    ]
-                        else:
-                            # Large distance, sidechain-sidechain
-                            if d <= 6.5:
-                                energy += self.potential.tobi_sc_1[rec_tobi][lig_tobi]
-                            else:
-                                if d <= 8.0:
-                                    energy += self.potential.tobi_sc_2[rec_tobi][
-                                        lig_tobi
-                                    ]
-                    if d <= vdw_dist:
-                        energy += self.penalty
-        return energy * -1.0
 
 
 # Needed to dynamically load the scoring functions from command line
