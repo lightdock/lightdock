@@ -1,0 +1,34 @@
+{
+    "anm_lig": 10,
+    "anm_rec": 10,
+    "anm_seed": 324324,
+    "glowworms": 200,
+    "ligand_pdb": "ligand.pdb",
+    "ligand_restraints": {
+        "active": [],
+        "blocked": [],
+        "passive": []
+    },
+    "membrane": false,
+    "noh": true,
+    "now": true,
+    "noxt": true,
+    "receptor_pdb": "receptor.pdb",
+    "receptor_restraints": {
+        "active": [
+            "H.ASP.52A",
+            "H.LEU.82C"
+        ],
+        "blocked": [],
+        "passive": []
+    },
+    "restraints": "restraints.list",
+    "starting_points_seed": 324324,
+    "surface_density": 50.0,
+    "swarm_radius": 10.0,
+    "swarms": 20,
+    "transmembrane": false,
+    "use_anm": true,
+    "verbose_parser": false,
+    "write_starting_positions": false
+}
