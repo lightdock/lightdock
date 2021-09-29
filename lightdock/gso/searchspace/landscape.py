@@ -336,6 +336,7 @@ class DockingLandscapePosition(LandscapePosition):
             full_output=1,
             xtol=0.5,
             ftol=0.0001,
+            disp=False,
         )
         # Update the landscape position vector
         optimized_vector = result[0]

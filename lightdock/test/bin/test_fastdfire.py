@@ -119,3 +119,36 @@ class TestRegressionFastDFIRELong(RegressionTest):
         assert (self.test_path / "swarm_100" / "gso_20.out").exists()
         assert (self.test_path / "swarm_100" / "gso_30.out").exists()
         assert (self.test_path / "swarm_100" / "gso_40.out").exists()
+
+
+class TestRegressionFastDFIRELocalMinimization(RegressionTest):
+    def __init__(self):
+        super().__init__()
+        self.path = Path(__file__).absolute().parent
+        self.test_path = self.path / "scratch_fastdfire_min"
+        self.golden_data_path = self.path / "golden_data" / "regression_fastdfire_min"
+
+    def setup(self):
+        self.ini_path()
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
+
+    def teardown(self):
+        self.clean_path()
+
+    def test_lightdock_2uuy_2_steps_local_min(self):
+        os.chdir(self.test_path)
+        steps = 2
+        swarm = 0
+
+        command = "lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb --noh --now --noxt -anm >> test_lightdock.out"
+        os.system(command)
+
+        command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l {swarm} -min >> test_lightdock.out"
+        os.system(command)
+
+        assert filecmp.cmp(
+            self.golden_data_path / "swarm_0" / "gso_0.out",
+            self.test_path / "swarm_0" / "gso_0.out",
+        )
+        assert (self.test_path / "swarm_0" / "gso_2.out").exists()
