@@ -150,7 +150,7 @@ exts = [
 
 setuptools.setup(
     name="lightdock",
-    version="0.9.1",
+    version="0.9.2",
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
