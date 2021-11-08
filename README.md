@@ -4,7 +4,7 @@
 [![Supported versions](https://img.shields.io/pypi/pyversions/lightdock.svg)](https://pypi.org/project/lightdock)
 [![Build Status](https://travis-ci.com/lightdock/lightdock.svg?branch=master)](https://travis-ci.com/lightdock/lightdock)
 [![Code Coverage](https://codecov.io/gh/lightdock/lightdock/branch/master/graph/badge.svg)](https://codecov.io/gh/lightdock/lightdock)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/lightdock/lightdock.svg)](https://github.com/lightdock/lightdock/commits/master)
+[![Downloads](https://static.pepy.tech/personalized-badge/lightdock?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/lightdock)
  
 <p align="center">
     <img src="https://lightdock.org/assets/images/lightdock_logo.png">
@@ -26,6 +26,9 @@ LightDock protocol and the updates to make use of residue restraints have been p
 Jorge Roel-Touris, Alexandre M.J.J. Bonvin, [Brian Jiménez-García](http://bjimenezgarcia.com)<br>
 *Bioinformatics*, btz642; doi: [https://doi.org/10.1093/bioinformatics/btz642](https://doi.org/10.1093/bioinformatics/btz642)
 
+**Integrative Modeling of Membrane-associated Protein Assemblies**<br>
+Jorge Roel-Touris, [Brian Jiménez-García](https://bjimenezgarcia.com) & Alexandre M.J.J. Bonvin<br>
+*Nat Commun* **11**, 6210 (2020); doi: [https://doi.org/10.1038/s41467-020-20076-5](https://doi.org/10.1038/s41467-020-20076-5)
 
 ## 3. Installation
 
@@ -33,6 +36,7 @@ Lightdock software is compatible and it has been tested with the followings OS:
 
 * **macOS**: El Capitan, Sierra, High Sierra, Mojave, Catalina.
 * **GNU/Linux**: Ubuntu 16+, Debian Stretch+, Scientific Linux 6+, CentOS 6+.
+* **100% compatible with [Google Colab platform](https://colab.research.google.com/)**
 
 Microsoft Windows is not officially supported, despite many parts of the protocol might be able to run. Please use it at your own risk. If you wish to contribute testing and developing LightDock for Windows, please contact us.
 
@@ -42,13 +46,12 @@ LightDock has the following dependencies:
 * NumPy (<http://www.numpy.org/>)
 * Scipy (<http://www.scipy.org/>)
 * Cython (<http://cython.org/>)
-* BioPython (<http://biopython.org>)
 * ProDy (<http://prody.csb.pitt.edu/>)
 * Freesasa (<http://freesasa.github.io/>)
 
 Optional dependencies are:
 
-* MPI4py (if you plan to use MPI support which is experimental at the moment, <http://pythonhosted.org/mpi4py/>)
+* MPI4py (if you plan to use MPI support, <http://pythonhosted.org/mpi4py/>)
 
 ### 3.2. Install LightDock
 The fastest way to install LightDock is to use `pip`:
@@ -74,8 +77,6 @@ Please make sure dependencies are already installed (via pip, package manager, e
 * numpy>=1.17.1
 * scipy>=1.3.1
 * cython>=0.29.13
-* biopython>=1.74
-* pyparsing>=2.4.2
 * prody>=1.10.11
 * freesasa>=2.0.3
 
@@ -130,9 +131,9 @@ The complete documentation about how to run the LightDock protocol and several t
 
 LightDock is being actively developed and some issues may arise or you may need extra help to run LightDock. In those cases, there are two main ways to get help:
 
-1. Read the [FAQ](https://lightdock.org/tutorials/faq) in case your problem is known
+1. Read the [FAQ](https://lightdock.org/tutorials/faq) in case your problem was already reported
 2. Open a [new issue in this repository](https://github.com/lightdock/lightdock/issues/new)
-3. Or write an email to <lightdocking@gmail.com>
+3. Or write an email to <lightdocking@gmail.com> (we will do our best to answer your questions as soon as possible)
 
 ## 7. LICENSE
 
