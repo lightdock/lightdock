@@ -101,6 +101,8 @@ class TestPoses:
         assert q in (e1, e2)
 
     def test_get_quaternion_for_restraint1(self):
+        seed = 1984
+        number_generator = MTGenerator(1984)
         # Origin is 0,0,0
         # Ligand center
         l_center = [-5.0, 5.0, -5.0]
@@ -120,6 +122,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, -5.0, 5.0],  # ligand translation
+            number_generator
         )
 
         e = Quaternion(w=0.14518697, x=0.19403814, y=-0.58211441, z=-0.77615254)
@@ -127,6 +130,8 @@ class TestPoses:
         assert e == q
 
     def test_get_quaternion_for_restraint2(self):
+        seed = 1984
+        number_generator = MTGenerator(1984)
         # Origin is 0,0,0
         # Ligand center
         l_center = [-5.0, 5.0, -5.0]
@@ -146,6 +151,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, -5.0, 5.0],  # ligand translation
+            number_generator
         )
 
         e = Quaternion(0.10977233, -0.44451098, -0.88902195, 0.0)
@@ -153,6 +159,8 @@ class TestPoses:
         assert e == q
 
     def test_get_quaternion_for_restraint2d(self):
+        seed = 1984
+        number_generator = MTGenerator(1984)
         # Origin is 0,0,0
         # Ligand center
         l_center = [5.0, 5.0, 0.0]
@@ -172,6 +180,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, 5.0, 0.0],  # ligand translation
+            number_generator
         )
 
         e = Quaternion(0.16018224, 0.0, 0.0, -0.98708746)
@@ -179,6 +188,8 @@ class TestPoses:
         assert e == q
 
     def test_get_quaternion_for_restraint2d_different_quadrant(self):
+        seed = 1984
+        number_generator = MTGenerator(1984)
         # Origin is 0,0,0
         # Ligand center
         l_center = [5.0, -5.0, 0.0]
@@ -198,6 +209,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, -5.0, 0.0],  # ligand translation
+            number_generator
         )
 
         e = Quaternion(0.07088902, 0.0, 0.0, -0.99748421)
