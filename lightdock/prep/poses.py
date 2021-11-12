@@ -76,7 +76,7 @@ def mirror_vector(v, axis, theta=np.pi):
 
 
 def get_quaternion_for_restraint(
-    rec_residue, lig_residue, tx, ty, tz, rt, lt, number_generator, center
+    rec_residue, lig_residue, tx, ty, tz, rt, lt, number_generator, flip=False
 ):
     """Calculates the quaternion required for orienting the ligand towards the restraint"""
     r_ca = rec_residue.get_calpha()
@@ -103,14 +103,16 @@ def get_quaternion_for_restraint(
 
     q = quaternion_from_vectors(a, b)
 
-    p_flip = number_generator()
-    if p_flip > 0.5:
-        # Mirror ligand restraint
-        new_lr = q.rotate([lx, ly, lz])
+    # If flip mode is activated, toss a coin
+    if flip:
+        p_flip = number_generator()
+        if p_flip > 0.5:
+            # Mirror ligand restraint
+            new_lr = q.rotate([lx, ly, lz])
 
-        v_rot = mirror_vector(np.array(new_lr), np.array([tx, ty, tz]))
+            v_rot = mirror_vector(np.array(new_lr), np.array([tx, ty, tz]))
 
-        q = Quaternion(0, v_rot[0], v_rot[1], v_rot[2])
+            q = Quaternion(0, v_rot[0], v_rot[1], v_rot[2])
 
     return q
 
@@ -128,6 +130,7 @@ def populate_poses(
     receptor_restraints=None,
     ligand_restraints=None,
     ligand_diameter=1.0,
+    flip=False,
 ):
     """Creates new poses around a given center and a given radius"""
     new_poses = []
@@ -184,7 +187,7 @@ def populate_poses(
                 rec_translation,
                 lig_translation,
                 number_generator,
-                center
+                flip,
             )
 
         # Only restraints in the ligand partner
@@ -216,6 +219,7 @@ def populate_poses(
                 rec_translation,
                 lig_translation,
                 number_generator,
+                flip,
             )
 
         # No restraints at all
@@ -412,6 +416,7 @@ def calculate_initial_poses(
     is_transmembrane=False,
     writing_starting_positions=False,
     swarm_radius=10.0,
+    flip=False,
 ):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
 
@@ -478,6 +483,7 @@ def calculate_initial_poses(
             receptor_restraints,
             ligand_restraints,
             ligand_diameter,
+            flip,
         )
         if writing_starting_positions:
             # Save poses as pdb file

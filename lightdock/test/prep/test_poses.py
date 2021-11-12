@@ -102,7 +102,7 @@ class TestPoses:
 
     def test_get_quaternion_for_restraint1(self):
         seed = 1984
-        number_generator = MTGenerator(1984)
+        number_generator = MTGenerator(seed)
         # Origin is 0,0,0
         # Ligand center
         l_center = [-5.0, 5.0, -5.0]
@@ -131,7 +131,7 @@ class TestPoses:
 
     def test_get_quaternion_for_restraint2(self):
         seed = 1984
-        number_generator = MTGenerator(1984)
+        number_generator = MTGenerator(seed)
         # Origin is 0,0,0
         # Ligand center
         l_center = [-5.0, 5.0, -5.0]
@@ -160,7 +160,7 @@ class TestPoses:
 
     def test_get_quaternion_for_restraint2d(self):
         seed = 1984
-        number_generator = MTGenerator(1984)
+        number_generator = MTGenerator(seed)
         # Origin is 0,0,0
         # Ligand center
         l_center = [5.0, 5.0, 0.0]
@@ -189,7 +189,7 @@ class TestPoses:
 
     def test_get_quaternion_for_restraint2d_different_quadrant(self):
         seed = 1984
-        number_generator = MTGenerator(1984)
+        number_generator = MTGenerator(seed)
         # Origin is 0,0,0
         # Ligand center
         l_center = [5.0, -5.0, 0.0]

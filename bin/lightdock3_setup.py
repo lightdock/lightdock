@@ -157,6 +157,7 @@ if __name__ == "__main__":
             args.transmembrane,
             args.write_starting_positions,
             args.swarm_radius,
+            args.flip,
         )
         if len(starting_points_files) != args.swarms:
             args.swarms = len(starting_points_files)
