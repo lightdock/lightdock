@@ -15,6 +15,7 @@ from lightdock.prep.poses import (
     populate_poses,
     calculate_initial_poses,
     apply_restraints,
+    mirror_vector,
 )
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.lrandom import MTGenerator
@@ -122,7 +123,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, -5.0, 5.0],  # ligand translation
-            number_generator
+            number_generator,
         )
 
         e = Quaternion(w=0.14518697, x=0.19403814, y=-0.58211441, z=-0.77615254)
@@ -151,7 +152,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, -5.0, 5.0],  # ligand translation
-            number_generator
+            number_generator,
         )
 
         e = Quaternion(0.10977233, -0.44451098, -0.88902195, 0.0)
@@ -180,7 +181,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, 5.0, 0.0],  # ligand translation
-            number_generator
+            number_generator,
         )
 
         e = Quaternion(0.16018224, 0.0, 0.0, -0.98708746)
@@ -209,7 +210,7 @@ class TestPoses:
             l_center[2],  # translation
             [0.0, 0.0, 0.0],  # receptor translation
             [5.0, -5.0, 0.0],  # ligand translation
-            number_generator
+            number_generator,
         )
 
         e = Quaternion(0.07088902, 0.0, 0.0, -0.99748421)
@@ -694,3 +695,16 @@ class TestPoses:
         )
 
         assert np.allclose(expected_new_centers, new_centers)
+
+    def test_mirror_vector(self):
+        v = np.array([2.0, 2.0, 2.0])
+
+        # Mirror the y axis 180 degrees
+        axis = np.array([0.0, 1.0, 0.0])
+        v_mirrored = mirror_vector(v, axis)
+        assert np.allclose(np.array([-2.0, 2.0, -2.0]), v_mirrored)
+
+        # Mirror the x axis 180 degrees
+        axis = np.array([1.0, 0.0, 0.0])
+        v_mirrored = mirror_vector(v, axis)
+        assert np.allclose(np.array([2.0, -2.0, -2.0]), v_mirrored)

@@ -108,9 +108,7 @@ class TestSetupWithRestraintsAndFlipMode(RegressionTest):
         super().__init__()
         self.path = Path(__file__).absolute().parent
         self.test_path = self.path / "scratch_regression_setup_rst_flip"
-        self.golden_data_path = (
-            self.path / "golden_data" / "regression_setup_rst_flip"
-        )
+        self.golden_data_path = self.path / "golden_data" / "regression_setup_rst_flip"
 
     def setup(self):
         self.ini_path()
