@@ -43,8 +43,6 @@ static PyObject * sd_calculate_energy(PyObject *self, PyObject *args) {
 
         interface_cutoff2 = interface_cutoff*interface_cutoff;
 
-        descr = PyArray_DescrFromType(NPY_DOUBLE);
-
         tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
         tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
 
@@ -53,9 +51,11 @@ static PyObject * sd_calculate_energy(PyObject *self, PyObject *args) {
 
         dims[1] = 3;
         dims[0] = rec_len;
+        descr = PyArray_DescrFromType(NPY_DOUBLE);
         PyArray_AsCArray((PyObject **)&tmp0, (void **)&rec_array, dims, 2, descr);
 
         dims[0] = lig_len;
+        descr = PyArray_DescrFromType(NPY_DOUBLE);
         PyArray_AsCArray((PyObject **)&tmp1, (void **)&lig_array, dims, 2, descr);
 
         total_elec = 0.0;
@@ -121,15 +121,10 @@ static PyObject * sd_calculate_energy(PyObject *self, PyObject *args) {
         }
 
         // Free structures
-        Py_DECREF(rec_c_charges);
-        Py_DECREF(lig_c_charges);
-        Py_DECREF(rec_c_vdw);
-        Py_DECREF(lig_c_vdw);
-        Py_DECREF(rec_c_vdw_radii);
-        Py_DECREF(lig_c_vdw_radii);
-        Py_DECREF(descr);
         PyArray_Free(tmp0, rec_array);
         PyArray_Free(tmp1, lig_array);
+        Py_DECREF(tmp0);
+        Py_DECREF(tmp1);
     }
 
     interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));

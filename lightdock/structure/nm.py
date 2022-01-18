@@ -21,7 +21,7 @@ def calculate_nmodes(pdb_file_name, n_modes, molecule):
     backbone_atoms = prody_molecule.select("name CA")
     if not backbone_atoms:
         # If previous step has failed, maybe we're dealing with DNA
-        backbone_atoms = prody_molecule.select("nucleic and name C4'")
+        backbone_atoms = prody_molecule.select("name C4'")
     if not backbone_atoms:
         raise NormalModesCalculationError(
             "Error selecting backbone atoms (protein or nucleic)"

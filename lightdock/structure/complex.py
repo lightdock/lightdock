@@ -94,7 +94,8 @@ class Complex(object):
         """Calculates the mask on atoms to apply ANM"""
         mask = []
         for residue in self.residues:
-            if residue.is_standard() or residue.is_nucleic():
+            # is_protein should accept common modified cases supported by ProDy
+            if residue.is_protein() or residue.is_nucleic():
                 mask.extend([True] * len(residue.atoms))
             else:
                 mask.extend([False] * len(residue.atoms))

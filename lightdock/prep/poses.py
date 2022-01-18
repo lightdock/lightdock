@@ -20,6 +20,7 @@ from lightdock.constants import (
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
 from lightdock.error.lightdock_errors import LightDockWarning, MembraneSetupError
+from scipy.spatial.transform import Rotation
 
 
 def get_random_point_within_sphere(number_generator, radius):
@@ -67,7 +68,16 @@ def quaternion_from_vectors(a, b):
     return Quaternion(real_part, w[0], w[1], w[2]).normalize()
 
 
-def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
+def mirror_vector(v, axis, theta=np.pi):
+    axis = normalize_vector(axis)
+    rot = Rotation.from_rotvec(theta * axis)
+    new_v = rot.apply(v)
+    return new_v
+
+
+def get_quaternion_for_restraint(
+    rec_residue, lig_residue, tx, ty, tz, rt, lt, number_generator, flip=False
+):
     """Calculates the quaternion required for orienting the ligand towards the restraint"""
     r_ca = rec_residue.get_calpha()
     # Deal with possible DNA nucleotides
@@ -78,6 +88,7 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
     if not l_ca:
         l_ca = lig_residue.get_atom("P")
 
+    # Center restraints pair at origin
     rx = r_ca.x + rt[0]
     ry = r_ca.y + rt[1]
     rz = r_ca.z + rt[2]
@@ -91,6 +102,17 @@ def get_quaternion_for_restraint(rec_residue, lig_residue, tx, ty, tz, rt, lt):
     b = np.array([rx - tx, ry - ty, rz - tz])
 
     q = quaternion_from_vectors(a, b)
+
+    # If flip mode is activated, toss a coin
+    if flip:
+        p_flip = number_generator()
+        if p_flip > 0.5:
+            # Mirror ligand restraint
+            new_lr = q.rotate([lx, ly, lz])
+
+            v_rot = mirror_vector(np.array(new_lr), np.array([tx, ty, tz]))
+
+            q = Quaternion(0, v_rot[0], v_rot[1], v_rot[2])
 
     return q
 
@@ -108,6 +130,7 @@ def populate_poses(
     receptor_restraints=None,
     ligand_restraints=None,
     ligand_diameter=1.0,
+    flip=False,
 ):
     """Creates new poses around a given center and a given radius"""
     new_poses = []
@@ -135,6 +158,8 @@ def populate_poses(
         distances.sort(key=lambda tup: tup[1])
         closest_residues = [x[0] for x in distances[:10]]
 
+    # Uncomment for fixed translations:
+    # x, y, z = get_random_point_within_sphere(number_generator, radius)
     for _ in range(to_generate):
         # First calculate a random translation within the swarm sphere
         x, y, z = get_random_point_within_sphere(number_generator, radius)
@@ -154,7 +179,15 @@ def populate_poses(
             ]
             # Calculate the quaternion which rotates the ligand to point to the given receptor restraint
             q = get_quaternion_for_restraint(
-                rec_residue, lig_residue, tx, ty, tz, rec_translation, lig_translation
+                rec_residue,
+                lig_residue,
+                tx,
+                ty,
+                tz,
+                rec_translation,
+                lig_translation,
+                number_generator,
+                flip,
             )
 
         # Only restraints in the ligand partner
@@ -178,8 +211,17 @@ def populate_poses(
                 number_generator.randint(0, len(ligand_restraints) - 1)
             ]
             q = get_quaternion_for_restraint(
-                rec_residue, lig_residue, tx, ty, tz, rec_translation, lig_translation
+                rec_residue,
+                lig_residue,
+                tx,
+                ty,
+                tz,
+                rec_translation,
+                lig_translation,
+                number_generator,
+                flip,
             )
+
         # No restraints at all
         else:
             q = Quaternion.random(number_generator)
@@ -374,6 +416,7 @@ def calculate_initial_poses(
     is_transmembrane=False,
     writing_starting_positions=False,
     swarm_radius=10.0,
+    flip=False,
 ):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
 
@@ -424,7 +467,6 @@ def calculate_initial_poses(
     pdb_file_name = os.path.join(dest_folder, SWARM_CENTERS_FILE)
     create_pdb_from_points(pdb_file_name, swarm_centers)
 
-    _ = ligand.center_of_coordinates()
     positions_files = []
 
     for swarm_id, swarm_center in enumerate(swarm_centers):
@@ -441,6 +483,7 @@ def calculate_initial_poses(
             receptor_restraints,
             ligand_restraints,
             ligand_diameter,
+            flip,
         )
         if writing_starting_positions:
             # Save poses as pdb file

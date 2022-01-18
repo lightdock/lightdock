@@ -169,6 +169,7 @@ def calculate_starting_positions(
     is_transmembrane=False,
     write_starting_positions=False,
     swarm_radius=DEFAULT_SWARM_RADIUS,
+    flip=False,
 ):
     """Defines the starting positions of each glowworm in the simulation.
 
@@ -198,6 +199,7 @@ def calculate_starting_positions(
             is_transmembrane,
             write_starting_positions,
             swarm_radius,
+            flip,
         )
         log.info(f"Generated {len(starting_points_files)} positions files")
     else:

@@ -270,6 +270,15 @@ class SetupCommandLineParser(object):
             dest="swarm_radius",
             default=DEFAULT_SWARM_RADIUS,
         )
+        # Autoflip mode
+        parser.add_argument(
+            "-flip",
+            "--flip",
+            help="Activates the 180° flip of 50%% of starting poses when using restraints",
+            dest="flip",
+            action="store_true",
+            default=False,
+        )
         if input_args:
             self.args = parser.parse_args(input_args)
         else:
