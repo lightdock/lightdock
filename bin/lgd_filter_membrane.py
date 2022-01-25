@@ -90,7 +90,7 @@ def parse_command_line():
         metavar="receptor_chains",
     )
     parser.add_argument(
-        "ligand_chains", help="Chains on the receptor partner", metavar="ligand_chains"
+        "ligand_chains", help="Chains on the ligand partner", metavar="ligand_chains"
     )
     parser.add_argument(
         "--cutoff",
@@ -132,6 +132,8 @@ if __name__ == "__main__":
 
     filter_passed = {}
     percentages = {}
+    lig_chains = [chain.strip() for chain in args.ligand_chains.split(',')]
+    lig_chains_rst = ' and '.join([f'chain {chain}' for chain in lig_chains])
     for pdb_file in structures:
         try:
             swarm_id = int(re.findall(r"swarm_\d+", pdb_file)[0].split("_")[-1])
@@ -140,7 +142,7 @@ if __name__ == "__main__":
             # Read molecule and split by receptor and ligand
             molecule = parsePDB(pdb_file)
             ca_ligand = molecule.select(
-                "protein and chain {} and calpha".format(args.ligand_chains)
+                f"protein and ({lig_chains_rst}) and calpha"
             )
 
             # Contacts on ligand side
