@@ -144,22 +144,26 @@ if __name__ == "__main__":
 
             # Read molecule and split by receptor and ligand
             if score > 0.0:
+                rec_chains = [chain.strip() for chain in args.receptor_chains.split(',')]
+                rec_chains_rst = ' and '.join([f'chain {chain}' for chain in rec_chains])
+                lig_chains = [chain.strip() for chain in args.ligand_chains.split(',')]
+                lig_chains_rst = ' and '.join([f'chain {chain}' for chain in lig_chains])
                 molecule = parsePDB(pdb)
                 if args.rnuc:
                     receptor = molecule.select(
-                        "nucleic and chain {}".format(args.receptor_chains)
+                        f"nucleic and ({rec_chains_rst})"
                     )
                 else:
                     receptor = molecule.select(
-                        "protein and chain {}".format(args.receptor_chains)
+                        f"protein and ({rec_chains_rst})"
                     )
                 if args.lnuc:
                     ligand = molecule.select(
-                        "nucleic and chain {}".format(args.ligand_chains)
+                        f"nucleic and ({lig_chains_rst})"
                     )
                 else:
                     ligand = molecule.select(
-                        "protein and chain {}".format(args.ligand_chains)
+                        f"protein and ({lig_chains_rst})"
                     )
 
                 # Contacts on receptor side
