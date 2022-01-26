@@ -132,8 +132,11 @@ if __name__ == "__main__":
 
     filter_passed = {}
     percentages = {}
-    lig_chains = [chain.strip() for chain in args.ligand_chains.split(',')]
-    lig_chains_rst = ' and '.join([f'chain {chain}' for chain in lig_chains])
+
+    # Parse chains for selection
+    lig_chains = [chain.strip() for chain in args.ligand_chains.split(",")]
+    lig_chains_rst = " ".join(lig_chains)
+
     for pdb_file in structures:
         try:
             swarm_id = int(re.findall(r"swarm_\d+", pdb_file)[0].split("_")[-1])
@@ -142,7 +145,7 @@ if __name__ == "__main__":
             # Read molecule and split by receptor and ligand
             molecule = parsePDB(pdb_file)
             ca_ligand = molecule.select(
-                f"protein and ({lig_chains_rst}) and calpha"
+                f"protein and (chain {lig_chains_rst}) and calpha"
             )
 
             # Contacts on ligand side
