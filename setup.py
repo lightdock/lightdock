@@ -150,7 +150,7 @@ exts = [
 
 setuptools.setup(
     name="lightdock",
-    version="0.9.2",
+    version="0.9.2.post1",
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -182,7 +182,7 @@ setuptools.setup(
         "numpy>=1.17.1",
         "scipy>=1.3.1",
         "cython>=0.29.13",
-        "prody>=2.0.1",
+        "prody==2.0.1",
         "freesasa>=2.0.3",
     ],
     scripts=[
