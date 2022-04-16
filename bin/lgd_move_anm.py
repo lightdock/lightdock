@@ -11,7 +11,7 @@ from prody import parsePDB, ANM, extendModel, confProDy, sampleModes, writePDB, 
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
 from lightdock.util.logger import LoggingManager
-
+from lightdock.constants import DEFAULT_EXTENT_MU, DEFAULT_EXTENT_SIGMA
 
 log = LoggingManager.get_logger("lgd_move_anm")
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
         raise SystemExit
 
     np.random.seed(RANDOM_SEED)
-    randn = np.random.standard_normal((args.n_confs, n_modes))
+    randn = np.random.normal(DEFAULT_EXTENT_MU, DEFAULT_EXTENT_SIGMA, size=(args.n_confs, n_modes))
     coef = ((randn ** 2 * variances).sum(1) ** 0.5).mean()
     scale = num_atoms_prody**0.5 * args.rmsd / coef
     scale = scale / magnitudes * variances ** 0.5
