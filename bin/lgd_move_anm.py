@@ -123,7 +123,7 @@ if __name__ == "__main__":
         lightdock_structure.atom_coordinates[0].coordinates = coordinates + conf
         output_file = f"anm_{i+1}_{args.pdb_file}"
         write_pdb_to_file(lightdock_structure, output_file, lightdock_structure[0])
-        log.info(f"ANM mode {i+1} structure written to [{output_file}]")
+        log.info(f"Conformation {i+1} written to [{output_file}]")
 
     if args.ensemble:
         np.random.seed(RANDOM_SEED)
