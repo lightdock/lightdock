@@ -2,6 +2,7 @@ import os
 import setuptools
 from distutils.core import Extension
 from setuptools.command.test import test as TestCommand
+from lightdock.version import CURRENT_VERSION
 
 
 # Inspired by the example at https://pytest.org/latest/goodpractises.html
@@ -150,7 +151,7 @@ exts = [
 
 setuptools.setup(
     name="lightdock",
-    version="0.9.2.post1",
+    version=CURRENT_VERSION,
     description="A macromolecular docking framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
