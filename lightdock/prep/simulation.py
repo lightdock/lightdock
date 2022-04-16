@@ -123,14 +123,14 @@ def save_lightdock_structure(structure):
     log.info("Done.")
 
 
-def calculate_anm(structure, num_nmodes, file_name):
+def calculate_anm(structure, num_nmodes, rmsd, seed, file_name):
     """Calculates ANM for representative structure"""
     original_file_name = structure.structure_file_names[structure.representative_id]
     # We have to use the parsed structure by LightDock
     parsed_lightdock_structure = Path(original_file_name).parent / Path(
         DEFAULT_LIGHTDOCK_PREFIX % Path(original_file_name).name
     )
-    modes = calculate_nmodes(parsed_lightdock_structure, num_nmodes, structure)
+    modes = calculate_nmodes(parsed_lightdock_structure, num_nmodes, rmsd, seed, structure)
     structure.n_modes = modes
     write_nmodes(modes, file_name)
     log.info(f"{num_nmodes} normal modes calculated")

@@ -7,6 +7,12 @@ import numpy as np
 from prody import parsePDB, ANM, extendModel, confProDy
 from lightdock.error.lightdock_errors import NormalModesCalculationError
 from lightdock.util.logger import LoggingManager
+from lightdock.constants import (
+    DEFAULT_NUM_SWARMS,
+    DEFAULT_NUM_GLOWWORMS,
+    DEFAULT_EXTENT_MU,
+    DEFAULT_EXTENT_SIGMA,
+)
 
 # Disable ProDy output
 confProDy(verbosity="none")
@@ -14,7 +20,7 @@ confProDy(verbosity="none")
 log = LoggingManager.get_logger("ANM")
 
 
-def calculate_nmodes(pdb_file_name, n_modes, molecule):
+def calculate_nmodes(pdb_file_name, n_modes, rmsd, seed, molecule):
     """Calculates Normal modes for a given molecule"""
     prody_molecule = parsePDB(pdb_file_name)
     # Try first for proteins
@@ -53,13 +59,27 @@ def calculate_nmodes(pdb_file_name, n_modes, molecule):
     molecule_anm_ext, molecule_all = extendModel(
         molecule_anm, backbone_atoms, prody_molecule, norm=True
     )
+
+    calculated_n_modes = len(molecule_anm_ext)
+    variances = molecule_anm_ext.getVariances()
+    magnitudes = np.array([abs(mode) for mode in molecule_anm_ext])
+
+    if np.any(variances == 0):
+        raise NormalModesCalculationError("One or more modes has zero variance")
+
+    np.random.seed(seed)
+    randn = np.random.normal(DEFAULT_EXTENT_MU, DEFAULT_EXTENT_SIGMA,
+        size=(DEFAULT_NUM_SWARMS*DEFAULT_NUM_GLOWWORMS, n_modes))
+    coef = ((randn ** 2 * variances).sum(1) ** 0.5).mean()
+    scale = num_atoms_prody**0.5 * rmsd / coef
+    scale = scale / magnitudes * variances ** 0.5
+
     modes = []
-    calculated_n_modes = (molecule_anm_ext.getEigvecs()).shape[1]
     try:
         for i in range(calculated_n_modes):
-            nm = molecule_anm_ext.getEigvecs()[:, i].reshape((num_atoms_prody, 3))
+            nm = molecule_anm_ext.getEigvecs()[:, i].reshape((num_atoms_prody, 3)) * scale[i]
             modes.append(nm)
-    except (ValueError, IndexError):
+    except (ValueError, IndexError) as err:
         log.info(
             "Number of atoms of the ANM model: %s" % str(molecule_anm_ext.numAtoms())
         )
@@ -67,6 +87,7 @@ def calculate_nmodes(pdb_file_name, n_modes, molecule):
             "Number of nodes in the model: %s"
             % str((molecule_anm_ext.getEigvecs()).shape)
         )
+        print(err)
         raise NormalModesCalculationError(
             "Number of atoms and ANM model differ. Please, check there are no missing "
             "nucleotides nor residues."
