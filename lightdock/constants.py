@@ -44,6 +44,8 @@ DEFAULT_LIG_NM_FILE = "lightdock_lig.nm"
 # LightDock default scoring function if none is specified
 DEFAULT_SCORING_FUNCTION = "fastdfire"
 # Threshold for an atomic-pair to be considered a contact (in Angstroms)
+DEFAULT_ATOMIC_CONTACT = 3.9
+# Threshold for an atomic-pair to be considered a contact in restraints definition (in Angstroms)
 DEFAULT_CONTACT_RESTRAINTS_CUTOFF = 3.9
 
 ## Default file extensions
