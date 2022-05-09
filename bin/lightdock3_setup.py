@@ -30,6 +30,7 @@ from lightdock.constants import (
 from lightdock.mathutil.ellipsoid import MinimumVolumeEllipsoid
 from lightdock.util.logger import LoggingManager
 from lightdock.error.lightdock_errors import LightDockError
+from lightdock.version import CURRENT_VERSION
 
 
 log = LoggingManager.get_logger("lightdock3_setup")
@@ -165,6 +166,9 @@ if __name__ == "__main__":
 
         # Create simulation folders
         prepare_results_environment(args.swarms)
+
+        # Add manually setup version
+        args.setup_version = CURRENT_VERSION
 
         # Dump to a setup file the actual configuration
         create_setup_file(args)

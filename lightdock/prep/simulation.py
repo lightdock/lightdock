@@ -30,6 +30,7 @@ from lightdock.structure.complex import Complex
 from lightdock.structure.nm import calculate_nmodes, write_nmodes
 from lightdock.gso.boundaries import Boundary, BoundingBox
 from lightdock.error.lightdock_errors import LightDockError
+from lightdock.version import CURRENT_VERSION
 
 
 log = LoggingManager.get_logger("lightdock3_setup")
@@ -287,12 +288,12 @@ def create_simulation_info_file(args, path=".", file_name=DEFAULT_LIGHTDOCK_INFO
 
     # Data to store
     now = time.strftime("%Y-%m-%d %H:%M:%S")
-    data = {"start_time": now}
+    data = {"start_time": now, "simulation_version": CURRENT_VERSION}
     data.update(vars(args))
 
     # Store the data in the file sorted alphabetically
     with open(output_file_name, "w") as fp:
-        json.dump(vars(args), fp, indent=4, sort_keys=True)
+        json.dump(data, fp, indent=4, sort_keys=True)
 
     return output_file_name
 

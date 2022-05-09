@@ -300,6 +300,15 @@ class SetupCommandLineParser(object):
             action="store_true",
             default=False,
         )
+        # Version
+        parser.add_argument(
+            "-V",
+            "-v",
+            "--version",
+            help="show version",
+            action="version",
+            version="%s %s" % (parser.prog, CURRENT_VERSION),
+        )
         if input_args:
             self.args = parser.parse_args(input_args)
         else:
