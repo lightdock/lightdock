@@ -4,7 +4,7 @@
 DEFAULT_NUM_SWARMS = 400
 DEFAULT_NUM_GLOWWORMS = 200
 
-## GSO algorithm constants
+"""GSO algorithm constants"""
 # Maximum translation allowed at initialization (in Angstroms)
 MAX_TRANSLATION = 30
 # Quaternion default value for its components
@@ -20,7 +20,7 @@ GSO_SEED = 324324
 # Seed for the random number generator used for calculating starting points
 STARTING_POINTS_SEED = 324324
 
-## Normal modes
+"""Normal modes"""
 # Default number of normal modes to consider for receptor
 DEFAULT_NMODES_REC = 10
 # Default number of normal modes to consider for ligand
@@ -40,7 +40,7 @@ DEFAULT_NMODES_STEP = 0.5
 DEFAULT_REC_NM_FILE = "lightdock_rec.nm"
 DEFAULT_LIG_NM_FILE = "lightdock_lig.nm"
 
-## Scoring function constants
+"""Scoring function constants"""
 # LightDock default scoring function if none is specified
 DEFAULT_SCORING_FUNCTION = "fastdfire"
 # Threshold for an atomic-pair to be considered a contact (in Angstroms)
@@ -48,7 +48,7 @@ DEFAULT_ATOMIC_CONTACT = 3.9
 # Threshold for an atomic-pair to be considered a contact in restraints definition (in Angstroms)
 DEFAULT_CONTACT_RESTRAINTS_CUTOFF = 3.9
 
-## Default file extensions
+"""Default file extensions"""
 DEFAULT_REFERENCE_POINTS_EXTENSION = ".vol"
 DEFAULT_LIST_EXTENSION = ".list"
 DEFAULT_RMSD_EXTENSION = ".rmsd"
@@ -56,7 +56,7 @@ NUMPY_FILE_SAVE_EXTENSION = ".npy"
 DEFAULT_REPRESENTATIVES_EXTENSION = ".repr"
 DEFAULT_ELLIPSOID_DATA_EXTENSION = ".xyz"
 
-## Default file names and folders
+"""Default file names and folders"""
 # Folder which contains the initial_positions files for each swarm
 DEFAULT_POSITIONS_FOLDER = "init"
 # Simulation default output file

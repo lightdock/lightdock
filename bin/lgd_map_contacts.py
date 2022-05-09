@@ -7,7 +7,6 @@ import os
 import numpy as np
 from scipy.spatial import distance
 from lightdock.mathutil.cython.quaternion import Quaternion
-from lightdock.util.analysis import read_ranking_file
 from lightdock.util.logger import LoggingManager
 from lightdock.constants import (
     DEFAULT_ATOMIC_CONTACT,
@@ -19,7 +18,6 @@ from lightdock.structure.complex import Complex
 from lightdock.structure.nm import read_nmodes
 from lightdock.util.parser import (
     valid_file,
-    valid_integer_number,
     get_lightdock_structures,
 )
 from lightdock.prep.simulation import get_setup_from_file
@@ -28,8 +26,18 @@ from lightdock.prep.simulation import get_setup_from_file
 log = LoggingManager.get_logger("lgd_map_contacts")
 
 
-def calculate_pose(translation, rotation, rec_extent, lig_extent,
-    receptor, num_anm_rec, nmodes_rec, ligand, num_anm_lig, nmodes_lig):
+def calculate_pose(
+    translation,
+    rotation,
+    rec_extent,
+    lig_extent,
+    receptor,
+    num_anm_rec,
+    nmodes_rec,
+    ligand,
+    num_anm_lig,
+    nmodes_lig
+):
     """Calculates a docking pose encoded by a glowworm"""
     receptor_pose = receptor.atom_coordinates[0].clone()
     ligand_pose = ligand.atom_coordinates[0].clone()
@@ -78,7 +86,6 @@ def parse_output_file(lightdock_output, num_anm_rec, num_anm_lig):
                     np.array([float(x) for x in coord[7 : 7 + num_anm_rec]])
                 )
                 lig_extents.append(np.array([float(x) for x in coord[-num_anm_lig:]]))
-            raw_data = line[last + 1 :].split()
 
     log.info("Read %s coordinate lines" % counter)
     return translations, rotations, rec_extents, lig_extents
@@ -222,7 +229,7 @@ if __name__ == "__main__":
     # Normalize frequencies
     freqs = np.array(list(residue_freqs.values()))
     norm = np.linalg.norm(freqs)
-    residue_freqs_norm = {k: v/norm*100.0 for k, v in residue_freqs.items() }
+    residue_freqs_norm = {k: v / norm * 100.0 for k, v in residue_freqs.items()}
     max_freq = np.max(np.array(list(residue_freqs_norm.values())))
     print(f"spectrum b, white_blue, minimum=0, maximum={max_freq}")
 

@@ -69,9 +69,9 @@ def calculate_nmodes(pdb_file_name, n_modes, rmsd, seed, molecule):
 
     np.random.seed(seed)
     randn = np.random.normal(DEFAULT_EXTENT_MU, DEFAULT_EXTENT_SIGMA,
-        size=(DEFAULT_NUM_SWARMS*DEFAULT_NUM_GLOWWORMS, n_modes))
+        size=(DEFAULT_NUM_SWARMS * DEFAULT_NUM_GLOWWORMS, n_modes))
     coef = ((randn ** 2 * variances).sum(1) ** 0.5).mean()
-    scale = num_atoms_prody**0.5 * rmsd / coef
+    scale = num_atoms_prody ** 0.5 * rmsd / coef
     scale = scale / magnitudes * variances ** 0.5
 
     modes = []

@@ -5,7 +5,9 @@ exclude =
     __pycache__,
     old,
     build,
-    dist
-    venv
-    .eggs
+    dist,
+    venv,
+    .eggs,
+    sandbox
 max-complexity = 10
+max-line-length = 120
