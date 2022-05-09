@@ -6,7 +6,6 @@ before_install:
   - pip install coverage
 install:
   - python setup.py build
-  - python setup.py install
   - python setup.py egg_info
   - pip install -e .
 script:
