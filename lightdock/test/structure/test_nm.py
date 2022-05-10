@@ -2,12 +2,12 @@
 
 import os
 import shutil
-from pathlib import Path
 import numpy as np
+from pathlib import Path
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
 from lightdock.structure.nm import calculate_nmodes, write_nmodes, read_nmodes
-
+from lightdock.constants import STARTING_NM_SEED, DEFAULT_ANM_RMSD
 
 class TestNM:
     def __init__(self):
@@ -33,7 +33,13 @@ class TestNM:
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
-        nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
+        nmodes = calculate_nmodes(
+            pdb_file,
+            n_modes=10,
+            rmsd=DEFAULT_ANM_RMSD,
+            seed=STARTING_NM_SEED,
+            molecule=molecule
+        )
 
         expected_nmodes = read_nmodes(
             self.golden_data_path / "nm_prot" / "lightdock_lig.nm.npy"
@@ -46,7 +52,13 @@ class TestNM:
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
-        nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
+        nmodes = calculate_nmodes(
+            pdb_file,
+            n_modes=10,
+            rmsd=DEFAULT_ANM_RMSD,
+            seed=STARTING_NM_SEED,
+            molecule=molecule
+        )
 
         expected_nmodes = read_nmodes(
             self.golden_data_path / "nm_prot" / "lightdock_rec.nm.npy"
@@ -59,7 +71,13 @@ class TestNM:
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
-        nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
+        nmodes = calculate_nmodes(
+            pdb_file,
+            n_modes=10,
+            rmsd=DEFAULT_ANM_RMSD,
+            seed=STARTING_NM_SEED,
+            molecule=molecule
+        )
 
         expected_nmodes = read_nmodes(
             self.golden_data_path / "nm_dna" / "lightdock_lig.nm.npy"
@@ -72,7 +90,13 @@ class TestNM:
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
-        nmodes = calculate_nmodes(pdb_file, n_modes=10, molecule=molecule)
+        nmodes = calculate_nmodes(
+            pdb_file,
+            n_modes=10,
+            rmsd=DEFAULT_ANM_RMSD,
+            seed=STARTING_NM_SEED,
+            molecule=molecule
+        )
         write_nmodes(nmodes, self.test_path / "test_nm")
 
         expected_nmodes = read_nmodes(
