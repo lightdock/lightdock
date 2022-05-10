@@ -23,6 +23,8 @@ from lightdock.prep.simulation import (
 from lightdock.structure.complex import Complex
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.util.parser import SetupCommandLineParser
+from lightdock.version import CURRENT_VERSION
+from lightdock.test.support import compare_two_files
 
 
 class TestParsingRestraintsFile:
@@ -174,7 +176,9 @@ class TestSimulation:
 
         expected = {
             "anm_lig": 10,
+            "anm_lig_rmsd": 1.0,
             "anm_rec": 10,
+            "anm_rec_rmsd": 1.0,
             "anm_seed": 324324,
             "flip": False,
             "glowworms": 10,
@@ -185,6 +189,7 @@ class TestSimulation:
             "noxt": True,
             "receptor_pdb": "2UUY_rec.pdb",
             "restraints": None,
+            "setup_version": CURRENT_VERSION,
             "starting_points_seed": 324324,
             "surface_density": 50.0,
             "swarm_radius": 10.0,
@@ -211,8 +216,9 @@ class TestSimulation:
 
         create_setup_file(parser.args)
 
-        assert filecmp.cmp(
-            self.test_path / "setup.json", self.golden_data_path / "setup.json"
+        assert compare_two_files(
+            self.test_path / "setup.json", self.golden_data_path / "setup.json",
+            ignore = ["setup_version", "start_time"]
         )
 
     def test_prepare_results_environment(self):
