@@ -1,0 +1,34 @@
+[lightdock3_setup] INFO: Ignoring OXT atoms
+[lightdock3_setup] INFO: Ignoring Hydrogen atoms
+[lightdock3_setup] INFO: Ignoring water
+[lightdock3_setup] INFO: Reading structure from receptor.pdb PDB file...
+[lightdock3_setup] INFO: 3326 atoms, 434 residues read.
+[lightdock3_setup] INFO: Ignoring OXT atoms
+[lightdock3_setup] INFO: Ignoring Hydrogen atoms
+[lightdock3_setup] INFO: Ignoring water
+[lightdock3_setup] INFO: Reading structure from ligand.pdb PDB file...
+[lightdock3_setup] INFO: 270 atoms, 34 residues read.
+[lightdock3_setup] INFO: Calculating reference points for receptor receptor.pdb...
+[lightdock3_setup] INFO: Reference points for receptor found, skipping
+[lightdock3_setup] INFO: Done.
+[lightdock3_setup] INFO: Calculating reference points for ligand ligand.pdb...
+[lightdock3_setup] INFO: Reference points for ligand found, skipping
+[lightdock3_setup] INFO: Done.
+[lightdock3_setup] INFO: Saving processed structure to PDB file...
+[lightdock3_setup] INFO: Done.
+[lightdock3_setup] INFO: Saving processed structure to PDB file...
+[lightdock3_setup] INFO: Done.
+[lightdock3_setup] INFO: Calculating ANM for receptor molecule...
+[lightdock3_setup] INFO: 10 normal modes calculated
+[lightdock3_setup] INFO: Calculating ANM for ligand molecule...
+[lightdock3_setup] INFO: 10 normal modes calculated
+[lightdock3_setup] INFO: Reading restraints from restraints.list
+[lightdock3_setup] INFO: Number of receptor restraints is: 2 (active), 0 (passive)
+[lightdock3_setup] INFO: Number of ligand restraints is: 0 (active), 0 (passive)
+[lightdock3_setup] INFO: Calculating starting positions...
+[lightdock3_setup] INFO: Generated 20 positions files
+[lightdock3_setup] INFO: Done.
+[lightdock3_setup] INFO: Number of calculated swarms is 20
+[lightdock3_setup] INFO: Preparing environment
+[lightdock3_setup] INFO: Done.
+[lightdock3_setup] INFO: LightDock setup OK

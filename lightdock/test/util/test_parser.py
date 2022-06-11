@@ -68,6 +68,10 @@ class TestParserUtils:
         assert valid_integer_number("1")
 
     @raises(argparse.ArgumentTypeError)
+    def test_valid_integer_number_ko(self):
+        assert valid_natural_number("aa") == 0
+
+    @raises(argparse.ArgumentTypeError)
     def test_valid_integer_number_ko_1(self):
         assert not valid_integer_number("aa")
 
@@ -82,8 +86,8 @@ class TestParserUtils:
         assert valid_natural_number("0") == 0
 
     @raises(argparse.ArgumentTypeError)
-    def test_valid_integer_number_ko(self):
-        assert valid_natural_number("aa") == 0
+    def test_valid_natural_number_ko(self):
+        assert valid_natural_number("-1") == 0
 
     def test_valid_float_number_ok(self):
         assert valid_float_number("1.0") == 1.0

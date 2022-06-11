@@ -16,6 +16,7 @@ from lightdock.constants import (
     DEFAULT_NMODES_LIG,
     DEFAULT_SURFACE_DENSITY,
     DEFAULT_SWARM_RADIUS,
+    DEFAULT_ANM_RMSD,
 )
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.version import CURRENT_VERSION
@@ -187,6 +188,25 @@ class SetupCommandLineParser(object):
             type=int,
             default=STARTING_NM_SEED,
         )
+        # ANM RMSD interval for receptor
+        parser.add_argument(
+            "--anm_rec_rmsd",
+            "-anm_rec_rmsd",
+            help="RMSD interval to generate random ANM conformations",
+            dest="anm_rec_rmsd",
+            type=valid_float_number,
+            default=DEFAULT_ANM_RMSD,
+        )
+        # ANM RMSD interval for ligand
+        parser.add_argument(
+            "--anm_lig_rmsd",
+            "-anm_lig_rmsd",
+            help="RMSD interval to generate random ANM conformations",
+            dest="anm_lig_rmsd",
+            type=valid_float_number,
+            default=DEFAULT_ANM_RMSD,
+        )
+        # Default number of non-trivial modes for receptor
         parser.add_argument(
             "-ar",
             "--ar",
@@ -197,6 +217,7 @@ class SetupCommandLineParser(object):
             dest="anm_rec",
             default=DEFAULT_NMODES_REC,
         )
+        # Default number of non-trivial modes for ligand
         parser.add_argument(
             "-al",
             "--al",
@@ -278,6 +299,15 @@ class SetupCommandLineParser(object):
             dest="flip",
             action="store_true",
             default=False,
+        )
+        # Version
+        parser.add_argument(
+            "-V",
+            "-v",
+            "--version",
+            help="show version",
+            action="version",
+            version="%s %s" % (parser.prog, CURRENT_VERSION),
         )
         if input_args:
             self.args = parser.parse_args(input_args)

@@ -30,6 +30,7 @@ from lightdock.structure.complex import Complex
 from lightdock.structure.nm import calculate_nmodes, write_nmodes
 from lightdock.gso.boundaries import Boundary, BoundingBox
 from lightdock.error.lightdock_errors import LightDockError
+from lightdock.version import CURRENT_VERSION
 
 
 log = LoggingManager.get_logger("lightdock3_setup")
@@ -123,14 +124,14 @@ def save_lightdock_structure(structure):
     log.info("Done.")
 
 
-def calculate_anm(structure, num_nmodes, file_name):
+def calculate_anm(structure, num_nmodes, rmsd, seed, file_name):
     """Calculates ANM for representative structure"""
     original_file_name = structure.structure_file_names[structure.representative_id]
     # We have to use the parsed structure by LightDock
     parsed_lightdock_structure = Path(original_file_name).parent / Path(
         DEFAULT_LIGHTDOCK_PREFIX % Path(original_file_name).name
     )
-    modes = calculate_nmodes(parsed_lightdock_structure, num_nmodes, structure)
+    modes = calculate_nmodes(parsed_lightdock_structure, num_nmodes, rmsd, seed, structure)
     structure.n_modes = modes
     write_nmodes(modes, file_name)
     log.info(f"{num_nmodes} normal modes calculated")
@@ -287,12 +288,12 @@ def create_simulation_info_file(args, path=".", file_name=DEFAULT_LIGHTDOCK_INFO
 
     # Data to store
     now = time.strftime("%Y-%m-%d %H:%M:%S")
-    data = {"start_time": now}
+    data = {"start_time": now, "simulation_version": CURRENT_VERSION}
     data.update(vars(args))
 
     # Store the data in the file sorted alphabetically
     with open(output_file_name, "w") as fp:
-        json.dump(vars(args), fp, indent=4, sort_keys=True)
+        json.dump(data, fp, indent=4, sort_keys=True)
 
     return output_file_name
 
