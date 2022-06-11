@@ -39,7 +39,7 @@ class TestSetupWithRestraints(RegressionTest):
         )
         assert compare_two_files(
             self.test_path / "setup.json", self.golden_data_path / "setup.json",
-            ignore = ["setup_version", "start_time"]
+            ignore=["setup_version", "start_time"]
         )
         assert filecmp.cmp(
             self.golden_data_path / "init" / "initial_positions_0.dat",
@@ -94,7 +94,7 @@ class TestSetupWithRestraintsAndInsertCodes(RegressionTest):
         )
         assert compare_two_files(
             self.test_path / "setup.json", self.golden_data_path / "setup.json",
-            ignore = ["setup_version", "start_time"]
+            ignore=["setup_version", "start_time"]
         )
         assert filecmp.cmp(
             self.golden_data_path / "lightdock_receptor.pdb",
@@ -135,7 +135,7 @@ class TestSetupWithRestraintsAndFlipMode(RegressionTest):
         )
         assert compare_two_files(
             self.test_path / "setup.json", self.golden_data_path / "setup.json",
-            ignore = ["setup_version", "start_time"]
+            ignore=["setup_version", "start_time"]
         )
         assert filecmp.cmp(
             self.golden_data_path / "init" / "initial_positions_0.dat",

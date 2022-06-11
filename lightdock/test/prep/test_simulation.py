@@ -2,7 +2,6 @@
 
 import os
 import shutil
-import filecmp
 from pathlib import Path
 from glob import glob
 from nose.tools import raises
@@ -218,7 +217,7 @@ class TestSimulation:
 
         assert compare_two_files(
             self.test_path / "setup.json", self.golden_data_path / "setup.json",
-            ignore = ["setup_version", "start_time"]
+            ignore=["setup_version", "start_time"]
         )
 
     def test_prepare_results_environment(self):

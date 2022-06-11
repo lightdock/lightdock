@@ -9,6 +9,7 @@ from lightdock.structure.complex import Complex
 from lightdock.structure.nm import calculate_nmodes, write_nmodes, read_nmodes
 from lightdock.constants import STARTING_NM_SEED, DEFAULT_ANM_RMSD
 
+
 class TestNM:
     def __init__(self):
         self.path = Path(__file__).absolute().parent
