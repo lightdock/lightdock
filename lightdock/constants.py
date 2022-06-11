@@ -26,7 +26,7 @@ DEFAULT_NMODES_REC = 10
 # Default number of normal modes to consider for ligand
 DEFAULT_NMODES_LIG = 10
 # Default RMSD interval at which conformations will be sampled through ANM
-DEFAULT_ANM_RMSD = 1.0
+DEFAULT_ANM_RMSD = 0.5
 # Default mean and std for the Normal distribution for random ANM extents
 DEFAULT_EXTENT_MU = 0.0
 DEFAULT_EXTENT_SIGMA = 1.0
