@@ -5,6 +5,7 @@ import os
 import filecmp
 from pathlib import Path
 from lightdock.test.bin.regression import RegressionTest
+from lightdock.test.support import compare_two_files
 
 
 class TestSetupWithMembrane(RegressionTest):
@@ -33,8 +34,9 @@ class TestSetupWithMembrane(RegressionTest):
         command += "--noxt --noh -membrane -anm >> test_lightdock.out"
         os.system(command)
 
-        assert filecmp.cmp(
-            self.golden_data_path / "setup.json", self.test_path / "setup.json"
+        assert compare_two_files(
+            self.test_path / "setup.json", self.golden_data_path / "setup.json",
+            ignore = ["setup_version", "start_time"]
         )
         assert filecmp.cmp(
             self.golden_data_path / "lightdock_3x29_receptor_membrane_mask.npy",
@@ -77,8 +79,9 @@ class TestSetupWithMembraneANM(RegressionTest):
             self.golden_data_path / "init" / "swarm_centers.pdb",
             self.test_path / "init" / "swarm_centers.pdb",
         )
-        assert filecmp.cmp(
-            self.golden_data_path / "setup.json", self.test_path / "setup.json"
+        assert compare_two_files(
+            self.test_path / "setup.json", self.golden_data_path / "setup.json",
+            ignore = ["setup_version", "start_time"]
         )
         assert filecmp.cmp(
             self.golden_data_path / "init" / "initial_positions_0.dat",
@@ -136,8 +139,9 @@ class TestSetupWithMembraneAndRestraints(RegressionTest):
             self.golden_data_path / "init" / "swarm_centers.pdb",
             self.test_path / "init" / "swarm_centers.pdb",
         )
-        assert filecmp.cmp(
-            self.golden_data_path / "setup.json", self.test_path / "setup.json"
+        assert compare_two_files(
+            self.test_path / "setup.json", self.golden_data_path / "setup.json",
+            ignore = ["setup_version", "start_time"]
         )
         assert filecmp.cmp(
             self.golden_data_path / "init" / "initial_positions_0.dat",
