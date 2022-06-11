@@ -176,9 +176,9 @@ class TestSimulation:
 
         expected = {
             "anm_lig": 10,
-            "anm_lig_rmsd": 1.0,
+            "anm_lig_rmsd": 0.5,
             "anm_rec": 10,
-            "anm_rec_rmsd": 1.0,
+            "anm_rec_rmsd": 0.5,
             "anm_seed": 324324,
             "flip": False,
             "glowworms": 10,
