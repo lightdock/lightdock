@@ -25,6 +25,7 @@ class TestNM:
     def tearDown(self):
         try:
             shutil.rmtree(self.test_path)
+            pass
         except OSError:
             pass
 
