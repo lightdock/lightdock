@@ -158,14 +158,6 @@ def calculate_surface_points(
         s_clusters = kmeans2(data=s, k=num_points, minit="points", iter=100)
         s = s_clusters[0]
 
-    # Filter interior points
-    surface_swarms = []
-    for swarm in s:
-        min_dist = min(calcDistance(np.array(swarm), molecule))
-        if min_dist > DEFAULT_CONTACT_RESTRAINTS_CUTOFF:
-            surface_swarms.append(swarm)
-    s = surface_swarms
-
     # Account for translation to origin of coordinates
     for p in s:
         p += rec_translation

@@ -5,8 +5,7 @@ import shutil
 import filecmp
 from pathlib import Path
 from nose.tools import assert_almost_equal
-from lightdock.prep.starting_points import points_on_sphere
-from lightdock.prep.starting_points import calculate_surface_points
+from lightdock.prep.starting_points import points_on_sphere, calculate_surface_points
 from lightdock.structure.complex import Complex
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, create_pdb_from_points
 
@@ -63,7 +62,7 @@ class TestStartingPoints:
         ligand = Complex(chains, atoms, structure_file_name=file_name)
 
         starting_points, rec_diameter, lig_diameter = calculate_surface_points(
-            receptor, ligand, 50, [0.0, 0.0, 0.0], 50.0
+            receptor, ligand, 50, [0.0, 0.0, 0.0], 50.0, [], [],
         )
 
         assert_almost_equal(rec_diameter, 50.213210831413676)
