@@ -294,7 +294,8 @@ def apply_restraints(
         # Get swarms below the distance cutoff
         swarms_considered = []
         for swarm_id, distance in sorted_distances:
-            swarms_considered.append(swarm_id)
+            if distance <= distance_cutoff:
+                swarms_considered.append(swarm_id)
 
         random.seed(seed)
         swarms_considered = random.sample(swarms_considered, min(swarms_per_restraint, len(swarms_considered)))
