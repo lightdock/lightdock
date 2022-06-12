@@ -86,6 +86,14 @@ CLUSTER_REPRESENTATIVES_FILE = CLUSTER_DEFAULT_NAME + DEFAULT_REPRESENTATIVES_EX
 DEFAULT_LIGHTDOCK_INFO = "lightdock.info"
 DEFAULT_MASK_FILE = "lightdock_%s_mask" + NUMPY_FILE_SAVE_EXTENSION
 
-# Swarm calculations
+"""Swarm calculations"""
+# Total SASA will be divided by this number
 DEFAULT_SURFACE_DENSITY = 50.0
+# Swarm radius for the boundary of possible translations of initial poses
 DEFAULT_SWARM_RADIUS = 10.0
+# If this value is 0.0, swarm distance is estimated using the ligand max diameter
+DEFAULT_SWARM_DISTANCE = 0.0
+# Number of swarms to keep when applying restraints
+DEFAULT_SWARMS_PER_RESTRAINT = 10
+# Number of sampling points per centroid in automatic swarm calculation
+DEFAULT_SPHERES_PER_CENTROID = 100

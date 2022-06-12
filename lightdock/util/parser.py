@@ -17,6 +17,8 @@ from lightdock.constants import (
     DEFAULT_SURFACE_DENSITY,
     DEFAULT_SWARM_RADIUS,
     DEFAULT_ANM_RMSD,
+    DEFAULT_SWARM_DISTANCE,
+    DEFAULT_SWARMS_PER_RESTRAINT,
 )
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.version import CURRENT_VERSION
@@ -299,6 +301,28 @@ class SetupCommandLineParser(object):
             dest="flip",
             action="store_true",
             default=False,
+        )
+        # Swarm fixed distance
+        parser.add_argument(
+            "-fd",
+            "--fd",
+            "-fixed_distance",
+            "--fixed_distance",
+            help="Use a fixed distance (Å) instead of using ligand to calculate distance of swarms to receptor surface",
+            type=valid_float_number,
+            dest="fixed_distance",
+            default=DEFAULT_SWARM_DISTANCE,
+        )
+        # Number of swarms to keep per restraint
+        parser.add_argument(
+            "-spr",
+            "--spr",
+            "-swarms_per_restraint",
+            "--swarms_per_restraint",
+            help="Number of swarms to keep for restraint",
+            type=valid_natural_number,
+            dest="swarms_per_restraint",
+            default=DEFAULT_SWARMS_PER_RESTRAINT,
         )
         # Version
         parser.add_argument(

@@ -1,6 +1,7 @@
 """Module to prepare initial poses for docking"""
 
 import os
+import random
 import operator
 import numpy as np
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
@@ -16,11 +17,17 @@ from lightdock.constants import (
     DEFAULT_BILD_STARTING_PREFIX,
     DEFAULT_EXTENT_MU,
     DEFAULT_EXTENT_SIGMA,
+    DEFAULT_SWARM_DISTANCE,
+    DEFAULT_SWARMS_PER_RESTRAINT,
 )
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
 from lightdock.error.lightdock_errors import LightDockWarning, MembraneSetupError
+from lightdock.util.logger import LoggingManager
 from scipy.spatial.transform import Rotation
+
+
+log = LoggingManager.get_logger("lightdock3_setup")
 
 
 def get_random_point_within_sphere(number_generator, radius):
@@ -256,10 +263,15 @@ def apply_restraints(
     blocking_restraints,
     distance_cutoff,
     translation,
-    swarms_per_restraint=10,
+    seed,
+    swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
 ):
     """Filter out swarm centers which are not close to the given restraints or too close
     to blocking residues"""
+    log.info(f"{len(swarm_centers)} swarm centers before applying restraints")
+    log.info("Applying restraints...")
+    log.info(f" * Distance cutoff: {distance_cutoff:.2f} Å")
+    log.info(f" * Swarms per restraint: {swarms_per_restraint}")
     closer_swarms = []
     for i, residue in enumerate(receptor_restraints):
         distances = {}
@@ -278,14 +290,15 @@ def apply_restraints(
                 center[2],
             )
         sorted_distances = sorted(list(distances.items()), key=operator.itemgetter(1))
-        swarms_considered = 0
-        for swarm in sorted_distances:
-            swarm_id, distance = swarm[0], swarm[1]
-            if distance <= distance_cutoff:
-                closer_swarms.append(swarm_id)
-                swarms_considered += 1
-            if swarms_considered == swarms_per_restraint:
-                break
+
+        # Get swarms below the distance cutoff
+        swarms_considered = []
+        for swarm_id, distance in sorted_distances:
+            swarms_considered.append(swarm_id)
+
+        random.seed(seed)
+        swarms_considered = random.sample(swarms_considered, min(swarms_per_restraint, len(swarms_considered)))
+        closer_swarms.extend(swarms_considered)
 
     # Unique swarm ids
     closer_swarm_ids = sorted(list(set(closer_swarms)))
@@ -417,6 +430,8 @@ def calculate_initial_poses(
     writing_starting_positions=False,
     swarm_radius=10.0,
     flip=False,
+    swarms_at_fixed_distance=DEFAULT_SWARM_DISTANCE,
+    swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
 ):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
 
@@ -433,27 +448,27 @@ def calculate_initial_poses(
 
     # Calculate swarm centers
     has_membrane = is_membrane or is_transmembrane
+
+    # Filter swarms far from the restraints
+    receptor_restraints = []
+    blocking_restraints = []
+    if receptor_restraints:
+        receptor_restraints = receptor_restraints["active"] + receptor_restraints["passive"]
+        blocking_restraints = receptor_restraints["blocked"]
+
     swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(
         receptor,
         ligand,
         num_swarms,
         rec_translation,
         surface_density,
+        receptor_restraints=receptor_restraints,
+        blocking_restraints=blocking_restraints,
         seed=seed,
         has_membrane=has_membrane,
+        swarms_at_fixed_distance=swarms_at_fixed_distance,
+        swarms_per_restraint=swarms_per_restraint,
     )
-    # Filter swarms far from the restraints
-    if receptor_restraints:
-        regular_restraints = (
-            receptor_restraints["active"] + receptor_restraints["passive"]
-        )
-        swarm_centers = apply_restraints(
-            swarm_centers,
-            regular_restraints,
-            receptor_restraints["blocked"],
-            ligand_diameter / 2.0,
-            rec_translation,
-        )
 
     # Filter out swarms which are not compatible with the explicit membrane
     if has_membrane:
