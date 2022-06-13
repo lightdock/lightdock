@@ -450,12 +450,11 @@ def calculate_initial_poses(
     # Calculate swarm centers
     has_membrane = is_membrane or is_transmembrane
 
-    # Filter swarms far from the restraints
-    receptor_restraints = []
     blocking_restraints = []
+    # Filter swarms far from the restraints
     if receptor_restraints:
-        receptor_restraints = receptor_restraints["active"] + receptor_restraints["passive"]
         blocking_restraints = receptor_restraints["blocked"]
+        receptor_restraints = receptor_restraints["active"] + receptor_restraints["passive"]
 
     swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(
         receptor,
