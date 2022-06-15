@@ -1,4 +1,4 @@
-REMARK Selection 'protein or nucleic'
+REMARK Selection 'protein or nucl...ot resname MMB)'
 ATOM      1  N   GLU A  30      50.375  81.175  42.811  1.00139.27           N  
 ATOM      2  CA  GLU A  30      49.159  81.210  43.608  1.00142.33           C  
 ATOM      3  C   GLU A  30      49.401  81.877  44.956  1.00149.17           C  
