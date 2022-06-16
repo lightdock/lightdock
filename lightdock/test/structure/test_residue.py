@@ -120,6 +120,14 @@ class TestResidue:
         assert dummy.atoms[0].name == "CA"
         assert str(dummy.atoms[0]) == "  CA   1.000   2.000   3.000"
 
+    def test_full_name(self):
+        residue = Residue("ALA", 1)
+        assert residue.full_name() == "ALA.1"
+
+    def test_full_name_with_insertion(self):
+        residue = Residue("ALA", 1, residue_insertion="A")
+        assert residue.full_name() == "ALA.1A"
+
 
 class TestAminoAcid:
     def test_create_amino_acid(self):
