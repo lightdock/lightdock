@@ -57,14 +57,14 @@ def calculate_surface_points(
 
     # Surface
     pdb_file_name = Path(receptor.structure_file_names[receptor.representative_id])
-    molecule = parsePDB(pdb_file_name).select("protein or nucleic")
+    molecule = parsePDB(pdb_file_name).select("protein or nucleic or (hetero and not water and not resname MMB)")
     if has_membrane:
         pdb_no_membrane = str(
             pdb_file_name.absolute().parent
             / f"{pdb_file_name.stem}_no_membrane{pdb_file_name.suffix}"
         )
         writePDB(pdb_no_membrane, molecule)
-    surface = molecule.select("protein and surface or nucleic and name P")
+    surface = molecule.select("protein and surface or nucleic and name P or (hetero and not water and not resname MMB)")
     coords = surface.getCoords()
 
     # SASA

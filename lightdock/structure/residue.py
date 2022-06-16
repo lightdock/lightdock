@@ -1,5 +1,7 @@
 """Module to package a complex residue representation and operations"""
 
+import numpy as np
+from scipy.spatial import cKDTree
 from lightdock.error.lightdock_errors import (
     ResidueNonStandardError,
     SideChainError,
@@ -183,11 +185,19 @@ class Residue(object):
         """Get the Calpha atom"""
         return self.get_atom("CA")
 
+    def get_central_atom(self):
+        """Calculates center of coordiantes of residue and returns closest atom"""
+        coordinates = np.array([[atom.x, atom.y, atom.z] for atom in self.atoms])
+        centroid = coordinates.mean(axis=0)
+        min_dist, min_dist_idx = cKDTree(coordinates).query(centroid, 1)
+        return self.atoms[min_dist_idx]
+
     def get_non_hydrogen_atoms(self):
         return [atom for atom in self.atoms if not atom.is_hydrogen()]
 
     @staticmethod
     def dummy(x=0.0, y=0.0, z=0.0):
+        """Creates a dummy residue with DUM residue name"""
         atom = Atom(atom_name="CA", residue_name="DUM", x=x, y=y, z=z)
         return Residue(residue_name="DUM", residue_number=0, atoms=[atom])
 
@@ -201,6 +211,11 @@ class Residue(object):
             return "\n".join(representation)
         else:
             return f"{self.name}.{self.number}{self.insertion}"
+
+
+    def full_name(self):
+        """Get the full id of this residue"""
+        return f"{self.name}.{self.number}{self.insertion}"
 
 
 class AminoAcid(Residue):

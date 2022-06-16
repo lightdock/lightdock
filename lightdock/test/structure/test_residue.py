@@ -120,6 +120,29 @@ class TestResidue:
         assert dummy.atoms[0].name == "CA"
         assert str(dummy.atoms[0]) == "  CA   1.000   2.000   3.000"
 
+    def test_full_name(self):
+        residue = Residue("ALA", 1)
+        assert residue.full_name() == "ALA.1"
+
+    def test_full_name_with_insertion(self):
+        residue = Residue("ALA", 1, residue_insertion="A")
+        assert residue.full_name() == "ALA.1A"
+
+    def test_get_centra_atom(self):
+        atoms = [
+            Atom(1, "N", "", "A", "CYS", 3, x=2.496, y=13.096, z=10.611),
+            Atom(2, "CA", "", "A", "CYS", 3, x=2.787, y=12.161, z=9.557),
+            Atom(3, "C", "", "A", "CYS", 3, x=4.052, y=11.431, z=9.896),
+            Atom(4, "O", "", "A", "CYS", 3, x=5.120, y=12.044, z=9.912),
+            Atom(5, "CB", "", "A", "CYS", 3, x=2.879, y=12.853, z=8.246),
+            Atom(6, "SG", "", "A", "CYS", 3, x=3.492, y=11.911, z=6.838),
+        ]
+        residue = Residue("CYS", 1, atoms=atoms)
+
+        central_atom = residue.get_central_atom()
+
+        assert central_atom.name == "CA"
+
 
 class TestAminoAcid:
     def test_create_amino_acid(self):

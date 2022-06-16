@@ -19,7 +19,11 @@ from lightdock.constants import (
 )
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
-from lightdock.error.lightdock_errors import LightDockWarning, MembraneSetupError
+from lightdock.error.lightdock_errors import (
+    LightDockWarning,
+    MembraneSetupError,
+    StructureError,
+)
 from scipy.spatial.transform import Rotation
 
 
@@ -83,10 +87,21 @@ def get_quaternion_for_restraint(
     # Deal with possible DNA nucleotides
     if not r_ca:
         r_ca = rec_residue.get_atom("P")
+        if not r_ca:
+            # In case of HETATM
+            r_ca = rec_residue.get_central_atom()
+    if not r_ca:
+        raise StructureError(f"Cannot find a central atom for receptor restraint {rec_residue.full_name()}")
+
     l_ca = lig_residue.get_calpha()
     # Deal with possible DNA nucleotides
     if not l_ca:
         l_ca = lig_residue.get_atom("P")
+        if not l_ca:
+            # In case of HETATM
+            l_ca = lig_residue.get_central_atom()
+    if not l_ca:
+        raise StructureError(f"Cannot find a central atom for ligand restraint {lig_residue.full_name()}")
 
     # Center restraints pair at origin
     rx = r_ca.x + rt[0]
@@ -152,6 +167,11 @@ def populate_poses(
             ca = residue.get_calpha()
             if not ca:
                 ca = residue.get_atom("P")
+                if not ca:
+                    ca = residue.get_central_atom()
+                    if not ca:
+                        raise StructureError(f"Cannot find a central atom for residue {residue.full_name()}")
+
             distances.append(
                 (i, cdistance(ca.x, ca.y, ca.z, center[0], center[1], center[2]))
             )
@@ -267,6 +287,11 @@ def apply_restraints(
         ca = residue.get_calpha()
         if not ca:
             ca = residue.get_atom("P")
+            if not ca:
+                ca = residue.get_central_atom()
+                if not ca:
+                    raise StructureError(f"Cannot find a central atom for residue {residue.full_name()}")
+
         # Calculate the euclidean distance between swarm center and given atom/bead
         for swarm_id, center in enumerate(swarm_centers):
             distances[swarm_id] = cdistance(
@@ -313,6 +338,12 @@ def apply_restraints(
             ca = residue.get_calpha()
             if not ca:
                 ca = residue.get_atom("P")
+                if not ca:
+                    # In case of HETATM
+                    ca = residue.get_central_atom()
+                    if not ca:
+                        raise StructureError(f"Cannot find a central atom for residue {residue.full_name()}")
+
             to_remove = []
             for center_id, center in enumerate(centers_list):
                 d = cdistance(
