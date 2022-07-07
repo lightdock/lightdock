@@ -324,6 +324,15 @@ class SetupCommandLineParser(object):
             dest="swarms_per_restraint",
             default=DEFAULT_SWARMS_PER_RESTRAINT,
         )
+        # Calculate swarms from receptor restraints, not the whole surface
+        parser.add_argument(
+            "--sfr",
+            "-sfr",
+            help="Calculate swarms from receptor restraints, not the whole surface",
+            dest="swarms_from_restraints",
+            action="store_true",
+            default=False,
+        )
         # Version
         parser.add_argument(
             "-V",

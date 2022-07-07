@@ -8,10 +8,11 @@ class Atom(object):
     """Represents a chemical atom"""
 
     BACKBONE_ATOMS = ["CA", "C", "N", "O"]
-    RECOGNIZED_ELEMENTS = ["C", "N", "O", "H", "S", "P", "CL", "MG", "FE", "PB", "SE"]
+    RECOGNIZED_ELEMENTS = ["C", "N", "O", "H", "S", "P", "CL", "MG", "FE", "PB", "SE", "F"]
     MASSES = {
         "H": 1.007825,
         "C": 12.01,
+        "F": 18.9984,
         "O": 15.9994,
         "N": 14.0067,
         "S": 31.972071,

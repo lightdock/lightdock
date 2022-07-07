@@ -5,7 +5,10 @@ import random
 import operator
 import numpy as np
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
-from lightdock.prep.starting_points import calculate_surface_points
+from lightdock.prep.starting_points import (
+    calculate_surface_points,
+    calculate_surface_points_from_restraints
+)
 from lightdock.mathutil.lrandom import MTGenerator, NormalGenerator
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.cython.cutil import distance as cdistance
@@ -22,9 +25,13 @@ from lightdock.constants import (
 )
 from lightdock.prep.geometry import create_bild_file
 from lightdock.structure.residue import Residue
-from lightdock.error.lightdock_errors import LightDockWarning, MembraneSetupError
-from lightdock.util.logger import LoggingManager
+from lightdock.error.lightdock_errors import (
+    LightDockWarning,
+    MembraneSetupError,
+    StructureError,
+)
 from scipy.spatial.transform import Rotation
+from lightdock.util.logger import LoggingManager
 
 
 log = LoggingManager.get_logger("lightdock3_setup")
@@ -90,10 +97,21 @@ def get_quaternion_for_restraint(
     # Deal with possible DNA nucleotides
     if not r_ca:
         r_ca = rec_residue.get_atom("P")
+        if not r_ca:
+            # In case of HETATM
+            r_ca = rec_residue.get_central_atom()
+    if not r_ca:
+        raise StructureError(f"Cannot find a central atom for receptor restraint {rec_residue.full_name()}")
+
     l_ca = lig_residue.get_calpha()
     # Deal with possible DNA nucleotides
     if not l_ca:
         l_ca = lig_residue.get_atom("P")
+        if not l_ca:
+            # In case of HETATM
+            l_ca = lig_residue.get_central_atom()
+    if not l_ca:
+        raise StructureError(f"Cannot find a central atom for ligand restraint {lig_residue.full_name()}")
 
     # Center restraints pair at origin
     rx = r_ca.x + rt[0]
@@ -159,6 +177,11 @@ def populate_poses(
             ca = residue.get_calpha()
             if not ca:
                 ca = residue.get_atom("P")
+                if not ca:
+                    ca = residue.get_central_atom()
+                    if not ca:
+                        raise StructureError(f"Cannot find a central atom for residue {residue.full_name()}")
+
             distances.append(
                 (i, cdistance(ca.x, ca.y, ca.z, center[0], center[1], center[2]))
             )
@@ -279,6 +302,11 @@ def apply_restraints(
         ca = residue.get_calpha()
         if not ca:
             ca = residue.get_atom("P")
+            if not ca:
+                ca = residue.get_central_atom()
+                if not ca:
+                    raise StructureError(f"Cannot find a central atom for residue {residue.full_name()}")
+
         # Calculate the euclidean distance between swarm center and given atom/bead
         for swarm_id, center in enumerate(swarm_centers):
             distances[swarm_id] = cdistance(
@@ -327,6 +355,12 @@ def apply_restraints(
             ca = residue.get_calpha()
             if not ca:
                 ca = residue.get_atom("P")
+                if not ca:
+                    # In case of HETATM
+                    ca = residue.get_central_atom()
+                    if not ca:
+                        raise StructureError(f"Cannot find a central atom for residue {residue.full_name()}")
+
             to_remove = []
             for center_id, center in enumerate(centers_list):
                 d = cdistance(
@@ -433,6 +467,7 @@ def calculate_initial_poses(
     flip=False,
     swarms_at_fixed_distance=DEFAULT_SWARM_DISTANCE,
     swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
+    swarms_from_restraints=False
 ):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
 
@@ -456,19 +491,34 @@ def calculate_initial_poses(
         blocking_restraints = receptor_restraints["blocked"]
         receptor_restraints = receptor_restraints["active"] + receptor_restraints["passive"]
 
-    swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(
-        receptor,
-        ligand,
-        num_swarms,
-        rec_translation,
-        surface_density,
-        receptor_restraints=receptor_restraints,
-        blocking_restraints=blocking_restraints,
-        seed=seed,
-        has_membrane=has_membrane,
-        swarms_at_fixed_distance=swarms_at_fixed_distance,
-        swarms_per_restraint=swarms_per_restraint,
-    )
+    # Two methods to calculate swarms, see method definition for differences:
+    if not swarms_from_restraints:
+        swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(
+            receptor,
+            ligand,
+            num_swarms,
+            rec_translation,
+            surface_density,
+            receptor_restraints=receptor_restraints,
+            blocking_restraints=blocking_restraints,
+            seed=seed,
+            has_membrane=has_membrane,
+            swarms_at_fixed_distance=swarms_at_fixed_distance,
+            swarms_per_restraint=swarms_per_restraint,
+        )
+    else:
+        swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points_from_restraints(
+            receptor,
+            ligand,
+            num_swarms,
+            rec_translation,
+            surface_density,
+            receptor_restraints=receptor_restraints,
+            blocking_restraints=blocking_restraints,
+            seed=seed,
+            has_membrane=has_membrane,
+            swarms_at_fixed_distance=swarms_at_fixed_distance,
+            swarms_per_restraint=swarms_per_restraint,
 
     # Filter out swarms which are not compatible with the explicit membrane
     if has_membrane:

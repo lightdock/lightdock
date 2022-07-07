@@ -45,6 +45,114 @@ def calculate_surface_points(
     num_points,
     rec_translation,
     surface_density,
+    seed=STARTING_POINTS_SEED,
+    has_membrane=False,
+    num_sphere_points=100,
+):
+    """Calculates the position of num_points on the surface of the given protein.
+
+    Original implementation from 0.9.0 series. This is the default method.
+
+    Steps of the algorithm:
+    1. Calculates several swarm centers using the surface atoms of the molecule and
+    clustering using K-means.
+    2. Places a sphere of points for each swarm center calculated in the previous step.
+    3. Filters out overlapping points on those spheres.
+
+    """
+    if num_points < 0:
+        raise SetupError("Invalid number of points to generate over the surface")
+
+    receptor_atom_coordinates = receptor.representative(has_membrane)
+
+    distances_matrix_rec = distance.pdist(receptor_atom_coordinates)
+    receptor_max_diameter = np.max(distances_matrix_rec)
+    distances_matrix_lig = distance.pdist(ligand.representative())
+    ligand_max_diameter = np.max(distances_matrix_lig)
+    surface_distance = ligand_max_diameter / 4.0
+
+    # Surface
+    pdb_file_name = Path(receptor.structure_file_names[receptor.representative_id])
+    molecule = parsePDB(pdb_file_name).select("protein or nucleic or (hetero and not water and not resname MMB)")
+    if has_membrane:
+        pdb_no_membrane = str(
+            pdb_file_name.absolute().parent
+            / f"{pdb_file_name.stem}_no_membrane{pdb_file_name.suffix}"
+        )
+        writePDB(pdb_no_membrane, molecule)
+    surface = molecule.select("protein and surface or nucleic and name P or (hetero and not water and not resname MMB)")
+    coords = surface.getCoords()
+
+    # SASA
+    if num_points == 0:
+        if has_membrane:
+            structure = freesasa.Structure(pdb_no_membrane)
+        else:
+            structure = freesasa.Structure(str(pdb_file_name))
+        result = freesasa.calc(structure)
+        total_sasa = result.totalArea()
+        num_points = ceil(total_sasa / surface_density)
+
+    # Surface clusters
+    if len(coords) > num_points:
+        # Extremely important to set the seed in order to get reproducible results
+        np.random.seed(seed)
+        surface_clusters = kmeans2(data=coords, k=num_points, minit="points", iter=100)
+        surface_centroids = surface_clusters[0]
+    else:
+        surface_centroids = coords
+
+    # Create points over the surface of each surface cluster
+    sampling = []
+    for sc in surface_centroids:
+        sphere_points = np.array(points_on_sphere(num_sphere_points))
+        surface_points = sphere_points * surface_distance + sc
+        sampling.append(surface_points)
+
+    # Filter out not compatible points
+    centroids_kd_tree = KDTree(surface_centroids)
+    for i_centroid in range(len(sampling)):
+        # print('.', end="", flush=True)
+        centroid = surface_centroids[i_centroid]
+        # Search for this centroid neighbors
+        centroid_neighbors = centroids_kd_tree.query_ball_point(centroid, r=20.0)
+        # For each neighbor, remove points too close
+        for n in centroid_neighbors:
+            points_to_remove = []
+            if n != i_centroid:
+                for i_p, p in enumerate(sampling[i_centroid]):
+                    if np.linalg.norm(p - surface_centroids[n]) <= surface_distance:
+                        points_to_remove.append(i_p)
+                points_to_remove = list(set(points_to_remove))
+                sampling[i_centroid] = [
+                    sampling[i_centroid][i_p]
+                    for i_p in range(len(sampling[i_centroid]))
+                    if i_p not in points_to_remove
+                ]
+
+    s = []
+    for points in sampling:
+        s.extend(points)
+
+    # Final cluster of points
+    if len(s) > num_points:
+        # Extremely important to set seed in order to get reproducible results
+        np.random.seed(seed)
+        s_clusters = kmeans2(data=s, k=num_points, minit="points", iter=100)
+        s = s_clusters[0]
+
+    for p in s:
+        p += rec_translation
+
+    return s, receptor_max_diameter, ligand_max_diameter
+
+
+def calculate_surface_points_from_restraints(
+    receptor,
+    ligand,
+    num_points,
+    rec_translation,
+    surface_density,
     receptor_restraints,
     blocking_restraints,
     seed=STARTING_POINTS_SEED,
@@ -53,16 +161,24 @@ def calculate_surface_points(
     swarms_at_fixed_distance=DEFAULT_SWARM_DISTANCE,
     swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
 ):
-    """Calculates the position of num_points on the surface of the given molecule.
+    """Calculates the position of num_points on the surface of the given molecule, but
+    using receptor restraints instead of the whole surface and building from them, not
+    filtering swarm centers.
 
-    First, calculates several swarm centers using the surface atoms of the molecule and
+    The steps of the algorithm are:
+    1. Calculates several swarm centers using the surface atoms of the molecule and
     clustering using K-means.
-    Second, places a sphere of points for each swarm center calculated in the previous step.
-    Third, filters out overlapping points on those spheres.
-    Finally, fixes the number of swarm centers if required.
+    2. Places a sphere of points for each swarm center calculated in the previous step.
+    3. Filters out overlapping points on those spheres.
+    4. Fixes the number of swarm centers if required, for example, if they are too close
+    to the surface.
+
     """
     if num_points < 0:
         raise SetupError("Invalid number of points to generate over the surface")
+
+    if not receptor_restraints:
+        raise SetupError("Calculating swarms from restraints requires restraints defined at the receptor")
 
     receptor_atom_coordinates = receptor.representative(has_membrane)
 
@@ -79,41 +195,25 @@ def calculate_surface_points(
         # We will use the ligand size to place the swarms over receptor's surface
         surface_distance = ligand_max_diameter / 4.0
 
-    # Surface
+    # Get PDB structure
     pdb_file_name = Path(receptor.structure_file_names[receptor.representative_id])
-    molecule = parsePDB(pdb_file_name).select("protein or nucleic")
+    molecule = parsePDB(pdb_file_name).select("protein or nucleic or (hetero and not water and not resname MMB)")
     if has_membrane:
+        # In case of using membrane beads, save structure to disk without CG beads
         pdb_no_membrane = str(
             pdb_file_name.absolute().parent
             / f"{pdb_file_name.stem}_no_membrane{pdb_file_name.suffix}"
         )
         writePDB(pdb_no_membrane, molecule)
 
-    if receptor_restraints:
-        res_numbers = " ".join([str(residue.number) for residue in receptor_restraints])
-        coords = molecule.select(f"resnum {res_numbers}").getCoords()
-    else:
-        surface = molecule.select("protein and surface or nucleic and name P")
-        coords = surface.getCoords()
-
-    # Automatic number of points
-    if receptor_restraints:
-        num_points = swarms_per_restraint * len(receptor_restraints)
-    else:
-        if num_points == 0:
-            # Use SASA to get an estimation of points to calculate
-            if has_membrane:
-                structure = freesasa.Structure(pdb_no_membrane)
-            else:
-                structure = freesasa.Structure(str(pdb_file_name))
-            result = freesasa.calc(structure)
-            total_sasa = result.totalArea()
-            # fix if using restraints
-            num_points = ceil(total_sasa / surface_density)
+    # Use only residues from receptor restraints
+    res_numbers = " ".join([str(residue.number) for residue in receptor_restraints])
+    coords = molecule.select(f"resnum {res_numbers}").getCoords()
+    num_points = swarms_per_restraint * len(receptor_restraints)
 
     # Surface clusters
     if len(coords) > num_points:
-        # Extremely important to set seed in order to get reproducible results
+        # Extremely important to set the seed in order to get reproducible results
         np.random.seed(seed)
         surface_clusters = kmeans2(data=coords, k=num_points, minit="points", iter=100)
         surface_centroids = surface_clusters[0]
@@ -157,6 +257,14 @@ def calculate_surface_points(
         np.random.seed(seed)
         s_clusters = kmeans2(data=s, k=num_points, minit="points", iter=100)
         s = s_clusters[0]
+
+    # Filter interior points
+    surface_swarms = []
+    for swarm in s:
+        min_dist = min(calcDistance(np.array(swarm), molecule))
+        if min_dist > DEFAULT_CONTACT_RESTRAINTS_CUTOFF:
+            surface_swarms.append(swarm)
+    s = surface_swarms
 
     # Account for translation to origin of coordinates
     for p in s:
