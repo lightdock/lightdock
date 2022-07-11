@@ -181,6 +181,13 @@ class Residue(object):
                 return atom
         return None
 
+    def get_chain(self):
+        """Gets the chain ID"""
+        if self.atoms:
+            return self.atoms[0].chain_id
+        else:
+            return None
+
     def get_calpha(self):
         """Get the Calpha atom"""
         return self.get_atom("CA")

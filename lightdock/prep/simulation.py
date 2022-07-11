@@ -175,7 +175,7 @@ def calculate_starting_positions(
     flip=False,
     swarms_at_fixed_distance=DEFAULT_SWARM_DISTANCE,
     swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
-    swarms_from_restraints=False
+    dense_sampling=False
 ):
     """Defines the starting positions of each glowworm in the simulation.
 
@@ -211,7 +211,7 @@ def calculate_starting_positions(
             flip,
             swarms_at_fixed_distance,
             swarms_per_restraint,
-            swarms_from_restraints
+            dense_sampling,
         )
         log.info(f"Generated {len(starting_points_files)} positions files")
     else:

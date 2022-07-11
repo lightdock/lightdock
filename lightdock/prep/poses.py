@@ -5,10 +5,7 @@ import random
 import operator
 import numpy as np
 from lightdock.pdbutil.PDBIO import create_pdb_from_points
-from lightdock.prep.starting_points import (
-    calculate_surface_points,
-    calculate_surface_points_from_restraints
-)
+from lightdock.prep.starting_points import calculate_surface_points
 from lightdock.mathutil.lrandom import MTGenerator, NormalGenerator
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.cython.cutil import distance as cdistance
@@ -467,7 +464,7 @@ def calculate_initial_poses(
     flip=False,
     swarms_at_fixed_distance=DEFAULT_SWARM_DISTANCE,
     swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
-    swarms_from_restraints=False
+    dense_sampling=False
 ):
     """Calculates the starting points for each of the glowworms using the center of swarms"""
 
@@ -491,34 +488,32 @@ def calculate_initial_poses(
         blocking_restraints = receptor_restraints["blocked"]
         receptor_restraints = receptor_restraints["active"] + receptor_restraints["passive"]
 
-    # Two methods to calculate swarms, see method definition for differences:
-    if not swarms_from_restraints:
-        swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(
-            receptor,
-            ligand,
-            num_swarms,
-            rec_translation,
-            surface_density,
-            receptor_restraints=receptor_restraints,
-            blocking_restraints=blocking_restraints,
-            seed=seed,
-            has_membrane=has_membrane,
-            swarms_at_fixed_distance=swarms_at_fixed_distance,
-            swarms_per_restraint=swarms_per_restraint,
-        )
-    else:
-        swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points_from_restraints(
-            receptor,
-            ligand,
-            num_swarms,
-            rec_translation,
-            surface_density,
-            receptor_restraints=receptor_restraints,
-            blocking_restraints=blocking_restraints,
-            seed=seed,
-            has_membrane=has_membrane,
-            swarms_at_fixed_distance=swarms_at_fixed_distance,
-            swarms_per_restraint=swarms_per_restraint,
+
+    swarm_centers, receptor_diameter, ligand_diameter = calculate_surface_points(
+        receptor,
+        ligand,
+        num_swarms,
+        rec_translation,
+        surface_density,
+        receptor_restraints=receptor_restraints,
+        blocking_restraints=blocking_restraints,
+        seed=seed,
+        has_membrane=has_membrane,
+        swarms_at_fixed_distance=swarms_at_fixed_distance,
+        swarms_per_restraint=swarms_per_restraint,
+        dense_sampling=dense_sampling,
+    )
+
+    # Filter swarms far from the restraints
+    # if receptor_restraints:
+    #     swarm_centers = apply_restraints(
+    #         swarm_centers,
+    #         receptor_restraints,
+    #         blocking_restraints,
+    #         ligand_diameter / 2.0,
+    #         rec_translation,
+    #         seed=seed,
+    #     )
 
     # Filter out swarms which are not compatible with the explicit membrane
     if has_membrane:

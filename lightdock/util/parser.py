@@ -319,17 +319,17 @@ class SetupCommandLineParser(object):
             "--spr",
             "-swarms_per_restraint",
             "--swarms_per_restraint",
-            help="Number of swarms to keep for restraint",
+            help="Number of swarms to keep per restraint",
             type=valid_natural_number,
             dest="swarms_per_restraint",
             default=DEFAULT_SWARMS_PER_RESTRAINT,
         )
-        # Calculate swarms from receptor restraints, not the whole surface
+        # Enable dense sampling
         parser.add_argument(
-            "--sfr",
-            "-sfr",
-            help="Calculate swarms from receptor restraints, not the whole surface",
-            dest="swarms_from_restraints",
+            "--ds",
+            "-ds",
+            help="Enable dense sampling for restraints-swarm filtering",
+            dest="dense_sampling",
             action="store_true",
             default=False,
         )
