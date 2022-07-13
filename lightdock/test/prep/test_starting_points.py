@@ -62,7 +62,7 @@ class TestStartingPoints:
         ligand = Complex(chains, atoms, structure_file_name=file_name)
 
         starting_points, rec_diameter, lig_diameter = calculate_surface_points(
-            receptor, ligand, 50, [0.0, 0.0, 0.0], 50.0, [], [],
+            receptor, ligand, 100, [0.0, 0.0, 0.0], 50.0, [], [],
         )
 
         assert_almost_equal(rec_diameter, 50.213210831413676)
