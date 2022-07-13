@@ -205,6 +205,7 @@ setuptools.setup(
         "bin/lgd_rank.py",
         "bin/lgd_rank_swarm.py",
         "bin/lgd_top.py",
+        "bin/lgd_dummify.py",
         "bin/lightdock3.py",
         "bin/lightdock3_setup.py",
     ],
