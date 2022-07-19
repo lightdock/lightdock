@@ -23,12 +23,20 @@
 [lightdock3_setup] INFO: Calculating ANM for ligand molecule...
 [lightdock3_setup] INFO: 10 normal modes calculated
 [lightdock3_setup] INFO: Reading restraints from restraints.list
-[lightdock3_setup] INFO: Number of receptor restraints is: 2 (active), 1 (passive)
+[lightdock3_setup] INFO: Number of receptor restraints is: 1 (active), 1 (passive)
 [lightdock3_setup] INFO: Number of ligand restraints is: 1 (active), 2 (passive)
 [lightdock3_setup] INFO: Calculating starting positions...
-[lightdock3_setup] INFO: Generated 19 positions files
+[lightdock3_setup] INFO:   * Surface density: TotalSASA/50.00
+[lightdock3_setup] INFO:   * Swarm radius: 10.00 Å
+[lightdock3_setup] INFO:   * 180° flip of 50% of starting poses: False
+[lightdock3_setup] INFO:   * Ligand Max Diameter: 39.05 Å
+[lightdock3_setup] INFO:   * Surface distance: 9.76 Å
+[lightdock3_setup] INFO: Swarms after incompatible filter: 440
+[lightdock3_setup] INFO: Swarms after interior points filter: 216
+[lightdock3_setup] INFO: Swarms after distance filter: 206
+[lightdock3_setup] INFO: Generated 40 positions files
 [lightdock3_setup] INFO: Done.
-[lightdock3_setup] INFO: Number of calculated swarms is 19
+[lightdock3_setup] INFO: Number of calculated swarms is 40
 [lightdock3_setup] INFO: Preparing environment
 [lightdock3_setup] INFO: Done.
 [lightdock3_setup] INFO: LightDock setup OK
