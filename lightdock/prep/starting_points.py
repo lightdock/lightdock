@@ -15,6 +15,7 @@ from lightdock.constants import (
     DEFAULT_CONTACT_RESTRAINTS_CUTOFF,
     DEFAULT_SWARMS_PER_RESTRAINT,
     DEFAULT_SWARM_RADIUS,
+    SWARM_DISTANCE_TO_SURFACE_CUTOFF,
 )
 from lightdock.error.lightdock_errors import SetupError
 from lightdock.util.logger import LoggingManager
@@ -179,9 +180,9 @@ def calculate_surface_points(
 
     # Filter interior points
     surface_swarms = []
+    molecule_kd_tree = KDTree(molecule.getCoords())
     for swarm in s:
-        min_dist = min(calcDistance(np.array(swarm), molecule))
-        if min_dist >= 3.0:
+        if not molecule_kd_tree.query_ball_point(swarm, SWARM_DISTANCE_TO_SURFACE_CUTOFF):
             surface_swarms.append(swarm)
     s = surface_swarms
 
@@ -192,14 +193,43 @@ def calculate_surface_points(
     if receptor_restraints and not dense_sampling:
         near_swarms = []
         coords = molecule.select(f"within 10 of ({res_selection}) and surface or ({res_selection})").getCoords()
+        restraints_patch_kd_tree = KDTree(coords)
         for swarm in s:
-            min_dist = min(calcDistance(np.array(swarm), coords))
-            if min_dist <= surface_distance:
+            if restraints_patch_kd_tree.query_ball_point(swarm, surface_distance):
                 near_swarms.append(swarm)
+
+            #min_dist = min(calcDistance(np.array(swarm), coords))
+            #if min_dist <= surface_distance:
+            #    near_swarms.append(swarm)
+
         s = near_swarms
 
         if verbose:
             log.info(f"Swarms after distance filter: {len(s)}")
+
+    # EXPERIMENTAL: Occlusion ray-tracing probe
+    # if receptor_restraints:
+    #     sampling_steps = 10
+    #     swarms_with_visibility = []
+    #     for swarm in s:
+    #         # Find nearest restraint
+    #         rst_centroids = [residue.get_central_atom() for residue in receptor_restraints]
+    #         rst_centroid_coords = [[a.x, a.y, a.z] for a in rst_centroids]
+    #         near_rst_centroid = np.array(rst_centroid_coords[np.argmin(distance.cdist(np.array([swarm]), rst_centroid_coords, 'euclidean'))])
+    #         direction = near_rst_centroid - np.array(swarm)
+    #         distance_to_restraint = np.linalg.norm(direction)
+    #         step = distance_to_restraint / sampling_steps
+    #         atoms_colliding = []
+    #         for i in range(1, sampling_steps//2):
+    #             probe = np.array(swarm) + i * step
+    #             atoms_colliding.append(molecule_kd_tree.query_ball_point(probe, 0.5))
+    #         if not any(atoms_colliding):
+    #             swarms_with_visibility.append(swarm)
+
+    #     s = swarms_with_visibility
+
+    #     if verbose:
+    #         log.info(f"Swarms after occlusion filter: {len(s)}")
 
     # Final cluster of points
     if len(s) > num_points and not dense_sampling:

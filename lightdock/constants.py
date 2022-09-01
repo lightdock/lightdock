@@ -97,3 +97,5 @@ DEFAULT_SWARM_DISTANCE = 0.0
 DEFAULT_SWARMS_PER_RESTRAINT = 20
 # Number of sampling points per centroid in automatic swarm calculation
 DEFAULT_SPHERES_PER_CENTROID = 100
+# Cutoff for filtering swarms too close to the surface
+SWARM_DISTANCE_TO_SURFACE_CUTOFF = 3.0
