@@ -5,6 +5,7 @@
 import argparse
 import os
 import numpy as np
+from pathlib import Path
 from lightdock.util.logger import LoggingManager
 from lightdock.constants import (
     DEFAULT_NMODES_REC,
@@ -61,6 +62,43 @@ def parse_output_file(lightdock_output, num_anm_rec, num_anm_lig):
             ligand_id = int(raw_data[1])
             receptor_ids.append(receptor_id)
             ligand_ids.append(ligand_id)
+    log.info("Read %s coordinate lines" % counter)
+    return translations, rotations, receptor_ids, ligand_ids, rec_extents, lig_extents
+
+
+def parse_initial_file(lightdock_output, num_anm_rec, num_anm_lig):
+    translations = []
+    rotations = []
+    receptor_ids = []
+    ligand_ids = []
+    rec_extents = []
+    lig_extents = []
+
+    data_file = open(lightdock_output)
+    lines = data_file.readlines()
+    data_file.close()
+
+    counter = 0
+    for line in lines:
+        if line[0] != "#":
+            counter += 1
+            line = line.rstrip(os.linesep)
+            coord = line.split()
+            translations.append([float(coord[0]), float(coord[1]), float(coord[2])])
+            rotations.append(
+                Quaternion(
+                    float(coord[3]), float(coord[4]), float(coord[5]), float(coord[6])
+                )
+            )
+            if len(coord) > 7:
+                rec_extents.append(
+                    np.array([float(x) for x in coord[7 : 7 + num_anm_rec]])
+                )
+                lig_extents.append(np.array([float(x) for x in coord[-num_anm_lig:]]))
+
+            receptor_ids.append(0)
+            ligand_ids.append(0)
+
     log.info("Read %s coordinate lines" % counter)
     return translations, rotations, receptor_ids, ligand_ids, rec_extents, lig_extents
 
@@ -149,14 +187,25 @@ if __name__ == "__main__":
     ligand = Complex.from_structures(structures)
 
     # Output file
-    (
-        translations,
-        rotations,
-        receptor_ids,
-        ligand_ids,
-        rec_extents,
-        lig_extents,
-    ) = parse_output_file(args.lightdock_output, num_anm_rec, num_anm_lig)
+    output_file_path = Path(args.lightdock_output)
+    if output_file_path.suffix == ".dat":
+        (
+            translations,
+            rotations,
+            receptor_ids,
+            ligand_ids,
+            rec_extents,
+            lig_extents,
+        ) = parse_initial_file(args.lightdock_output, num_anm_rec, num_anm_lig)
+    else:
+        (
+            translations,
+            rotations,
+            receptor_ids,
+            ligand_ids,
+            rec_extents,
+            lig_extents,
+        ) = parse_output_file(args.lightdock_output, num_anm_rec, num_anm_lig)
 
     found_conformations = len(translations)
     num_conformations = args.glowworms
