@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import freesasa
 from scipy.cluster.vq import kmeans2
-from scipy.spatial import distance, KDTree
+from scipy.spatial import distance, KDTree, ConvexHull
 from prody import parsePDB, writePDB, calcDistance, calcCenter
 from lightdock.constants import (
     STARTING_POINTS_SEED,
@@ -24,6 +24,15 @@ from lightdock.util.logger import LoggingManager
 log = LoggingManager.get_logger("lightdock3_setup")
 
 freesasa.setVerbosity(freesasa.silent)
+
+
+def points_in_hull(p, hull, tol=1e-12):
+    return np.all(hull.equations[:,:-1] @ p.T + np.repeat(hull.equations[:,-1][None,:], len(p), axis=0).T <= tol, 0)
+
+def equidistant_points(p1, p2, parts):
+    return np.array(list(zip(np.linspace(p1[0], p2[0], parts+1),
+               np.linspace(p1[1], p2[1], parts+1),
+               np.linspace(p1[2], p2[2], parts+1))))
 
 
 def points_on_sphere(number_of_points):
@@ -71,8 +80,9 @@ def calculate_surface_points(
     clustering using K-means.
     2. Places a sphere of points for each swarm center calculated in the previous step.
     3. Filters out overlapping points on those spheres.
-    4. Filters out swarms too close to the molecule
-    5. If receptor restraints enabled, filters swarms too far from input restraints
+    4. Filters out swarms too close to the molecule.
+    5. If receptor restraints enabled, filters swarms which vision line goes through the
+       receptor molecule.
     6. If not dense_sampling is enabled, clusters the final number of swarms in the
        given input number.
 
@@ -189,47 +199,29 @@ def calculate_surface_points(
     if verbose:
         log.info(f"Swarms after interior points filter: {len(s)}")
 
-    # Filter too distant points
-    if receptor_restraints and not dense_sampling:
-        near_swarms = []
-        coords = molecule.select(f"within 10 of ({res_selection}) and surface or ({res_selection})").getCoords()
-        restraints_patch_kd_tree = KDTree(coords)
+    # Test for swarms which vision line goes through the receptor
+    # We calculate for this the convex hull of surface atoms
+    if receptor_restraints:
+        # Calculate convex hull of surface atoms
+        hull = ConvexHull(surface_centroids)
+        swarms_with_visibility = []
+        num_probes = 10
         for swarm in s:
-            if restraints_patch_kd_tree.query_ball_point(swarm, surface_distance):
-                near_swarms.append(swarm)
+            # Find nearest restraint
+            rst_centroids = [residue.get_central_atom() for residue in receptor_restraints]
+            rst_centroid_coords = [[a.x, a.y, a.z] for a in rst_centroids]
+            near_rst_centroid = np.array(rst_centroid_coords[np.argmin(distance.cdist(np.array([swarm]), rst_centroid_coords, 'euclidean'))])
 
-            #min_dist = min(calcDistance(np.array(swarm), coords))
-            #if min_dist <= surface_distance:
-            #    near_swarms.append(swarm)
+            p = equidistant_points(np.array(swarm), near_rst_centroid, num_probes-1)
+            num_inside = np.count_nonzero(points_in_hull(p, hull))
+            if num_inside <= 0.2 * num_probes:
+                swarms_with_visibility.append(swarm)
 
-        s = near_swarms
+        s = swarms_with_visibility
 
         if verbose:
-            log.info(f"Swarms after distance filter: {len(s)}")
+            log.info(f"Swarms after occlusion filter: {len(s)}")
 
-    # EXPERIMENTAL: Occlusion ray-tracing probe
-    # if receptor_restraints:
-    #     sampling_steps = 10
-    #     swarms_with_visibility = []
-    #     for swarm in s:
-    #         # Find nearest restraint
-    #         rst_centroids = [residue.get_central_atom() for residue in receptor_restraints]
-    #         rst_centroid_coords = [[a.x, a.y, a.z] for a in rst_centroids]
-    #         near_rst_centroid = np.array(rst_centroid_coords[np.argmin(distance.cdist(np.array([swarm]), rst_centroid_coords, 'euclidean'))])
-    #         direction = near_rst_centroid - np.array(swarm)
-    #         distance_to_restraint = np.linalg.norm(direction)
-    #         step = distance_to_restraint / sampling_steps
-    #         atoms_colliding = []
-    #         for i in range(1, sampling_steps//2):
-    #             probe = np.array(swarm) + i * step
-    #             atoms_colliding.append(molecule_kd_tree.query_ball_point(probe, 0.5))
-    #         if not any(atoms_colliding):
-    #             swarms_with_visibility.append(swarm)
-
-    #     s = swarms_with_visibility
-
-    #     if verbose:
-    #         log.info(f"Swarms after occlusion filter: {len(s)}")
 
     # Final cluster of points
     if len(s) > num_points and not dense_sampling:
