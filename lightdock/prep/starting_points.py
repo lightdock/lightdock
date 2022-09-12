@@ -1,6 +1,7 @@
 """Calculate the position of a set of points around a protein."""
 
 import warnings
+import itertools
 from math import sqrt, cos, sin, pi, ceil
 from pathlib import Path
 import numpy as np
@@ -73,8 +74,7 @@ def calculate_surface_points(
     swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
     dense_sampling=False,
     verbose=True,
-    num_probes=10,
-    probe_tolerance=0.2,
+    probe_tolerance=0.5,
 ):
     """Calculates the position of num_points on the surface of the given protein.
 
@@ -215,14 +215,28 @@ def calculate_surface_points(
             rst_centroids = [residue.get_central_atom() for residue in receptor_restraints]
             rst_centroid_coords = [[a.x, a.y, a.z] for a in rst_centroids]
             near_rst_centroid = np.array(rst_centroid_coords[np.argmin(distance.cdist(np.array([swarm]), rst_centroid_coords, 'euclidean'))])
+
             # Calculate probe positions between swarm and closest restraint
-            p = equidistant_points(np.array(swarm), near_rst_centroid, num_probes-1)
+            p1 = np.array(swarm)
+            p2 = near_rst_centroid
+
+            num_probes = int(np.ceil(np.linalg.norm(p1 - p2)))
+            p = equidistant_points(p1, p2, num_probes)
+
             # Calculate fraction of probes inside the convex hull described by the surface atoms
-            num_inside = np.count_nonzero(points_in_hull(p, hull))
+            a = points_in_hull(p, hull)
+
+            #num_inside = np.count_nonzero(a)
+            try:
+                max_consecutive_inside = max([ sum( 1 for _ in group ) for key, group in itertools.groupby( a==True ) if key ])
+            except ValueError:
+                max_consecutive_inside = 0
+
             # Accept swarm depending on the ratio of probes found inside
-            if num_inside <= probe_tolerance * num_probes:
+            if max_consecutive_inside <= probe_tolerance * num_probes:
                 swarms_with_visibility.append(swarm)
 
+        # Update set of swarms
         s = swarms_with_visibility
 
         if verbose:

@@ -92,6 +92,10 @@ class TestSetupWithRestraintsAndInsertCodes(RegressionTest):
             self.golden_data_path / "init" / "swarm_centers.pdb",
             self.test_path / "init" / "swarm_centers.pdb",
         )
+        assert filecmp.cmp(
+            self.golden_data_path / "init" / "initial_positions_0.dat",
+            self.test_path / "init" / "initial_positions_0.dat",
+        )
         assert compare_two_files(
             self.test_path / "setup.json", self.golden_data_path / "setup.json",
             ignore=["setup_version", "start_time"]
