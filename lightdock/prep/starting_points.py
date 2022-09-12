@@ -26,13 +26,16 @@ log = LoggingManager.get_logger("lightdock3_setup")
 freesasa.setVerbosity(freesasa.silent)
 
 
-def points_in_hull(p, hull, tol=1e-12):
-    return np.all(hull.equations[:,:-1] @ p.T + np.repeat(hull.equations[:,-1][None,:], len(p), axis=0).T <= tol, 0)
+def points_in_hull(p, hull, tolerance=1e-12):
+    """Calculates for a set of p points if they are inside of the convex hull"""
+    return np.all(hull.equations[:,:-1] @ p.T + np.repeat(hull.equations[:,-1][None,:], len(p), axis=0).T <= tolerance, 0)
 
 def equidistant_points(p1, p2, parts):
+    """Calculates several points at equidistant distance between points p1 and p2"""
     return np.array(list(zip(np.linspace(p1[0], p2[0], parts+1),
-               np.linspace(p1[1], p2[1], parts+1),
-               np.linspace(p1[2], p2[2], parts+1))))
+                             np.linspace(p1[1], p2[1], parts+1),
+                             np.linspace(p1[2], p2[2], parts+1)))
+                    )
 
 
 def points_on_sphere(number_of_points):
@@ -70,6 +73,8 @@ def calculate_surface_points(
     swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
     dense_sampling=False,
     verbose=True,
+    num_probes=10,
+    probe_tolerance=0.2,
 ):
     """Calculates the position of num_points on the surface of the given protein.
 
@@ -205,16 +210,17 @@ def calculate_surface_points(
         # Calculate convex hull of surface atoms
         hull = ConvexHull(surface_centroids)
         swarms_with_visibility = []
-        num_probes = 10
         for swarm in s:
             # Find nearest restraint
             rst_centroids = [residue.get_central_atom() for residue in receptor_restraints]
             rst_centroid_coords = [[a.x, a.y, a.z] for a in rst_centroids]
             near_rst_centroid = np.array(rst_centroid_coords[np.argmin(distance.cdist(np.array([swarm]), rst_centroid_coords, 'euclidean'))])
-
+            # Calculate probe positions between swarm and closest restraint
             p = equidistant_points(np.array(swarm), near_rst_centroid, num_probes-1)
+            # Calculate fraction of probes inside the convex hull described by the surface atoms
             num_inside = np.count_nonzero(points_in_hull(p, hull))
-            if num_inside <= 0.2 * num_probes:
+            # Accept swarm depending on the ratio of probes found inside
+            if num_inside <= probe_tolerance * num_probes:
                 swarms_with_visibility.append(swarm)
 
         s = swarms_with_visibility
