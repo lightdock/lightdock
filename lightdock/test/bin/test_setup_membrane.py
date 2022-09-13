@@ -65,7 +65,7 @@ class TestSetupWithMembraneANM(RegressionTest):
     def teardown(self):
         self.clean_path()
 
-    def test_lightdock_setup_with_membrane_automatic(self):
+    def test_lightdock_setup_with_membrane_manual(self):
         os.chdir(self.test_path)
 
         num_swarms = 400
@@ -92,8 +92,8 @@ class TestSetupWithMembraneANM(RegressionTest):
             self.test_path / "init" / "initial_positions_35.dat",
         )
         assert filecmp.cmp(
-            self.golden_data_path / "init" / "initial_positions_139.dat",
-            self.test_path / "init" / "initial_positions_139.dat",
+            self.golden_data_path / "init" / "initial_positions_111.dat",
+            self.test_path / "init" / "initial_positions_111.dat",
         )
         assert filecmp.cmp(
             self.golden_data_path / "lightdock_3x29_receptor_membrane.pdb",
