@@ -28,7 +28,7 @@ def abspath(file):
 
 
 class LDExtension(Extension, object):
-    """Derived class to cleanly handle setup-time (numpy) dependencies."""
+    """Derived class for handling setup-time (numpy) dependencies."""
 
     def __init__(self, name, sources, *args, **kwargs):
         self._ld_include_dirs = []
@@ -57,7 +57,7 @@ def get_numpy_include():
     try:
         import numpy as np
     except ImportError:
-        raise SystemExit("LightDock requires NumPy even for setup")
+        raise SystemExit("LightDock requires NumPy for setup")
     return np.get_include()
 
 
@@ -170,6 +170,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX",
         "Programming Language :: Python :: Implementation :: CPython",
@@ -194,6 +195,7 @@ setuptools.setup(
         "bin/lgd_cluster_bsas.py",
         "bin/lgd_copy_structures.py",
         "bin/lgd_create_membrane.py",
+        "bin/lgd_dummify.py",
         "bin/lgd_filter_membrane.py",
         "bin/lgd_filter_restraints.py",
         "bin/lgd_flatten.py",
@@ -201,11 +203,11 @@ setuptools.setup(
         "bin/lgd_generate_glowworm_positions.py",
         "bin/lgd_generate_trajectory.py",
         "bin/lgd_gso_to_csv.py",
+        "bin/lgd_map_contacts.py",
         "bin/lgd_move_anm.py",
         "bin/lgd_rank.py",
         "bin/lgd_rank_swarm.py",
         "bin/lgd_top.py",
-        "bin/lgd_dummify.py",
         "bin/lightdock3.py",
         "bin/lightdock3_setup.py",
     ],
