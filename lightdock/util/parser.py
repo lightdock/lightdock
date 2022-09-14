@@ -367,7 +367,7 @@ class ListScoringAction(argparse.Action):
 class CommandLineParser(object):
     """Parses the command line"""
 
-    def __init__(self):
+    def __init__(self, input_args=None):
         parser = argparse.ArgumentParser(prog="lightdock3")
 
         # Receptor
@@ -487,5 +487,7 @@ class CommandLineParser(object):
             type=int,
             required=False,
         )
-
-        self.args = parser.parse_args()
+        if input_args:
+            self.args = parser.parse_args(input_args)
+        else:
+            self.args = parser.parse_args()

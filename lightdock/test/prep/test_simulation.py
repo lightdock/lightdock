@@ -21,7 +21,7 @@ from lightdock.prep.simulation import (
 )
 from lightdock.structure.complex import Complex
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
-from lightdock.util.parser import SetupCommandLineParser
+from lightdock.util.parser import SetupCommandLineParser, CommandLineParser
 from lightdock.version import CURRENT_VERSION
 from lightdock.test.support import compare_two_files
 
@@ -348,3 +348,18 @@ class TestSimulation:
 
         glowworms = 9
         assert not check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig)
+
+
+    def test_simulation_parser(self):
+        shutil.copyfile(
+            self.golden_data_path / "setup.json", self.test_path / "setup.json"
+        )
+
+        os.chdir(self.test_path)
+        parser = CommandLineParser(
+            ["setup.json", "10", "-c 1", "-l 0", "-s fastdfire"]
+        )
+
+        file_name = create_simulation_info_file(parser.args, path=self.test_path)
+
+        assert Path(file_name).name == "lightdock.info"
