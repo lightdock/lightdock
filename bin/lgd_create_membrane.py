@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     # Save genearted beads as a new PDB file
     create_pdb_from_points(
-        args.output_pdb_file, points, atom_type="BJ", res_type="MMB", element="P"
+        args.output_pdb_file, points, atom_name="BJ", res_name="MMB", element="P"
     )
 
     log.info(f"Membrane PDB file written to [{args.output_pdb_file}]")

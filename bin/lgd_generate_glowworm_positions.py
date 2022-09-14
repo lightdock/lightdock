@@ -57,5 +57,5 @@ if __name__ == "__main__":
     destination_path = os.path.dirname(args.lightdock_output)
     pdb_file_name = os.path.splitext(args.lightdock_output)[0] + ".pdb"
 
-    create_pdb_from_points(os.path.join(destination_path, pdb_file_name), translations)
+    create_pdb_from_points(os.path.join(destination_path, pdb_file_name), translations, res_name="GLW")
     log.info("PDB %s file created." % os.path.join(destination_path, pdb_file_name))

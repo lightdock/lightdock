@@ -4,6 +4,8 @@
     "anm_rec": 10,
     "anm_rec_rmsd": 0.5,
     "anm_seed": 324324,
+    "dense_sampling": false,
+    "fixed_distance": 0.0,
     "flip": false,
     "glowworms": 100,
     "ligand_pdb": "2UUY_lig.pdb",
@@ -24,7 +26,6 @@
     "receptor_pdb": "2UUY_rec.pdb",
     "receptor_restraints": {
         "active": [
-            "A.CYS.191",
             "A.SER.195"
         ],
         "blocked": [],
@@ -37,7 +38,8 @@
     "starting_points_seed": 324324,
     "surface_density": 50.0,
     "swarm_radius": 10.0,
-    "swarms": 19,
+    "swarms": 40,
+    "swarms_per_restraint": 20,
     "transmembrane": false,
     "use_anm": true,
     "verbose_parser": false,

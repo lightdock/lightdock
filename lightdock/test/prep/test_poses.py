@@ -593,7 +593,12 @@ class TestPoses:
         ]
 
         new_centers = apply_restraints(
-            swarm_centers, receptor_restraints, [], distance_cutoff, translation
+            swarm_centers,
+            receptor_restraints,
+            [],
+            distance_cutoff,
+            translation,
+            STARTING_POINTS_SEED,
         )
 
         assert np.allclose(expected_new_centers, new_centers)
@@ -647,6 +652,7 @@ class TestPoses:
             blocking_restraints,
             distance_cutoff,
             translation,
+            STARTING_POINTS_SEED,
         )
 
         assert np.allclose(expected_new_centers, new_centers)
@@ -691,7 +697,7 @@ class TestPoses:
         ]
 
         new_centers = apply_restraints(
-            swarm_centers, [], blocking_restraints, distance_cutoff, translation
+            swarm_centers, [], blocking_restraints, distance_cutoff, translation, STARTING_POINTS_SEED,
         )
 
         assert np.allclose(expected_new_centers, new_centers)

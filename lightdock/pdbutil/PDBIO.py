@@ -1,6 +1,7 @@
 """Parses Atomic coordinates entries from PDB files"""
 
 import math
+from os import linesep
 from lightdock.error.lightdock_errors import PDBParsingError, PDBParsingWarning
 from lightdock.structure.atom import Atom, HetAtom
 from lightdock.structure.residue import Residue
@@ -184,7 +185,7 @@ def write_atom_line(atom, atom_coordinates, output):
         atom_type = "HETATM"
     else:
         atom_type = "ATOM  "
-    line = "%6s%5d %-4s%-1s%3s%2s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f%12s\n" % (
+    line = "%6s%5d %-4s%-1s%3s%2s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f%12s%s" % (
         atom_type,
         atom.number,
         _format_atom_name(atom.name),
@@ -199,6 +200,7 @@ def write_atom_line(atom, atom_coordinates, output):
         atom.occupancy,
         atom.b_factor,
         atom.element,
+        linesep,
     )
     output.write(line)
 
@@ -217,24 +219,27 @@ def write_pdb_to_file(
 
 
 def create_pdb_from_points(
-    pdb_file_name, points, atom_type="H", res_type="XXX", element=""
+    pdb_file_name, points, atom_name="H", res_name="SWR", chain_id="Z", element="H"
 ):
     """Creates a PDB file which contains an atom_type atom for each point
     in points list.
     """
-    pdb_file = open(pdb_file_name, "w")
-    for index, point in enumerate(points):
-        line = "ATOM  %5d %-4s %3s    1     %8.3f%8.3f%8.3f" % (
-            index,
-            atom_type,
-            res_type,
-            point[0],
-            point[1],
-            point[2],
-        )
-        if element:
-            line += "                       %1s\n" % element
-        else:
-            line += "\n"
-        pdb_file.write(line)
-    pdb_file.close()
+    with open(pdb_file_name, "w") as output:
+        for index, point in enumerate(points):
+            line = "ATOM  %5d %-4s %3s%2s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f%12s%s" % (
+                index + 1,
+                _format_atom_name(atom_name),
+                res_name,
+                chain_id,
+                index + 1,
+                "",
+                point[0],
+                point[1],
+                point[2],
+                1.,
+                1.,
+                element,
+                linesep,
+            )
+
+            output.write(line)

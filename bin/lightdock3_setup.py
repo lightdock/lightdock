@@ -159,6 +159,9 @@ if __name__ == "__main__":
             args.write_starting_positions,
             args.swarm_radius,
             args.flip,
+            args.fixed_distance,
+            args.swarms_per_restraint,
+            args.dense_sampling,
         )
         if len(starting_points_files) != args.swarms:
             args.swarms = len(starting_points_files)

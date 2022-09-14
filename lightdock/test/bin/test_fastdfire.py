@@ -138,7 +138,7 @@ class TestRegressionFastDFIRELocalMinimization(RegressionTest):
 
     def test_lightdock_2uuy_2_steps_local_min(self):
         os.chdir(self.test_path)
-        steps = 2
+        steps = 10
         swarm = 0
 
         command = "lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb --noh --now --noxt -anm >> test_lightdock.out"
@@ -151,4 +151,4 @@ class TestRegressionFastDFIRELocalMinimization(RegressionTest):
             self.golden_data_path / "swarm_0" / "gso_0.out",
             self.test_path / "swarm_0" / "gso_0.out",
         )
-        assert (self.test_path / "swarm_0" / "gso_2.out").exists()
+        assert (self.test_path / "swarm_0" / "gso_10.out").exists()

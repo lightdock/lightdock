@@ -23,6 +23,8 @@ from lightdock.constants import (
     MAX_ROTATION,
     DEFAULT_SWARM_RADIUS,
     DEFAULT_MASK_FILE,
+    DEFAULT_SWARM_DISTANCE,
+    DEFAULT_SWARMS_PER_RESTRAINT,
 )
 from lightdock.util.logger import LoggingManager
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
@@ -171,12 +173,18 @@ def calculate_starting_positions(
     write_starting_positions=False,
     swarm_radius=DEFAULT_SWARM_RADIUS,
     flip=False,
+    swarms_at_fixed_distance=DEFAULT_SWARM_DISTANCE,
+    swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
+    dense_sampling=False
 ):
     """Defines the starting positions of each glowworm in the simulation.
 
     If the init folder already exists, uses the starting positions from this folder.
     """
     log.info("Calculating starting positions...")
+    log.info(f"  * Surface density: TotalSASA/{surface_density:.2f}")
+    log.info(f"  * Swarm radius: {swarm_radius:.2f} Å")
+    log.info(f"  * 180° flip of 50% of starting poses: {flip}")
     init_folder = DEFAULT_POSITIONS_FOLDER
     if not os.path.isdir(init_folder):
         os.mkdir(init_folder)
@@ -201,6 +209,9 @@ def calculate_starting_positions(
             write_starting_positions,
             swarm_radius,
             flip,
+            swarms_at_fixed_distance,
+            swarms_per_restraint,
+            dense_sampling,
         )
         log.info(f"Generated {len(starting_points_files)} positions files")
     else:
