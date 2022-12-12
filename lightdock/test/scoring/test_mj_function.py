@@ -85,7 +85,7 @@ class TestMJ3h:
         ligand = Complex(chains, atoms)
         adapter = MJ3hAdapter(receptor, ligand)
         assert_almost_equal(
-            -4.22,
+            -1.55,
             self.mj3h(
                 adapter.receptor_model,
                 adapter.receptor_model.coordinates[0],
