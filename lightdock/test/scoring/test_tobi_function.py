@@ -62,7 +62,7 @@ class TestTOBI:
         ligand = Complex(chains, atoms)
         adapter = TOBIAdapter(receptor, ligand)
         assert_almost_equal(
-            -11.22,
+            -9.87,
             self.tobi(
                 adapter.receptor_model,
                 adapter.receptor_model.coordinates[0],

@@ -119,6 +119,7 @@ def parse_complex_from_file(
     last_chain_id = "#"
     last_residue_name = "#"
     last_residue_number = "#"
+    last_residue_insertion = "#"
     current_chain = None
     current_residue = None
     for line in lines:
@@ -150,9 +151,11 @@ def parse_complex_from_file(
                 if (
                     last_residue_name != atom.residue_name
                     or last_residue_number != atom.residue_number
+                    or last_residue_insertion != atom.residue_insertion
                 ):
                     last_residue_name = atom.residue_name
                     last_residue_number = atom.residue_number
+                    last_residue_insertion = atom.residue_insertion
                     current_residue = Residue(
                         atom.residue_name, atom.residue_number, atom.residue_insertion
                     )
