@@ -29,13 +29,14 @@ freesasa.setVerbosity(freesasa.silent)
 
 def points_in_hull(p, hull, tolerance=1e-12):
     """Calculates for a set of p points if they are inside of the convex hull"""
-    return np.all(hull.equations[:,:-1] @ p.T + np.repeat(hull.equations[:,-1][None,:], len(p), axis=0).T <= tolerance, 0)
+    return np.all(hull.equations[:, :-1] @ p.T + np.repeat(hull.equations[:, -1][None, :], len(p), axis=0).T <= tolerance, 0)
+
 
 def equidistant_points(p1, p2, parts):
     """Calculates several points at equidistant distance between points p1 and p2"""
-    return np.array(list(zip(np.linspace(p1[0], p2[0], parts+1),
-                             np.linspace(p1[1], p2[1], parts+1),
-                             np.linspace(p1[2], p2[2], parts+1)))
+    return np.array(list(zip(np.linspace(p1[0], p2[0], parts + 1),
+                             np.linspace(p1[1], p2[1], parts + 1),
+                             np.linspace(p1[2], p2[2], parts + 1)))
                     )
 
 
@@ -108,7 +109,7 @@ def calculate_surface_points(
         # Fixed swarm distance to receptor's surface on user input
         surface_distance = swarms_at_fixed_distance
     else:
-        if ligand_max_diameter < DEFAULT_SWARM_RADIUS*2:
+        if ligand_max_diameter < DEFAULT_SWARM_RADIUS * 2:
             log.warning(f"Ligand radius is below the cutoff, using default swarm radius {DEFAULT_SWARM_RADIUS} as surface distance")
             surface_distance = DEFAULT_SWARM_RADIUS
         else:
@@ -118,7 +119,7 @@ def calculate_surface_points(
 
     # Surface
     pdb_file_name = Path(receptor.structure_file_names[receptor.representative_id])
-    molecule = parsePDB(pdb_file_name).select("protein or nucleic or (hetero and not water and not resname MMB)")
+    molecule = parsePDB(str(pdb_file_name)).select("protein or nucleic or (hetero and not water and not resname MMB)")
     if has_membrane:
         pdb_no_membrane = str(
             pdb_file_name.absolute().parent
@@ -228,7 +229,7 @@ def calculate_surface_points(
 
             #num_inside = np.count_nonzero(a)
             try:
-                max_consecutive_inside = max([ sum( 1 for _ in group ) for key, group in itertools.groupby( a==True ) if key ])
+                max_consecutive_inside = max([sum(1 for _ in group) for key, group in itertools.groupby(a == True) if key])
             except ValueError:
                 max_consecutive_inside = 0
 
@@ -241,7 +242,6 @@ def calculate_surface_points(
 
         if verbose:
             log.info(f"Swarms after occlusion filter: {len(s)}")
-
 
     # Final cluster of points
     if len(s) > num_points and not dense_sampling:
