@@ -8,7 +8,7 @@
     "fixed_distance": 0.0,
     "flip": false,
     "glowworms": 50,
-    "ligand_pdb": "1DIZ_lig.pdb.H",
+    "ligand_pdb": "1DIZ_lig.pdb",
     "ligand_restraints": {
         "active": [],
         "blocked": [],
@@ -18,7 +18,7 @@
     "noh": false,
     "now": false,
     "noxt": false,
-    "receptor_pdb": "1DIZ_rec.pdb.H",
+    "receptor_pdb": "1DIZ_rec.pdb",
     "receptor_restraints": {
         "active": [
             "A.MET.1",
@@ -29,7 +29,7 @@
         "passive": []
     },
     "restraints": "restraints.list",
-    "setup_version": "0.9.3",
+    "setup_version": "0.9.3.post2",
     "starting_points_seed": 324324,
     "surface_density": 50.0,
     "swarm_radius": 10.0,

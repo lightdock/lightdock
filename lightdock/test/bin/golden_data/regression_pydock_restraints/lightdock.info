@@ -11,7 +11,7 @@
     "flip": false,
     "glowworms": 25,
     "gso_seed": 324324,
-    "ligand_pdb": "1PPE_lig.pdb.H",
+    "ligand_pdb": "1PPE_lig.pdb",
     "ligand_restraints": {
         "active": [],
         "blocked": [],
@@ -26,7 +26,7 @@
     "now": false,
     "noxt": false,
     "profiling": false,
-    "receptor_pdb": "1PPE_rec.pdb.H",
+    "receptor_pdb": "1PPE_rec.pdb",
     "receptor_restraints": {
         "active": [
             "A.LEU.99"
@@ -38,9 +38,9 @@
     "rotation_step": 0.5,
     "scoring_function": "cpydock",
     "setup_file": "setup.json",
-    "setup_version": "0.9.3",
-    "simulation_version": "0.9.3",
-    "start_time": "2022-09-14 09:15:29",
+    "setup_version": "0.9.3.post2",
+    "simulation_version": "0.9.3.post2",
+    "start_time": "2023-03-07 17:01:28",
     "starting_points_seed": 324324,
     "steps": 20,
     "surface_density": 50.0,

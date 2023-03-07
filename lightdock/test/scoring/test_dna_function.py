@@ -41,12 +41,12 @@ class TestPyDockDNA:
 
     def test_calculate_DNA_3MFK_with_hydrogens(self):
         atoms, _, chains = parse_complex_from_file(
-            self.golden_data_path / "3mfk_homodimer.pdb.H"
+            self.golden_data_path / "3mfk_homodimer_with_H.pdb"
         )
         receptor = Complex(
             chains,
             atoms,
-            structure_file_name=(self.golden_data_path / "3mfk_homodimer.pdb.H"),
+            structure_file_name=(self.golden_data_path / "3mfk_homodimer_with_H.pdb"),
         )
         atoms, _t, chains = parse_complex_from_file(
             self.golden_data_path / "3mfk_dna.pdb"

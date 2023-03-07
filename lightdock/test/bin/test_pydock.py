@@ -18,8 +18,8 @@ class TestRegressionPyDockRestraints(RegressionTest):
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / "1PPE_rec.pdb.H", self.test_path)
-        shutil.copy(self.golden_data_path / "1PPE_lig.pdb.H", self.test_path)
+        shutil.copy(self.golden_data_path / "1PPE_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "1PPE_lig.pdb", self.test_path)
         shutil.copy(self.golden_data_path / "restraints.list", self.test_path)
 
     def teardown(self):
@@ -30,7 +30,7 @@ class TestRegressionPyDockRestraints(RegressionTest):
         num_glowworms = 25
         steps = 20
 
-        command = f"lightdock3_setup.py 1PPE_rec.pdb.H 1PPE_lig.pdb.H -g {num_glowworms} -anm "
+        command = f"lightdock3_setup.py 1PPE_rec.pdb 1PPE_lig.pdb -g {num_glowworms} -anm "
         command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 
@@ -60,8 +60,8 @@ class TestRegressionCPyDockLong(RegressionTest):
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / "1PPE_rec.pdb.H", self.test_path)
-        shutil.copy(self.golden_data_path / "1PPE_lig.pdb.H", self.test_path)
+        shutil.copy(self.golden_data_path / "1PPE_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "1PPE_lig.pdb", self.test_path)
 
     def teardown(self):
         self.clean_path()
@@ -71,7 +71,7 @@ class TestRegressionCPyDockLong(RegressionTest):
         num_glowworms = 50
         steps = 40
 
-        command = f"lightdock3_setup.py 1PPE_rec.pdb.H 1PPE_lig.pdb.H -g {num_glowworms} >> test_lightdock.out"
+        command = f"lightdock3_setup.py 1PPE_rec.pdb 1PPE_lig.pdb -g {num_glowworms} >> test_lightdock.out"
         os.system(command)
 
         command = f"lightdock3.py -c 1 -s cpydock setup.json {steps} -l 100 >> test_lightdock.out"
