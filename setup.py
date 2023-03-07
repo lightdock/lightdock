@@ -184,7 +184,7 @@ setuptools.setup(
         "numpy>=1.17.1",
         "scipy>=1.3.1",
         "cython>=0.29.13",
-        "prody==2.0.1",
+        "prody>=2.0.1",
         "freesasa>=2.0.3",
     ],
     scripts=[

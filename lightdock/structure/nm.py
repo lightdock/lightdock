@@ -22,7 +22,7 @@ log = LoggingManager.get_logger("ANM")
 
 def calculate_nmodes(pdb_file_name, n_modes, rmsd, seed, molecule):
     """Calculates Normal modes for a given molecule"""
-    prody_molecule = parsePDB(pdb_file_name)
+    prody_molecule = parsePDB(str(pdb_file_name))
     # Try first for proteins
     backbone_atoms = prody_molecule.select("name CA")
     if not backbone_atoms:

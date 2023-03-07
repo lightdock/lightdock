@@ -36,7 +36,7 @@ def get_backbone_atoms(ids_list, swarm_path):
         for struct_id in ids_list:
             pdb_file = swarm_path / f"lightdock_{struct_id}.pdb"
             log.info(f"Reading CA from {pdb_file}")
-            structure = parsePDB(pdb_file)
+            structure = parsePDB(str(pdb_file))
             selection = structure.select("name CA P")
             ca_atoms[struct_id] = selection
     except IOError as e:
