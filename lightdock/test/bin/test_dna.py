@@ -16,8 +16,8 @@ class TestRegressionDNAShort(RegressionTest):
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / "1DIZ_rec.pdb.H", self.test_path)
-        shutil.copy(self.golden_data_path / "1DIZ_lig.pdb.H", self.test_path)
+        shutil.copy(self.golden_data_path / "1DIZ_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "1DIZ_lig.pdb", self.test_path)
 
     def teardown(self):
         self.clean_path()
@@ -28,7 +28,7 @@ class TestRegressionDNAShort(RegressionTest):
         steps = 10
 
         command = (
-            f"lightdock3_setup.py 1DIZ_rec.pdb.H 1DIZ_lig.pdb.H -g {num_glowworms} -anm"
+            f"lightdock3_setup.py 1DIZ_rec.pdb 1DIZ_lig.pdb -g {num_glowworms} -anm"
         )
         command += ">> test_lightdock.out"
         os.system(command)
@@ -57,8 +57,8 @@ class TestRegressionDNARestraints(RegressionTest):
 
     def setup(self):
         self.ini_path()
-        shutil.copy(self.golden_data_path / "1DIZ_rec.pdb.H", self.test_path)
-        shutil.copy(self.golden_data_path / "1DIZ_lig.pdb.H", self.test_path)
+        shutil.copy(self.golden_data_path / "1DIZ_rec.pdb", self.test_path)
+        shutil.copy(self.golden_data_path / "1DIZ_lig.pdb", self.test_path)
         shutil.copy(self.golden_data_path / "restraints.list", self.test_path)
 
     def teardown(self):
@@ -69,7 +69,7 @@ class TestRegressionDNARestraints(RegressionTest):
         num_glowworms = 50
         steps = 30
 
-        command = f"lightdock3_setup.py 1DIZ_rec.pdb.H 1DIZ_lig.pdb.H -g {num_glowworms} -anm "
+        command = f"lightdock3_setup.py 1DIZ_rec.pdb 1DIZ_lig.pdb -g {num_glowworms} -anm "
         command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 

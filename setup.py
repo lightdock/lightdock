@@ -156,7 +156,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://lightdock.org/",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_namespace_packages(),
     include_package_data=True,
     license="GPLv3 License",
     classifiers=[
@@ -182,7 +182,7 @@ setuptools.setup(
     setup_requires=["numpy>=1.17.1", "nose"],
     install_requires=[
         "numpy>=1.17.1",
-        "scipy>=1.3.1",
+        "scipy>=1.7.0",
         "cython>=0.29.13",
         "prody>=2.0.1",
         "freesasa>=2.0.3",

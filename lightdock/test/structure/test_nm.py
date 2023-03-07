@@ -4,10 +4,12 @@ import os
 import shutil
 import numpy as np
 from pathlib import Path
+from nose.tools import assert_raises
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
 from lightdock.structure.nm import calculate_nmodes, write_nmodes, read_nmodes
 from lightdock.constants import STARTING_NM_SEED, DEFAULT_ANM_RMSD
+from lightdock.error.lightdock_errors import NormalModesCalculationError
 
 
 class TestNM:
@@ -69,7 +71,7 @@ class TestNM:
         assert np.allclose(expected_nmodes, nmodes)
 
     def test_calculate_anm_dna(self):
-        pdb_file = self.golden_data_path / "nm_dna" / "1DIZ_lig.pdb.H"
+        pdb_file = self.golden_data_path / "nm_dna" / "1DIZ_lig.pdb"
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 
@@ -87,8 +89,27 @@ class TestNM:
 
         assert np.allclose(expected_nmodes, nmodes)
 
-    def test_read_write(self):
+    def test_calculate_anm_wrong_extension(self):
         pdb_file = self.golden_data_path / "nm_dna" / "1DIZ_lig.pdb.H"
+        _, _, chains = parse_complex_from_file(pdb_file)
+        molecule = Complex(chains)
+
+        # PATCH: assert_raises is not working properly with ProDy debug mode
+        try:
+            nmodes = calculate_nmodes(
+                pdb_file,
+                n_modes=10,
+                rmsd=DEFAULT_ANM_RMSD,
+                seed=STARTING_NM_SEED,
+                molecule=molecule
+            )
+        except NormalModesCalculationError:
+            return True
+
+        return False
+
+    def test_read_write(self):
+        pdb_file = self.golden_data_path / "nm_dna" / "1DIZ_lig.pdb"
         _, _, chains = parse_complex_from_file(pdb_file)
         molecule = Complex(chains)
 

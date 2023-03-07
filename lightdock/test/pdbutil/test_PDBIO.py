@@ -102,29 +102,29 @@ class TestPDBReader:
         assert atoms == protein.atoms
 
         write_pdb_to_file(
-            protein, self.test_path / "1PPE_l_u.pdb.parsed", protein.atom_coordinates[0]
+            protein, self.test_path / "parsed_1PPE_l_u.pdb", protein.atom_coordinates[0]
         )
 
         assert filecmp.cmp(
-            self.golden_data_path / "1PPE_l_u.pdb.parsed",
-            self.test_path / "1PPE_l_u.pdb.parsed",
+            self.golden_data_path / "parsed_1PPE_l_u.pdb",
+            self.test_path / "parsed_1PPE_l_u.pdb",
         )
 
     def test_parse_pdb_noh(self):
         atoms_to_ignore = ["H"]
         atoms, _, chains = parse_complex_from_file(
-            self.golden_data_path / "1PPE_lig.pdb.H", atoms_to_ignore
+            self.golden_data_path / "1PPE_lig_with_H.pdb", atoms_to_ignore
         )
         protein = Complex(chains)
         assert atoms == protein.atoms
 
         write_pdb_to_file(
             protein,
-            self.test_path / "parsed_1PPE_lig.pdb.H",
+            self.test_path / "parsed_1PPE_lig_with_H.pdb",
             protein.atom_coordinates[0],
         )
 
         assert filecmp.cmp(
-            self.golden_data_path / "parsed_1PPE_lig.pdb.H",
-            self.test_path / "parsed_1PPE_lig.pdb.H",
+            self.golden_data_path / "parsed_1PPE_lig_with_H.pdb",
+            self.test_path / "parsed_1PPE_lig_with_H.pdb",
         )
