@@ -191,11 +191,7 @@ class Table(object):
         indices = list(range(self.__numRows))
         indices.sort(key=self.__content[column_to_sort].__getitem__, reverse=reverse)
 
-        new_content = dict([(i, list()) for i in self.__header])
-
-        for key in self.__header:
-            for i in range(self.__numRows):
-                new_content[key].append(self.__content[key][indices[i]])
+        new_content = {header:[values[idx] for idx in indices] for header,values in self.__content.items()}
 
         self.__content = new_content
 
@@ -284,7 +280,7 @@ class Table(object):
 
         self.__header.append(col_name)
         self.__numCols += 1
-        if self.is_empty:
+        if self.is_empty():
             self.__numRows = len(col_array)
         self.__content[col_name] = col_array[:]
 

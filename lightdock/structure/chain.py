@@ -22,5 +22,5 @@ class Chain(object):
     def __str__(self):
         return "[Chain %s]\n%s" % (
             self.cid,
-            "\n".join([str(residue) for residue in self.residues]),
+            "\n".join(str(residue) for residue in self.residues),
         )

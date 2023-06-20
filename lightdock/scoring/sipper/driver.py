@@ -35,7 +35,7 @@ class SIPPERModel(DockingModel):
         n_modes=None,
     ):
         super(SIPPERModel, self).__init__(
-            objects, coordinates, restraints, reference_points
+            objects, coordinates, restraints, reference_points=reference_points
         )
         self.energy = energy
         self.indexes = indexes
@@ -53,7 +53,7 @@ class SIPPERModel(DockingModel):
             self.indexes,
             self.atoms_per_residue,
             self.oda,
-            reference_points=self.reference_points.copy(),
+            reference_points=self.reference_points.clone(),
         )
 
 
@@ -161,12 +161,13 @@ class SIPPER(ScoringFunction):
             len(ligand.atoms_per_residue),
             receptor.oda,
             ligand.oda,
+            DEFAULT_CONTACT_RESTRAINTS_CUTOFF
         )
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(
-            receptor.restraints, interface_receptor
+            receptor.restraints, set(interface_receptor)
         )
         perc_ligand_restraints = ScoringFunction.restraints_satisfied(
-            ligand.restraints, interface_ligand
+            ligand.restraints, set(interface_ligand)
         )
         return (
             energy + perc_receptor_restraints * energy + perc_ligand_restraints * energy

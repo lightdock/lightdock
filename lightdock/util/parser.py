@@ -355,11 +355,11 @@ class ListScoringAction(argparse.Action):
         from lightdock import scoring
 
         scoring_path = os.path.dirname(scoring.__file__)
-        scoring_functions = [
+        scoring_functions = (
             s
             for s in os.listdir(scoring_path)
             if os.path.isdir(os.path.join(scoring_path, s)) and not s.startswith("__")
-        ]
+        )
         print("Available scoring functions are: ", ", ".join(scoring_functions))
         raise SystemExit
 

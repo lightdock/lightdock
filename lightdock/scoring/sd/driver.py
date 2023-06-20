@@ -33,7 +33,7 @@ class SDModel(DockingModel):
         n_modes=None,
     ):
         super(SDModel, self).__init__(
-            objects, coordinates, restraints, reference_points
+            objects, coordinates, restraints, reference_points=reference_points
         )
         self.charges = elec_charges
         self.vdw_energy = vdw_energy
@@ -49,7 +49,7 @@ class SDModel(DockingModel):
             self.charges.copy(),
             self.vdw_energy.copy(),
             self.vdw_radii.copy(),
-            reference_points=self.reference_points.copy(),
+            reference_points=self.reference_points.clone(),
         )
 
 

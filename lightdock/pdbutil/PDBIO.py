@@ -16,8 +16,12 @@ def cstrip(string):
     return string.strip(" \t\n\r")
 
 
-def read_atom_line(line, line_type="", atoms_to_ignore=[], residues_to_ignore=[]):
+def read_atom_line(line, line_type="", atoms_to_ignore=None, residues_to_ignore=None):
     """Parses a PDB file line starting with 'ATOM' or 'HETATM'"""
+    if atoms_to_ignore is None:
+        atoms_to_ignore = []
+    if residues_to_ignore is None:
+        residues_to_ignore = []
     element = cstrip(line[76:78])
     try:
         x = float(line[30:38])
@@ -105,12 +109,16 @@ def read_atom_line(line, line_type="", atoms_to_ignore=[], residues_to_ignore=[]
 
 
 def parse_complex_from_file(
-    input_file_name, atoms_to_ignore=[], residues_to_ignore=[], verbose=False
+    input_file_name, atoms_to_ignore=None, residues_to_ignore=None, verbose=False
 ):
     """Reads and parses a given input_file_name PDB file.
 
     TODO: Check if chain have been already created and insert it into the first one
     """
+    if atoms_to_ignore is None:
+        atoms_to_ignore = []
+    if residues_to_ignore is None:
+        residues_to_ignore = []
     lines = open(input_file_name).readlines()
     atoms = []
     residues = []

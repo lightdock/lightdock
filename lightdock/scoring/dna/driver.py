@@ -34,7 +34,7 @@ class DNAModel(DockingModel):
         n_modes=None,
     ):
         super(DNAModel, self).__init__(
-            objects, coordinates, restraints, reference_points
+            objects, coordinates, restraints, reference_points=reference_points
         )
         self.charges = charges
         self.vdw_energy = vdw_energy
@@ -50,7 +50,7 @@ class DNAModel(DockingModel):
             self.charges,
             self.vdw_energy,
             self.vdw_radii,
-            reference_points=self.reference_points.copy(),
+            reference_points=self.reference_points.clone(),
         )
 
 

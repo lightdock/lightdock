@@ -41,5 +41,5 @@ class BoundingBox(object):
         """Gets the Boundary of the dimension with dimension_index"""
         return self.boundaries[dimension_index]
 
-    def __repr__(self):
-        return " ".join([str(b) for b in self.boundaries])
+    def __repr__(self) -> str:
+        return " ".join(str(b) for b in self.boundaries)
