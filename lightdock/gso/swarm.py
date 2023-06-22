@@ -1,6 +1,7 @@
 """The set of swarms of glowworm agents used in the algorithm"""
 
 from operator import attrgetter
+from pathlib import Path
 from lightdock.gso.glowworm import Glowworm
 
 
@@ -62,9 +63,9 @@ class Swarm(object):
     def save(self, step, destination_path, file_name=""):
         """Saves actual population status to a file"""
         if file_name:
-            dest_file_name = "%s/%s" % (destination_path, file_name)
+            dest_file_name = Path(destination_path) / file_name
         else:
-            dest_file_name = "%s/gso_%d.out" % (destination_path, step)
+            dest_file_name = Path(destination_path) / f"gso_{step:d}.out"
 
         dest_file = open(dest_file_name, "w")
         dest_file.write(str(self))

@@ -422,6 +422,7 @@ class DDNAPotential(object):
         )
         self.map = DDNAPotential._createmap()
 
+    @staticmethod
     def _read_potentials(data_file_name):
         """Reads DDNA data potentials"""
         potentials = [0.0] * (21 * 20 * 20)
@@ -441,6 +442,7 @@ class DDNAPotential(object):
                     ] = energy
         return potentials
 
+    @staticmethod
     def _createmap():
         map = [-1] * 700
         for i in range(1, 50):

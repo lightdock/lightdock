@@ -61,8 +61,8 @@ if __name__ == "__main__":
         args = parse_command_line()
 
         solutions = []
-        contacts = []
-        rmsds = []
+        contacts = {}
+        rmsds = {}
         if os.path.isfile(EVALUATION_FILE):
             contacts, rmsds = read_rmsd_and_contacts_data(EVALUATION_FILE)
 

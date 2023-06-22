@@ -128,7 +128,10 @@ def calculate_surface_points(
         writePDB(pdb_no_membrane, molecule)
 
     if receptor_restraints:
-        res_selection = " or ".join([f"chain {residue.get_chain()} and resnum {residue.number}" for residue in receptor_restraints])
+        res_selection = " or ".join(
+                f"chain {residue.get_chain()} and resnum {residue.number}"
+                for residue in receptor_restraints
+        )
         coords = molecule.select(f"within 10 of ({res_selection}) and surface or ({res_selection})").getCoords()
     else:
         surface = molecule.select("protein and surface or nucleic and name P or (hetero and not water and not resname MMB)")
@@ -229,7 +232,11 @@ def calculate_surface_points(
 
             #num_inside = np.count_nonzero(a)
             try:
-                max_consecutive_inside = max([sum(1 for _ in group) for key, group in itertools.groupby(a == True) if key])
+                max_consecutive_inside = max(
+                    sum(1 for _ in group)
+                    for key, group in itertools.groupby(a == True)
+                    if key
+                )
             except ValueError:
                 max_consecutive_inside = 0
 

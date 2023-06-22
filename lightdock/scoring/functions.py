@@ -28,10 +28,9 @@ class ScoringFunction(ObjectiveFunction):
         if not restraints:
             return 0.0
 
-        residues = list(restraints.keys())
-        total = len(residues)
+        total = len(restraints)
         satisfied = 0
-        for residue in residues:
+        for residue in restraints:
             intersection = set(restraints[residue]) & interface
             if len(intersection) > 0:
                 satisfied += 1
@@ -49,7 +48,7 @@ class ModelAdapter(object):
         self.receptor_model = self._get_docking_model(receptor, receptor_restraints)
         self.ligand_model = self._get_docking_model(ligand, ligand_restraints)
 
-    def _get_docking_model(self, protein, restraints):
+    def _get_docking_model(self, molecule, restraints):
         """Complex -> DockingModel interface"""
         raise NotImplementedError()
 

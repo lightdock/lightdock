@@ -101,10 +101,8 @@ class Coordinates(object):
     def __repr__(self):
         """Coordinate representation"""
         # Path for equivalent representation from Python 2.7
-        coord = ["{:.12g}".format(f) for f in self._values]
-        return "(%s)" % ", ".join(
-            ["{}.0".format(f) if "." not in f else f for f in coord]
-        )
+        coord = (f"{f:.12g}" for f in self._values)
+        return "(%s)" % ", ".join(f"{f}.0" if "." not in f else f for f in coord)
 
     def __len__(self):
         return self.dimension

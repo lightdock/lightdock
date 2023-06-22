@@ -42,7 +42,7 @@ class CPyDockModel(DockingModel):
         n_modes=None,
     ):
         super(CPyDockModel, self).__init__(
-            objects, coordinates, restraints, reference_points
+            objects, coordinates, restraints, reference_points=reference_points
         )
         self.charges = charges
         self.vdw_energy = vdw_energy
@@ -66,7 +66,7 @@ class CPyDockModel(DockingModel):
             self.des_radii,
             self.sasa,
             self.hydrogens,
-            reference_points=self.reference_points.copy(),
+            reference_points=self.reference_points.clone(),
         )
 
 
