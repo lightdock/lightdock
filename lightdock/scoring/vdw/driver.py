@@ -28,7 +28,7 @@ class VdWModel(DockingModel):
         n_modes=None,
     ):
         super(VdWModel, self).__init__(
-            objects, coordinates, restraints, reference_points
+            objects, coordinates, restraints, reference_points=reference_points
         )
         self.vdw_energy = vdw_energy
         self.vdw_radii = vdw_radii
@@ -42,7 +42,7 @@ class VdWModel(DockingModel):
             self.restraints,
             self.vdw_energy,
             self.vdw_radii,
-            reference_points=self.reference_points.copy(),
+            reference_points=self.reference_points.clone(),
         )
 
 
@@ -115,7 +115,6 @@ class VdW(ScoringFunction):
             ligand.vdw_energy,
             receptor.vdw_radii,
             ligand.vdw_radii,
-            DEFAULT_CONTACT_RESTRAINTS_CUTOFF,
         )
         energy = vdw_energy * -1.0
         perc_receptor_restraints = ScoringFunction.restraints_satisfied(

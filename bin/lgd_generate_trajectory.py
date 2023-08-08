@@ -17,16 +17,10 @@ from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.pdbutil.PDBIO import parse_complex_from_file, write_pdb_to_file
 from lightdock.structure.complex import Complex
 from lightdock.prep.simulation import get_setup_from_file
+from lightdock.util.parser import valid_file
 
 
 log = LoggingManager.get_logger("lgd_generate_trajectory")
-
-
-def valid_file(file_name):
-    """Checks if it is a valid file"""
-    if not os.path.exists(file_name):
-        raise argparse.ArgumentTypeError("The file does not exist")
-    return file_name
 
 
 def parse_command_line():

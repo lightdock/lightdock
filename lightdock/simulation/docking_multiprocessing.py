@@ -87,11 +87,10 @@ def set_scoring_function(parser, receptor, ligand):
     if parser.args.scoring_function and os.path.exists(parser.args.scoring_function):
         # Multiple scoring functions found
         functions = ScoringConfiguration.parse_file(parser.args.scoring_function)
+    elif parser.args.scoring_function:
+        functions = {parser.args.scoring_function: "1.0"}
     else:
-        if parser.args.scoring_function:
-            functions = {parser.args.scoring_function: "1.0"}
-        else:
-            functions = {DEFAULT_SCORING_FUNCTION: "1.0"}
+        functions = {DEFAULT_SCORING_FUNCTION: "1.0"}
 
     for scoring_function, weight in functions.items():
         log.info("Loading scoring function...")

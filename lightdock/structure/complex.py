@@ -51,7 +51,7 @@ class Complex(object):
             ]
         else:
             self.num_structures = 1
-            self.structure_file_names = [structure_file_name]
+            self.structure_file_names = [str(structure_file_name)]
             self.atom_coordinates = [
                 SpacePoints([[atom.x, atom.y, atom.z] for atom in self.atoms])
             ]
@@ -187,8 +187,8 @@ class Complex(object):
         for coordinates in self.atom_coordinates:
             yield coordinates
 
-    def __len__(self):
-        return self.atom_coordinates.shape[0]
+    def __len__(self) -> int:
+        return self.atom_coordinates[0].shape()[0]
 
     def representative(self, is_membrane=False):
         coordinates = self.atom_coordinates[self.representative_id]

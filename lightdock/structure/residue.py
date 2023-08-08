@@ -111,13 +111,12 @@ class Residue(object):
 
     def is_standard(self):
         """Checks if residue is standard"""
-        return self.name in list(Residue.STANDARD_TYPES.keys())
+        return self.name in Residue.STANDARD_TYPES
 
     def is_protein(self):
         """Checks if residue is protein"""
-        return self.name in list(Residue.STANDARD_TYPES.keys()) or self.name in list(
-            Residue.MODIFIED_TYPES.keys()
-        )
+        return (self.name in Residue.STANDARD_TYPES or
+                self.name in Residue.MODIFIED_TYPES)
 
     def is_nucleic(self):
         """Check if residue is Deoxyribonucleotide or Ribonucleotide"""
@@ -141,13 +140,13 @@ class Residue(object):
     def check(self):
         """Check if the residue has all the backbone and sidechain atoms, ignore dummy beads"""
         if self.is_standard():
-            backbone_correct = set([a.name for a in self.backbone]) == set(backbone)
+            backbone_correct = set(a.name for a in self.backbone) == set(backbone)
             if not backbone_correct:
                 raise BackboneError(
                     f"Incomplete backbone for residue {self.name}.{self.number}{self.insertion}"
                 )
 
-            sd_correct = set([a.name for a in self.sidechain]) == set(
+            sd_correct = set(a.name for a in self.sidechain) == set(
                 sidechain[self.name]
             )
             if not sd_correct:
@@ -156,11 +155,10 @@ class Residue(object):
                 )
 
             return True
-        else:
-            if not (self.is_dummy() or self.is_nucleic()):
-                raise ResidueNonStandardError(
-                    f"Can not check non-standard residue {self.name}.{self.number}{self.insertion}"
-                )
+        elif not (self.is_dummy() or self.is_nucleic()):
+            raise ResidueNonStandardError(
+                f"Can not check non-standard residue {self.name}.{self.number}{self.insertion}"
+            )
 
     def __eq__(self, other):
         """Compares two residues for equality."""
@@ -209,16 +207,12 @@ class Residue(object):
         return Residue(residue_name="DUM", residue_number=0, atoms=[atom])
 
     def __str__(self):
+        residue_name=self.full_name()
         if len(self.atoms):
-            representation = []
-            for atom in self.atoms:
-                representation.append(
-                    f"{self.name}.{self.number}{self.insertion}  {str(atom)}"
-                )
+            representation=(f"{residue_name}  {str(atom)}" for atom in self.atoms)
             return "\n".join(representation)
         else:
-            return f"{self.name}.{self.number}{self.insertion}"
-
+            return residue_name
 
     def full_name(self):
         """Get the full id of this residue"""

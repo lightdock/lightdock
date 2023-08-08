@@ -130,7 +130,7 @@ def calculate_anm(structure, num_nmodes, rmsd, seed, file_name):
     """Calculates ANM for representative structure"""
     original_file_name = structure.structure_file_names[structure.representative_id]
     # We have to use the parsed structure by LightDock
-    parsed_lightdock_structure = Path(original_file_name).parent / Path(
+    parsed_lightdock_structure = Path(original_file_name).parent /(
         DEFAULT_LIGHTDOCK_PREFIX % Path(original_file_name).name
     )
     modes = calculate_nmodes(parsed_lightdock_structure, num_nmodes, rmsd, seed, structure)
@@ -223,8 +223,7 @@ def calculate_starting_positions(
             log.warning(f"Folder {init_folder} already exists, skipping calculation")
 
         pattern = str(
-            Path(DEFAULT_POSITIONS_FOLDER) / Path(f"{DEFAULT_STARTING_PREFIX}*.dat")
-        )
+            Path(DEFAULT_POSITIONS_FOLDER) / f"{DEFAULT_STARTING_PREFIX}*.dat")
         starting_points_files = glob.glob(pattern)
         for starting_point_file in starting_points_files:
             if not check_starting_file(
@@ -242,7 +241,7 @@ def load_starting_positions(
 ):
     """Gets the list of starting positions of this simulation"""
     pattern = str(
-        Path(DEFAULT_POSITIONS_FOLDER) / Path(f"{DEFAULT_STARTING_PREFIX}*.dat")
+        Path(DEFAULT_POSITIONS_FOLDER) / f"{DEFAULT_STARTING_PREFIX}*.dat"
     )
     starting_points_files = sorted(glob.glob(pattern))
     if len(starting_points_files) != swarms:
@@ -250,9 +249,8 @@ def load_starting_positions(
             "The number of initial positions files does not correspond with the number of swarms"
         )
     for swarm_id in range(len(starting_points_files)):
-        starting_point_file = Path(DEFAULT_POSITIONS_FOLDER) / Path(
-            f"{DEFAULT_STARTING_PREFIX}_{swarm_id}.dat"
-        )
+        starting_point_file = Path(DEFAULT_POSITIONS_FOLDER) / f"{DEFAULT_STARTING_PREFIX}_{swarm_id}.dat"
+
         if not check_starting_file(
             starting_point_file, glowworms, use_anm, anm_rec, anm_lig
         ):
@@ -289,7 +287,7 @@ def create_simulation_info_file(args, path=".", file_name=DEFAULT_LIGHTDOCK_INFO
     """Creates a simulation file from which recover from in a new simulation"""
     # Create the simulation info file. If it exists, includes a number
     # in the extension to avoid collision
-    output_file_name = Path(path) / Path(file_name)
+    output_file_name = Path(path) / file_name
     if output_file_name.is_file():
         original_file_name = output_file_name
         i = 1
@@ -321,8 +319,8 @@ def get_default_box(use_anm, anm_rec, anm_lig):
         Boundary(-MAX_ROTATION, MAX_ROTATION),
     ]
     if use_anm:
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in range(anm_rec)])
-        boundaries.extend([Boundary(MIN_EXTENT, MAX_EXTENT) for _ in range(anm_lig)])
+        boundaries.extend(Boundary(MIN_EXTENT, MAX_EXTENT) for _ in range(anm_rec))
+        boundaries.extend(Boundary(MIN_EXTENT, MAX_EXTENT) for _ in range(anm_lig))
 
     return BoundingBox(boundaries)
 
@@ -330,9 +328,9 @@ def get_default_box(use_anm, anm_rec, anm_lig):
 def parse_restraints_file(restraints_file_name):
     """Parse a restraints file, returns a dictionary for receptor and ligand"""
     with open(restraints_file_name) as input_restraints:
-        raw_restraints = [
+        raw_restraints = (
             line.rstrip(os.linesep) for line in input_restraints.readlines()
-        ]
+        )
         restraints = {
             "receptor": {"active": [], "passive": [], "blocked": []},
             "ligand": {"active": [], "passive": [], "blocked": []},
@@ -387,19 +385,18 @@ def parse_restraints_file(restraints_file_name):
                                 )
                             else:
                                 pass
-                    else:
-                        if (
-                            parsed_restraint not in restraints["ligand"]["active"]
-                            and parsed_restraint not in restraints["ligand"]["passive"]
+                    elif (
+                        parsed_restraint not in restraints["ligand"]["active"]
+                        and parsed_restraint not in restraints["ligand"]["passive"]
                         ):
-                            if active:
-                                restraints["ligand"]["active"].append(parsed_restraint)
-                            elif passive:
-                                restraints["ligand"]["passive"].append(parsed_restraint)
-                            elif blocked:
-                                restraints["ligand"]["blocked"].append(parsed_restraint)
-                            else:
-                                pass
+                        if active:
+                            restraints["ligand"]["active"].append(parsed_restraint)
+                        elif passive:
+                            restraints["ligand"]["passive"].append(parsed_restraint)
+                        elif blocked:
+                            restraints["ligand"]["blocked"].append(parsed_restraint)
+                        else:
+                            pass
                 except (AttributeError, IndexError):
                     log.warning(f"Ignoring malformed restraint {restraint}")
 
