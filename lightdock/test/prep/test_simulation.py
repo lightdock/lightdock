@@ -1,10 +1,10 @@
 """Tests for the simulation module"""
 
+import pytest
 import os
 import shutil
 from pathlib import Path
 from glob import glob
-from nose.tools import raises
 from lightdock.error.lightdock_errors import LightDockError
 from lightdock.prep.simulation import (
     parse_restraints_file,
@@ -27,23 +27,9 @@ from lightdock.test.support import compare_two_files
 
 
 class TestParsingRestraintsFile:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_parsing_restraints"
         self.golden_data_path = self.path / "golden_data"
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_simple_restraints_file(self):
         input_file = self.golden_data_path / "rst_1.lst"
@@ -95,23 +81,9 @@ class TestParsingRestraintsFile:
 
 
 class TestRestraints:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_restraints"
         self.golden_data_path = self.path / "golden_data"
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_get_restraints(self):
         input_file = self.golden_data_path / "2UUY_lig.pdb"
@@ -129,36 +101,22 @@ class TestRestraints:
             residues["passive"][0].name == "GLY" and residues["passive"][0].number == 75
         )
 
-    @raises(LightDockError)
     def test_get_restraints_with_error(self):
-        input_file = self.golden_data_path / "2UUY_lig.pdb"
-        _, _, chains = parse_complex_from_file(input_file)
-        structure = Complex(chains)
-        restraints = {"active": ["B.VAL.21"], "passive": ["B.GLY.75"], "blocked": []}
+        with pytest.raises(LightDockError):
+            input_file = self.golden_data_path / "2UUY_lig.pdb"
+            _, _, chains = parse_complex_from_file(input_file)
+            structure = Complex(chains)
+            restraints = {"active": ["B.VAL.21"], "passive": ["B.GLY.75"], "blocked": []}
 
-        residues = get_restraints(structure, restraints)
+            residues = get_restraints(structure, restraints)
 
-        assert residues is not None
+            assert residues is not None
 
 
 class TestSimulation:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_simulation"
         self.golden_data_path = self.path / "golden_data"
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_bounding_box(self):
         box = get_default_box(use_anm=False, anm_rec=0, anm_lig=0)
@@ -204,14 +162,14 @@ class TestSimulation:
 
         assert read == expected
 
-    def test_create_setup_file(self):
+    def test_create_setup_file(self, tmp_path):
         shutil.copyfile(
-            self.golden_data_path / "2UUY_rec.pdb", self.test_path / "2UUY_rec.pdb"
+            self.golden_data_path / "2UUY_rec.pdb", tmp_path / "2UUY_rec.pdb"
         )
         shutil.copyfile(
-            self.golden_data_path / "2UUY_lig.pdb", self.test_path / "2UUY_lig.pdb"
+            self.golden_data_path / "2UUY_lig.pdb", tmp_path / "2UUY_lig.pdb"
         )
-        os.chdir(self.test_path)
+        os.chdir(tmp_path)
         parser = SetupCommandLineParser(
             ["2UUY_rec.pdb", "2UUY_lig.pdb", "-s 5", "-g 10", "-anm", "--noxt"]
         )
@@ -219,28 +177,28 @@ class TestSimulation:
         create_setup_file(parser.args)
 
         assert compare_two_files(
-            self.test_path / "setup.json", self.golden_data_path / "setup.json",
+            tmp_path / "setup.json", self.golden_data_path / "setup.json",
             ignore=["setup_version", "start_time"]
         )
 
-    def test_prepare_results_environment(self):
-        os.chdir(self.test_path)
+    def test_prepare_results_environment(self, tmp_path):
+        os.chdir(tmp_path)
 
         prepare_results_environment(20)
 
-        directories = glob(str(self.test_path / "swarm_*/"))
+        directories = glob(str(tmp_path / "swarm_*/"))
 
         assert len(directories) == 20
 
-    @raises(LightDockError)
-    def test_prepare_results_environment_with_existing_data(self):
-        os.chdir(self.test_path)
+    def test_prepare_results_environment_with_existing_data(self, tmp_path):
+        os.chdir(tmp_path)
 
-        prepare_results_environment(20)
+        with pytest.raises(LightDockError):
+            prepare_results_environment(20)
 
-        prepare_results_environment()
+            prepare_results_environment()
 
-        assert False
+            assert False
 
     def test_get_pdb_files(self):
         os.chdir(self.golden_data_path)
@@ -288,31 +246,31 @@ class TestSimulation:
             "init/initial_positions_1.dat",
         ]
 
-    @raises(LightDockError)
     def test_load_starting_positions_wrong_num_swarms(self):
-        working_path = self.golden_data_path / "load_starting_positions" / "ok"
-        os.chdir(working_path)
+        with pytest.raises(LightDockError):
+            working_path = self.golden_data_path / "load_starting_positions" / "ok"
+            os.chdir(working_path)
 
-        swarms = 5
-        glowworms = 10
-        use_anm = False
-        _ = load_starting_positions(swarms, glowworms, use_anm)
+            swarms = 5
+            glowworms = 10
+            use_anm = False
+            _ = load_starting_positions(swarms, glowworms, use_anm)
 
-        assert False
+            assert False
 
-    @raises(LightDockError)
     def test_load_starting_positions_wrong_dat_files(self):
-        working_path = self.golden_data_path / "load_starting_positions" / "wrong_dat"
-        os.chdir(working_path)
+        with pytest.raises(LightDockError):
+            working_path = self.golden_data_path / "load_starting_positions" / "wrong_dat"
+            os.chdir(working_path)
 
-        swarms = 2
-        glowworms = 10
-        use_anm = False
-        _ = load_starting_positions(swarms, glowworms, use_anm)
+            swarms = 2
+            glowworms = 10
+            use_anm = False
+            _ = load_starting_positions(swarms, glowworms, use_anm)
 
-        assert False
+            assert False
 
-    def test_create_simulation_info_file(self):
+    def test_create_simulation_info_file(self, tmp_path):
         setup = get_setup_from_file(
             self.golden_data_path / "create_simulation_info_file" / "setup.json"
         )
@@ -324,11 +282,11 @@ class TestSimulation:
         for k, v in setup.items():
             setattr(args, k, v)
 
-        file_name = create_simulation_info_file(args, path=self.test_path)
+        file_name = create_simulation_info_file(args, path=tmp_path)
 
         assert Path(file_name).name == "lightdock.info"
 
-        file_name = create_simulation_info_file(args, path=self.test_path)
+        file_name = create_simulation_info_file(args, path=tmp_path)
 
         assert Path(file_name).name == "lightdock.info.1"
 
@@ -350,16 +308,16 @@ class TestSimulation:
         assert not check_starting_file(file_name, glowworms, use_anm, anm_rec, anm_lig)
 
 
-    def test_simulation_parser(self):
+    def test_simulation_parser(self, tmp_path):
         shutil.copyfile(
-            self.golden_data_path / "setup.json", self.test_path / "setup.json"
+            self.golden_data_path / "setup.json", tmp_path / "setup.json"
         )
 
-        os.chdir(self.test_path)
+        os.chdir(tmp_path)
         parser = CommandLineParser(
             ["setup.json", "10", "-c 1", "-l 0", "-s fastdfire"]
         )
 
-        file_name = create_simulation_info_file(parser.args, path=self.test_path)
+        file_name = create_simulation_info_file(parser.args, path=tmp_path)
 
         assert Path(file_name).name == "lightdock.info"

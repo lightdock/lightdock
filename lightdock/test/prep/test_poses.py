@@ -1,7 +1,5 @@
 """Tests for poses related module"""
 
-import os
-import shutil
 import filecmp
 from pathlib import Path
 import numpy as np
@@ -28,23 +26,9 @@ from lightdock.constants import STARTING_POINTS_SEED
 
 
 class TestPoses:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_poses"
         self.golden_data_path = self.path / "golden_data"
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_normalize_vector1(self):
         v = np.array([1.0, 0.0, 0.0])
@@ -512,7 +496,7 @@ class TestPoses:
         # We generate the expected poses
         assert np.allclose(expected, poses)
 
-    def test_calculate_initial_poses(self):
+    def test_calculate_initial_poses(self, tmp_path):
 
         file_name = self.golden_data_path / "3p0g" / "receptor_membrane.pdb"
         _, _, chains = parse_complex_from_file(file_name)
@@ -546,7 +530,7 @@ class TestPoses:
             rec_translation,
             lig_translation,
             surface_density,
-            dest_folder=self.test_path,
+            dest_folder=tmp_path,
             is_membrane=True,
         )
 

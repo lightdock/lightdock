@@ -1,30 +1,15 @@
 """Tests for geometry module"""
 
-import os
+import pytest
 from pathlib import Path
-import shutil
 import filecmp
 from lightdock.prep.geometry import sphere, axis, create_bild_file
 
 
 class TestGeometry:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_geometry"
         self.golden_data_path = self.path / "golden_data"
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_sphere(self):
         center = [5.0, 5.0, 5.0]
@@ -50,14 +35,14 @@ class TestGeometry:
 
         assert expected == axis(pose)
 
-    def test_create_bild_file(self):
+    def test_create_bild_file(self, tmp_path):
         poses = [
             [0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 0.5],
             [2.0, 2.0, 2.0, 0.0, 0.7071, 0.7071, 0.0],
             [-2.0, -2.0, -2.0, 0.0, 0.0, 0.7071, 0.7071],
         ]
 
-        generated_file = self.test_path / "test.bild"
+        generated_file = tmp_path / "test.bild"
         expected_file = self.golden_data_path / "test.bild"
 
         create_bild_file(generated_file, poses)
