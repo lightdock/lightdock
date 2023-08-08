@@ -1,7 +1,7 @@
 """Tests for errors module"""
 
+import pytest
 from lightdock.error.lightdock_errors import LightDockError, GSOError
-from nose.tools import raises
 
 
 class TestLightDockError:
@@ -10,13 +10,13 @@ class TestLightDockError:
 
         assert str(e) == "[LightDockError] Testing"
 
-    @raises(LightDockError)
     def test_raising_lightdock_exception(self):
-        raise LightDockError("Testing")
+        with pytest.raises(LightDockError):
+            raise LightDockError("Testing")
 
-    @raises(GSOError)
     def test_subclassing_base_exception(self):
-        e = GSOError("Testing")
+        with pytest.raises(GSOError):
+            e = GSOError("Testing")
 
-        assert str(e) == "[GSOError] Testing"
-        raise e
+            assert str(e) == "[GSOError] Testing"
+            raise e
