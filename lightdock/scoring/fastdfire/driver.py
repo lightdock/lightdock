@@ -4,8 +4,8 @@ S. Liu, C. Zhang, H. Zhou, and Y. Zhou, A physical reference state unifies the s
 potential of mean force for protein folding and binding. Proteins 56, 93-101 (2004)
 """
 
-import os
 import numpy as np
+from pathlib import Path
 from lightdock.structure.model import DockingModel
 from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.scoring.fastdfire.c.cdfire import calculate_dfire
@@ -14,9 +14,7 @@ from lightdock.error.lightdock_errors import NotSupportedInScoringError
 
 
 class DFIREPotential(object):
-    """
-    Loads DFIRE potentials information
-    """
+    """Loads DFIRE potentials information"""
 
     atoms_in_residues = {
         "ALA": ["N", "CA", "C", "O", "CB"],
@@ -37,36 +35,8 @@ class DFIREPotential(object):
         "SER": ["N", "CA", "C", "O", "CB", "OG"],
         "THR": ["N", "CA", "C", "O", "CB", "OG1", "CG2"],
         "VAL": ["N", "CA", "C", "O", "CB", "CG1", "CG2"],
-        "TRP": [
-            "N",
-            "CA",
-            "C",
-            "O",
-            "CB",
-            "CG",
-            "CD1",
-            "CD2",
-            "CE2",
-            "NE1",
-            "CE3",
-            "CZ3",
-            "CH2",
-            "CZ2",
-        ],
-        "TYR": [
-            "N",
-            "CA",
-            "C",
-            "O",
-            "CB",
-            "CG",
-            "CD1",
-            "CD2",
-            "CE1",
-            "CE2",
-            "CZ",
-            "OH",
-        ],
+        "TRP": ["N", "CA", "C", "O", "CB", "CG", "CD1", "CD2", "CE2", "NE1", "CE3", "CZ3", "CH2", "CZ2"],
+        "TYR": ["N", "CA", "C", "O", "CB", "CG", "CD1", "CD2", "CE1", "CE2", "CZ", "OH"],
         "MMB": ["BJ"],
     }
 
@@ -322,14 +292,36 @@ class DFIREPotential(object):
     ]
 
     # Atom type and residue translation matrix
-    atom_res_trans = np.matrix(
-        "74,  75,  76,  77,  78,   0,   0,   0,   0,   0,   0,   0,   0,   0; 0,   1,   2,   3,   4,   5,   0,   0,   0,   0,   0,   0,   0,   0; 122, 123, 124, 125, 126, 127, 128, 129,   0,   0,   0,   0,   0,   0; 113, 114, 115, 116, 117, 118, 119, 120, 121,   0,   0,   0,   0,   0; 14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,   0,   0,   0; 79,  80,  81,  82,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0; 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,   0,   0,   0,   0; 25,  26,  27,  28,  29,  30,  31,  32,   0,   0,   0,   0,   0,   0; 151, 152, 153, 154, 155, 156, 157, 158, 159,   0,   0,   0,   0,   0; 33,  34,  35,  36,  37,  38,  39,  40,   0,   0,   0,   0,   0,   0; 6,   7,   8,   9,  10,  11,  12,  13,   0,   0,   0,   0,   0,   0; 105, 106, 107, 108, 109, 110, 111, 112,   0,   0,   0,   0,   0,   0; 160, 161, 162, 163, 164, 165, 166,   0,   0,   0,   0,   0,   0,   0; 96,  97,  98,  99, 100, 101, 102, 103, 104,   0,   0,   0,   0,   0; 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150,   0,   0,   0; 90,  91,  92,  93,  94,  95,   0,   0,   0,   0,   0,   0,   0,   0; 83,  84,  85,  86,  87,  88,  89,   0,   0,   0,   0,   0,   0,   0; 41,  42,  43,  44,  45,  46,  47,   0,   0,   0,   0,   0,   0,   0; 48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61; 62,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,   0,   0; 167, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+    atom_res_trans = np.array(
+        [
+            [74, 75, 76, 77, 78, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0],
+            [122, 123, 124, 125, 126, 127, 128, 129, 0, 0, 0, 0, 0, 0],
+            [113, 114, 115, 116, 117, 118, 119, 120, 121, 0, 0, 0, 0, 0],
+            [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 0, 0, 0],
+            [79, 80, 81, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 0, 0, 0, 0],
+            [25, 26, 27, 28, 29, 30, 31, 32, 0, 0, 0, 0, 0, 0],
+            [151, 152, 153, 154, 155, 156, 157, 158, 159, 0, 0, 0, 0, 0],
+            [33, 34, 35, 36, 37, 38, 39, 40, 0, 0, 0, 0, 0, 0],
+            [6, 7, 8, 9, 10, 11, 12, 13, 0, 0, 0, 0, 0, 0],
+            [105, 106, 107, 108, 109, 110, 111, 112, 0, 0, 0, 0, 0, 0],
+            [160, 161, 162, 163, 164, 165, 166, 0, 0, 0, 0, 0, 0, 0],
+            [96, 97, 98, 99, 100, 101, 102, 103, 104, 0, 0, 0, 0, 0],
+            [140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 0, 0, 0],
+            [90, 91, 92, 93, 94, 95, 0, 0, 0, 0, 0, 0, 0, 0],
+            [83, 84, 85, 86, 87, 88, 89, 0, 0, 0, 0, 0, 0, 0],
+            [41, 42, 43, 44, 45, 46, 47, 0, 0, 0, 0, 0, 0, 0],
+            [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61],
+            [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 0, 0],
+            [167, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
     )
 
     def __init__(self):
-        data_path = os.path.dirname(os.path.realpath(__file__)) + "/data/"
+        data_path = Path(__file__).absolute().parent / "data"
 
-        self.dfire_energy = self._read_potentials(data_path + "DCparams")
+        self.dfire_energy = self._read_potentials(data_path / "DCparams")
 
     def _read_potentials(self, data_file_name):
         """Reads DFIRE data potentials"""
