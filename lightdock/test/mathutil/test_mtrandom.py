@@ -1,11 +1,11 @@
 """Tests for MTGenerator class"""
 
+import pytest
 from lightdock.mathutil.lrandom import MTGenerator
-from nose.tools import assert_almost_equals
 
 
 class TestMTGenerator:
-    def __init__(self):
+    def setup_class(self):
         self.generated = [
             0.376962302390386,
             0.9267885077263207,
@@ -62,4 +62,4 @@ class TestMTGenerator:
     def test_get_random_number(self):
         gen = MTGenerator(25)
         for i in range(50):
-            assert_almost_equals(self.generated[i], gen())
+            assert self.generated[i] == pytest.approx(gen())
