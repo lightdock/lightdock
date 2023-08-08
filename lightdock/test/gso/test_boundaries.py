@@ -5,7 +5,7 @@ from lightdock.gso.boundaries import BoundingBox
 
 
 class TestBoundingBox:
-    def __init__(self):
+    def setup_class(self):
         self.dimension1 = Boundary(0, 1)
         self.dimension2 = Boundary(0, 5)
 

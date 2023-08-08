@@ -1,7 +1,6 @@
 """Tests for GSOBuilder class using J1 function"""
 
-import os
-import shutil
+import pytest
 import filecmp
 from pathlib import Path
 from lightdock.gso.parameters import GSOParameters
@@ -15,9 +14,8 @@ from lightdock.scoring.mj3h.driver import MJ3h, MJ3hAdapter
 
 
 class TestLightDockGSOBuilder:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_lightdockbuilder"
         self.golden_data_path = self.path / "golden_data"
         self.gso_parameters = GSOParameters()
 
@@ -34,20 +32,7 @@ class TestLightDockGSOBuilder:
         )
         self.random_number_generator = MTGenerator(324324)
 
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-
-    def test_LightDockGSOBuilder_using_FromFileInitializer(self):
+    def test_LightDockGSOBuilder_using_FromFileInitializer(self, tmp_path):
         builder = LightdockGSOBuilder()
         number_of_glowworms = 5
         atoms, _, chains = parse_complex_from_file(
@@ -78,8 +63,8 @@ class TestLightDockGSOBuilder:
 
         assert gso.swarm.get_size() == 5
 
-        gso.report(self.test_path / "report.out")
+        gso.report(tmp_path / "report.out")
         assert filecmp.cmp(
             self.golden_data_path / "report_lightdockbuilder.out",
-            self.test_path / "report.out",
+            tmp_path / "report.out",
         )

@@ -1,12 +1,12 @@
 """Tests for J1 function"""
 
+import pytest
 from lightdock.gso.searchspace.benchmark_ofunctions import J1
 from lightdock.gso.coordinates import Coordinates
-from nose.tools import assert_almost_equals
 
 
 class TestJ1:
-    def __init__(self):
+    def setup_class(self):
         self.expected_values = [
             [
                 6.671280296717448e-05,
@@ -49,7 +49,4 @@ class TestJ1:
         j1 = J1()
         for i in range(5):
             for j in range(5):
-                assert_almost_equals(
-                    self.expected_values[i][j],
-                    j1(Coordinates([-3.0 + j * 1.5, -3.0 + i * 1.5])),
-                )
+                assert self.expected_values[i][j] == pytest.approx(j1(Coordinates([-3.0 + j * 1.5, -3.0 + i * 1.5])))

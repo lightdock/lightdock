@@ -8,7 +8,7 @@ from lightdock.gso.swarm import Swarm
 
 
 class TestSwarmInJ1:
-    def __init__(self):
+    def setup_class(self):
         self.gso_parameters = GSOParameters()
         self.objective_function = J1()
         self.landscape_position1 = LandscapePosition(

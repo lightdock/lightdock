@@ -1,12 +1,12 @@
 """Tests for J5 function"""
 
-from nose.tools import assert_equals
+import pytest
 from lightdock.gso.searchspace.benchmark_ofunctions import J5
 from lightdock.gso.coordinates import Coordinates
 
 
 class TestJ5:
-    def __init__(self):
+    def setup_class(self):
         self.expected_values = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1],
@@ -29,7 +29,4 @@ class TestJ5:
         j5 = J5()
         for i in range(15):
             for j in range(15):
-                assert_equals(
-                    self.expected_values[i][j],
-                    j5(Coordinates([-6.24 + j * 0.89143, -6.24 + i * 0.89143])),
-                )
+                assert self.expected_values[i][j] == pytest.approx(j5(Coordinates([-6.24 + j * 0.89143, -6.24 + i * 0.89143])))

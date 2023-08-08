@@ -21,7 +21,7 @@ class LandscapePosition(object):
 
     def __init__(self, objective_function, coordinates, step=DEFAULT_STEP_SIZE):
         self.objective_function = objective_function
-        self.coordinates = coordinates
+        self.coordinates = coordinates.clone()
         self.step = step
 
     def evaluate_objective_function(self):
@@ -42,7 +42,7 @@ class LandscapePosition(object):
     def clone(self):
         """Creates a copy of this landscape position"""
         return LandscapePosition(
-            self.objective_function, self.coordinates.clone(), self.step
+            self.objective_function, self.coordinates, self.step
         )
 
     def __add__(self, other):

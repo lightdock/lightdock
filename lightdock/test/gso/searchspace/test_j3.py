@@ -1,12 +1,12 @@
 """Tests for J3 function"""
 
+import pytest
 from lightdock.gso.searchspace.benchmark_ofunctions import J3
 from lightdock.gso.coordinates import Coordinates
-from nose.tools import assert_almost_equals
 
 
 class TestJ3:
-    def __init__(self):
+    def setup_class(self):
         self.expected_values = [
             [
                 3.80536808724531,
@@ -49,7 +49,4 @@ class TestJ3:
         j3 = J3()
         for i in range(5):
             for j in range(5):
-                assert_almost_equals(
-                    self.expected_values[i][j],
-                    j3(Coordinates([-10.0 + j * 5.0, -10.0 + i * 5.0])),
-                )
+                assert self.expected_values[i][j] == pytest.approx(j3(Coordinates([-10.0 + j * 5.0, -10.0 + i * 5.0])))
