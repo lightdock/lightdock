@@ -2,7 +2,6 @@
 [![PyPi version](https://img.shields.io/pypi/v/lightdock.svg)](https://pypi.org/project/lightdock/)
 [![PyPi Downloads](https://img.shields.io/pypi/dm/lightdock?label=PyPI%20Downloads)](https://pypistats.org/packages/lightdock)
 [![Supported versions](https://img.shields.io/pypi/pyversions/lightdock.svg)](https://pypi.org/project/lightdock)
-[![Code Coverage](https://codecov.io/gh/lightdock/lightdock/branch/master/graph/badge.svg)](https://codecov.io/gh/lightdock/lightdock)
 [![Downloads](https://static.pepy.tech/personalized-badge/lightdock?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/lightdock)
  
 <p align="center">
