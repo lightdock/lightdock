@@ -10,11 +10,11 @@ from lightdock.structure.complex import Complex
 from lightdock.util.logger import LoggingManager
 
 
-log = LoggingManager.get_logger("diameter")
+log = LoggingManager.get_logger("lgd_calculate_diameter")
 
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(prog="calculate_diameter")
+    parser = argparse.ArgumentParser(prog="lgd_calculate_diameter")
     parser.add_argument(
         "pdb", help="PDB file for structure to calculate maximum diameter"
     )

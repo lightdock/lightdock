@@ -20,11 +20,11 @@ class TestRegressionFastDFIREShort:
         num_glowworms = 25
         steps = 5
 
-        command = f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -s {num_swarms} -anm"
+        command = f"lgd_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -s {num_swarms} -anm"
         command += ">> test_lightdock.out"
         os.system(command)
 
-        command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l 10 >> test_lightdock.out"
+        command = f"lgd_run.py -c 1 -s fastdfire setup.json {steps} -l 10 >> test_lightdock.out"
         os.system(command)
 
         assert filecmp.cmp(
@@ -49,12 +49,12 @@ class TestRegressionFastDFIRERestraints:
         steps = 5
 
         command = (
-            f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm "
+            f"lgd_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm "
         )
         command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 
-        command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l 0 >> test_lightdock.out"
+        command = f"lgd_run.py -c 1 -s fastdfire setup.json {steps} -l 0 >> test_lightdock.out"
         os.system(command)
 
         assert filecmp.cmp(
@@ -77,10 +77,10 @@ class TestRegressionFastDFIRELong:
         num_glowworms = 50
         steps = 40
 
-        command = f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} >> test_lightdock.out"
+        command = f"lgd_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} >> test_lightdock.out"
         os.system(command)
 
-        command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l 100 >> test_lightdock.out"
+        command = f"lgd_run.py -c 1 -s fastdfire setup.json {steps} -l 100 >> test_lightdock.out"
         os.system(command)
 
         assert filecmp.cmp(
@@ -110,10 +110,10 @@ class TestRegressionFastDFIRELocalMinimization:
         steps = 10
         swarm = 0
 
-        command = "lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb --noh --now --noxt -anm >> test_lightdock.out"
+        command = "lgd_setup.py 2UUY_rec.pdb 2UUY_lig.pdb --noh --now --noxt -anm >> test_lightdock.out"
         os.system(command)
 
-        command = f"lightdock3.py -c 1 -s fastdfire setup.json {steps} -l {swarm} -min >> test_lightdock.out"
+        command = f"lgd_run.py -c 1 -s fastdfire setup.json {steps} -l {swarm} -min >> test_lightdock.out"
         os.system(command)
 
         assert filecmp.cmp(

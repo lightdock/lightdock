@@ -9,11 +9,11 @@ from lightdock.structure.complex import Complex
 from lightdock.util.logger import LoggingManager
 
 
-log = LoggingManager.get_logger("calculate_scoring")
+log = LoggingManager.get_logger("lgd_calculate_scoring")
 
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(prog="calculate_scoring")
+    parser = argparse.ArgumentParser(prog="lgd_calculate_scoring")
     parser.add_argument("scoring_function", help="scoring function")
     parser.add_argument("receptor", help="PDB receptor")
     parser.add_argument("ligand", help="PDB ligand")

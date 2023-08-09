@@ -33,7 +33,7 @@ from lightdock.structure.nm import read_nmodes
 from lightdock.error.lightdock_errors import NotSupportedInScoringError, SwarmNumError
 
 
-log = LoggingManager.get_logger("lightdock")
+log = LoggingManager.get_logger("lgd_run")
 
 
 def set_gso(

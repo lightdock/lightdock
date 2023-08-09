@@ -20,13 +20,13 @@ class TestRegressionDNAShort:
         steps = 10
 
         command = (
-            f"lightdock3_setup.py 1DIZ_rec.pdb 1DIZ_lig.pdb -g {num_glowworms} -anm"
+            f"lgd_setup.py 1DIZ_rec.pdb 1DIZ_lig.pdb -g {num_glowworms} -anm"
         )
         command += ">> test_lightdock.out"
         os.system(command)
 
         command = (
-            f"lightdock3.py -c 1 -s dna setup.json {steps} -l 0 >> test_lightdock.out"
+            f"lgd_run.py -c 1 -s dna setup.json {steps} -l 0 >> test_lightdock.out"
         )
         os.system(command)
 
@@ -54,12 +54,12 @@ class TestRegressionDNARestraints:
         num_glowworms = 50
         steps = 30
 
-        command = f"lightdock3_setup.py 1DIZ_rec.pdb 1DIZ_lig.pdb -g {num_glowworms} -anm "
+        command = f"lgd_setup.py 1DIZ_rec.pdb 1DIZ_lig.pdb -g {num_glowworms} -anm "
         command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 
         command = (
-            f"lightdock3.py -c 1 -s dna setup.json {steps} -l 0 >> test_lightdock.out"
+            f"lgd_run.py -c 1 -s dna setup.json {steps} -l 0 >> test_lightdock.out"
         )
         os.system(command)
 

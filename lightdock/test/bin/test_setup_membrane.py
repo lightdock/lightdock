@@ -19,7 +19,7 @@ class TestSetupWithMembrane:
         )
         shutil.copy(self.golden_data_path / "3x29_ligand.pdb", tmp_path)
 
-        command = "lightdock3_setup.py 3x29_receptor_membrane.pdb 3x29_ligand.pdb "
+        command = "lgd_setup.py 3x29_receptor_membrane.pdb 3x29_ligand.pdb "
         command += "--noxt --noh -membrane -anm >> test_lightdock.out"
         os.system(command)
 
@@ -52,7 +52,7 @@ class TestSetupWithMembraneANM:
         num_swarms = 400
         num_glowworms = 50
 
-        command = f"lightdock3_setup.py 3x29_receptor_membrane.pdb 3x29_ligand.pdb -g {num_glowworms} "
+        command = f"lgd_setup.py 3x29_receptor_membrane.pdb 3x29_ligand.pdb -g {num_glowworms} "
         command += f" -s {num_swarms} --noxt --noh -membrane >> test_lightdock.out"
         os.system(command)
 
@@ -102,7 +102,7 @@ class TestSetupWithMembraneAndRestraints:
         num_swarms = 400
         num_glowworms = 50
 
-        command = f"lightdock3_setup.py 3x29_receptor_membrane.pdb 3x29_ligand.pdb -g {num_glowworms} "
+        command = f"lgd_setup.py 3x29_receptor_membrane.pdb 3x29_ligand.pdb -g {num_glowworms} "
         command += f" -s {num_swarms} --noxt --noh -membrane -rst restraints.list >> test_lightdock.out"
         os.system(command)
 

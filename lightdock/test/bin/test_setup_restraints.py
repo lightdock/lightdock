@@ -20,7 +20,7 @@ class TestSetupWithRestraints:
 
         num_glowworms = 100
 
-        command = f"lightdock3_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm --noxt --noh --now "
+        command = f"lgd_setup.py 2UUY_rec.pdb 2UUY_lig.pdb -g {num_glowworms} -anm --noxt --noh --now "
         command += "-rst restraints.list -sp >> test_lightdock.out"
         os.system(command)
 
@@ -65,7 +65,7 @@ class TestSetupWithRestraintsAndInsertCodes:
         shutil.copy(self.golden_data_path / "ligand.pdb", tmp_path)
         shutil.copy(self.golden_data_path / "restraints.list", tmp_path)
 
-        command = "lightdock3_setup.py receptor.pdb ligand.pdb --noh --noxt --now -anm "
+        command = "lgd_setup.py receptor.pdb ligand.pdb --noh --noxt --now -anm "
         command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 
@@ -102,7 +102,7 @@ class TestSetupWithRestraintsAndFlipMode:
         shutil.copy(self.golden_data_path / "3V6Z_B.pdb", tmp_path)
         shutil.copy(self.golden_data_path / "restraints.list", tmp_path)
 
-        command = "lightdock3_setup.py 3V6Z_A.pdb 3V6Z_B.pdb --noh --noxt -anm -flip "
+        command = "lgd_setup.py 3V6Z_A.pdb 3V6Z_B.pdb --noh --noxt -anm -flip "
         command += "-rst restraints.list >> test_lightdock.out"
         os.system(command)
 

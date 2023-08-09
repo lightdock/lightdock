@@ -22,7 +22,7 @@ from lightdock.error.lightdock_errors import SetupError
 from lightdock.util.logger import LoggingManager
 
 
-log = LoggingManager.get_logger("lightdock3_setup")
+log = LoggingManager.get_logger("lgd_setup")
 
 freesasa.setVerbosity(freesasa.silent)
 
