@@ -11,7 +11,7 @@ class TestRegressionPyDockRestraints:
         self.path = Path(__file__).absolute().parent
         self.golden_data_path = self.path / "golden_data" / "regression_pydock_restraints"
 
-    def test_lightdock_2uuy_20_steps_25_glowworms_rst(self, tmp_path):
+    def test_lightdock_1ppe_20_steps_25_glowworms_rst(self, tmp_path):
         os.chdir(tmp_path)
         shutil.copy(self.golden_data_path / "1PPE_rec.pdb", tmp_path)
         shutil.copy(self.golden_data_path / "1PPE_lig.pdb", tmp_path)
@@ -46,7 +46,7 @@ class TestRegressionCPyDockLong:
         self.path = Path(__file__).absolute().parent
         self.golden_data_path = self.path / "golden_data" / "regression_pydock_long"
 
-    def test_lightdock_2uuy_40_steps_50_glowworms(self, tmp_path):
+    def test_lightdock_1ppe_40_steps_50_glowworms(self, tmp_path):
         os.chdir(tmp_path)
         shutil.copy(self.golden_data_path / "1PPE_rec.pdb", tmp_path)
         shutil.copy(self.golden_data_path / "1PPE_lig.pdb", tmp_path)

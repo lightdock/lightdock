@@ -56,7 +56,7 @@ def calculate_nmodes(pdb_file_name, n_modes, rmsd, seed, molecule):
     ):
         if lightdock_atom.name != prody_atom.getName():
             raise NormalModesCalculationError(
-                "Atoms differ: %s - %s" % (str(lightdock_atom), str(prody_atom))
+                f"Atoms differ (LightDock - ProDy): {lightdock_atom.chain_id}.{lightdock_atom.residue_name}.{lightdock_atom.residue_number} {lightdock_atom.name} - {prody_atom}"
             )
 
     molecule_anm_ext, molecule_all = extendModel(
