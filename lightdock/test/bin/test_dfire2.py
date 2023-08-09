@@ -4,26 +4,18 @@ import shutil
 import os
 import filecmp
 from pathlib import Path
-from lightdock.test.bin.regression import RegressionTest
 
 
-class TestRegressionDFIRE2Short(RegressionTest):
-    def __init__(self):
-        super().__init__()
+class TestRegressionDFIRE2Short:
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_dfire2_short"
         self.golden_data_path = self.path / "golden_data" / "regression_dfire2_short"
 
-    def setup(self):
-        self.ini_path()
-        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
-        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
+    def test_lightdock_2uuy_5_steps_25_glowworms_100_swarms(self, tmp_path):
+        os.chdir(tmp_path)
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", tmp_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", tmp_path)
 
-    def teardown(self):
-        self.clean_path()
-
-    def test_lightdock_2uuy_5_steps_25_glowworms_100_swarms(self):
-        os.chdir(self.test_path)
         num_swarms = 100
         num_glowworms = 25
         steps = 5
@@ -37,31 +29,22 @@ class TestRegressionDFIRE2Short(RegressionTest):
 
         assert filecmp.cmp(
             self.golden_data_path / "swarm_10" / "gso_0.out",
-            self.test_path / "swarm_10" / "gso_0.out",
+            tmp_path / "swarm_10" / "gso_0.out",
         )
-        assert (self.test_path / "swarm_10" / "gso_5.out").exists()
+        assert (tmp_path / "swarm_10" / "gso_5.out").exists()
 
 
-class TestRegressionDFIRE2Restraints(RegressionTest):
-    def __init__(self):
-        super().__init__()
+class TestRegressionDFIRE2Restraints:
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_dfire2_restraints"
-        self.golden_data_path = (
-            self.path / "golden_data" / "regression_dfire2_restraints"
-        )
+        self.golden_data_path = self.path / "golden_data" / "regression_dfire2_restraints"
 
-    def setup(self):
-        self.ini_path()
-        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
-        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
-        shutil.copy(self.golden_data_path / "restraints.list", self.test_path)
+    def test_lightdock_2uuy_5_steps_25_glowworms_rst(self, tmp_path):
+        os.chdir(tmp_path)
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", tmp_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", tmp_path)
+        shutil.copy(self.golden_data_path / "restraints.list", tmp_path)
 
-    def teardown(self):
-        self.clean_path()
-
-    def test_lightdock_2uuy_5_steps_25_glowworms_rst(self):
-        os.chdir(self.test_path)
         num_glowworms = 25
         steps = 5
 
@@ -76,28 +59,21 @@ class TestRegressionDFIRE2Restraints(RegressionTest):
 
         assert filecmp.cmp(
             self.golden_data_path / "swarm_0" / "gso_0.out",
-            self.test_path / "swarm_0" / "gso_0.out",
+            tmp_path / "swarm_0" / "gso_0.out",
         )
-        assert (self.test_path / "swarm_0" / "gso_5.out").exists()
+        assert (tmp_path / "swarm_0" / "gso_5.out").exists()
 
 
-class TestRegressionDFIRE2Long(RegressionTest):
-    def __init__(self):
-        super().__init__()
+class TestRegressionDFIRE2Long:
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_dfire2_long"
         self.golden_data_path = self.path / "golden_data" / "regression_dfire2_long"
 
-    def setup(self):
-        self.ini_path()
-        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", self.test_path)
-        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", self.test_path)
+    def test_lightdock_2uuy_40_steps_50_glowworms(self, tmp_path):
+        os.chdir(tmp_path)
+        shutil.copy(self.golden_data_path / "2UUY_rec.pdb", tmp_path)
+        shutil.copy(self.golden_data_path / "2UUY_lig.pdb", tmp_path)
 
-    def teardown(self):
-        self.clean_path()
-
-    def test_lightdock_2uuy_40_steps_50_glowworms(self):
-        os.chdir(self.test_path)
         num_glowworms = 50
         steps = 40
 
@@ -109,13 +85,13 @@ class TestRegressionDFIRE2Long(RegressionTest):
 
         assert filecmp.cmp(
             self.golden_data_path / "swarm_100" / "gso_0.out",
-            self.test_path / "swarm_100" / "gso_0.out",
+            tmp_path / "swarm_100" / "gso_0.out",
         )
         assert filecmp.cmp(
             self.golden_data_path / "init" / "swarm_centers.pdb",
-            self.test_path / "init" / "swarm_centers.pdb",
+            tmp_path / "init" / "swarm_centers.pdb",
         )
-        assert (self.test_path / "swarm_100" / "gso_10.out").exists()
-        assert (self.test_path / "swarm_100" / "gso_20.out").exists()
-        assert (self.test_path / "swarm_100" / "gso_30.out").exists()
-        assert (self.test_path / "swarm_100" / "gso_40.out").exists()
+        assert (tmp_path / "swarm_100" / "gso_10.out").exists()
+        assert (tmp_path / "swarm_100" / "gso_20.out").exists()
+        assert (tmp_path / "swarm_100" / "gso_30.out").exists()
+        assert (tmp_path / "swarm_100" / "gso_40.out").exists()
