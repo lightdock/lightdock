@@ -1,21 +1,7 @@
 import os
 import setuptools
 from distutils.core import Extension
-from setuptools.command.test import test as TestCommand
 from lightdock.version import CURRENT_VERSION
-
-
-# Inspired by the example at https://pytest.org/latest/goodpractises.html
-class NoseTestCommand(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import nose
-
-        nose.run_exit(argv=["nosetests"])
 
 
 with open("README.md", "r") as fh:
@@ -211,7 +197,6 @@ setuptools.setup(
         "bin/lgd_setup.py",
         "bin/lgd_top.py",
     ],
-    cmdclass={"test": NoseTestCommand},
     ext_modules=exts,
     zip_safe=False,
 )
