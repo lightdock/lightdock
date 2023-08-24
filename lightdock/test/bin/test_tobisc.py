@@ -1,4 +1,4 @@
-"""Regression tests for testing TOBI scoring function"""
+"""Regression tests for testing TOBISC scoring function"""
 
 import shutil
 import os
@@ -6,10 +6,10 @@ import filecmp
 from pathlib import Path
 
 
-class TestRegressionTOBIShort:
+class TestRegressionTOBISCShort:
     def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.golden_data_path = self.path / "golden_data" / "regression_tobi_short"
+        self.golden_data_path = self.path / "golden_data" / "regression_tobisc_short"
 
     def test_lightdock_2uuy_10_steps_25_glowworms_100_swarms(self, tmp_path):
         os.chdir(tmp_path)
@@ -25,7 +25,7 @@ class TestRegressionTOBIShort:
         os.system(command)
 
         command = f"lgd_run.py -c 1 -f {self.golden_data_path / 'glowworm.conf'} "
-        command += f"-s tobi setup.json {steps} -l 0 >> test_lightdock.out"
+        command += f"-s tobisc setup.json {steps} -l 0 >> test_lightdock.out"
         os.system(command)
 
         assert filecmp.cmp(
@@ -38,10 +38,10 @@ class TestRegressionTOBIShort:
         )
 
 
-class TestRegressionTOBILong:
+class TestRegressionTOBISCLong:
     def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.golden_data_path = self.path / "golden_data" / "regression_tobi_long"
+        self.golden_data_path = self.path / "golden_data" / "regression_tobisc_long"
 
     def test_lightdock_1ppe_50_steps_20_glowworms_100_swarms(self, tmp_path):
         os.chdir(tmp_path)
@@ -57,7 +57,7 @@ class TestRegressionTOBILong:
         os.system(command)
 
         command = f"lgd_run.py -c 1 -f {self.golden_data_path / 'glowworm.conf'} "
-        command += f"-s tobi setup.json {steps} -l 0 >> test_lightdock.out"
+        command += f"-s tobisc setup.json {steps} -l 0 >> test_lightdock.out"
         os.system(command)
 
         assert filecmp.cmp(

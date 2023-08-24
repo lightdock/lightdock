@@ -9,7 +9,7 @@ from lightdock.scoring.mj3h.driver import MJ3h, MJ3hAdapter
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
 from lightdock.mathutil.cython.quaternion import Quaternion
-from lightdock.scoring.tobi.driver import TOBIAdapter, TOBI
+from lightdock.scoring.tobisc.driver import TOBISC, TOBISCAdapter
 
 
 class TestDockingLandscapePosition:
@@ -170,8 +170,8 @@ class TestDockingLandscapePosition:
             self.golden_data_path / "1PPElig.pdb"
         )
         ligand = Complex(chains, atoms)
-        adapter = TOBIAdapter(self.receptor, ligand)
-        scoring_function = TOBI()
+        adapter = TOBISCAdapter(self.receptor, ligand)
+        scoring_function = TOBISC()
         coordinates1 = Coordinates([0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
         landscape_position1 = DockingLandscapePosition(
             scoring_function,
@@ -180,7 +180,7 @@ class TestDockingLandscapePosition:
             adapter.ligand_model,
             step_translation=5.0,
         )
-        adapter2 = TOBIAdapter(self.receptor, ligand)
+        adapter2 = TOBISCAdapter(self.receptor, ligand)
         coordinates2 = Coordinates([10.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
         landscape_position2 = DockingLandscapePosition(
             scoring_function,

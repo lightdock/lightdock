@@ -1,35 +1,30 @@
-"""Tests for TOBI scoring function module"""
+"""Tests for TOBIBAHAR scoring function module"""
 
 import pytest
 from pathlib import Path
-from lightdock.scoring.tobi.driver import TOBIPotential, TOBI, TOBIAdapter
+from lightdock.scoring.tobibahar.driver import TOBIBAHARPotential, TOBIBAHAR, TOBIBAHARAdapter
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
 
 
-class TestTOBIPotential:
-    def test_create_TOBIPotential_interface(self):
-        potential = TOBIPotential()
+class TestTOBIBAHARPotential:
+    def test_create_TOBIBAHARPotential_interface(self):
+        potential = TOBIBAHARPotential()
 
-        assert len(potential.tobi_sc_1) == 22
-        assert len(potential.tobi_sc_2) == 22
+        assert len(potential.tobibahar) == 22
 
-        assert -0.59 == pytest.approx(potential.tobi_sc_1[0][0])
-        assert -0.09 == pytest.approx( potential.tobi_sc_1[-1][-1])
-        assert 1.37 == pytest.approx(potential.tobi_sc_1[1][20])
-
-        assert -0.58 == pytest.approx(potential.tobi_sc_2[0][0])
-        assert -0.24 == pytest.approx(potential.tobi_sc_2[-1][-1])
-        assert 0.39 == pytest.approx(potential.tobi_sc_2[3][20])
+        assert -3.56 == pytest.approx(potential.tobibahar[0][0])
+        assert 1.82 == pytest.approx( potential.tobibahar[-1][-1])
+        assert 1.6 == pytest.approx(potential.tobibahar[1][20])
 
 
-class TestTOBI:
+class TestTOBIBAHAR:
     def setup_class(self):
         self.path = Path(__file__).absolute().parent
         self.golden_data_path = self.path / "golden_data"
-        self.tobi = TOBI()
+        self.tobisc = TOBIBAHAR()
 
-    def test_calculate_TOBI_1PPE(self):
+    def test_calculate_TOBIBAHAR_1PPE(self):
         atoms, _, chains = parse_complex_from_file(
             self.golden_data_path / "1PPErec.pdb"
         )
@@ -38,19 +33,17 @@ class TestTOBI:
             self.golden_data_path / "1PPElig.pdb"
         )
         ligand = Complex(chains, atoms)
-        adapter = TOBIAdapter(receptor, ligand)
-        assert 17.58 == pytest.approx(
-            self.tobi(
+        adapter = TOBIBAHARAdapter(receptor, ligand)
+        assert 27.67 == pytest.approx(
+            self.tobisc(
                 adapter.receptor_model,
                 adapter.receptor_model.coordinates[0],
                 adapter.ligand_model,
                 adapter.ligand_model.coordinates[0],
             )
         )
-        # Fixed to include vdw radii in search
-        # assert_almost_equal(-150.42, self.tobi(adapter.receptor_model, adapter.ligand_model))
 
-    def test_calculate_TOBI_1EAW(self):
+    def test_calculate_TOBIBAHAR_1EAW(self):
         atoms, _, chains = parse_complex_from_file(
             self.golden_data_path / "1EAWrec.pdb"
         )
@@ -59,19 +52,17 @@ class TestTOBI:
             self.golden_data_path / "1EAWlig.pdb"
         )
         ligand = Complex(chains, atoms)
-        adapter = TOBIAdapter(receptor, ligand)
-        assert -9.87 == pytest.approx(
-            self.tobi(
+        adapter = TOBIBAHARAdapter(receptor, ligand)
+        assert -14.64 == pytest.approx(
+            self.tobisc(
                 adapter.receptor_model,
                 adapter.receptor_model.coordinates[0],
                 adapter.ligand_model,
                 adapter.ligand_model.coordinates[0],
             )
         )
-        # Fixed to include vdw radii in search
-        # assert_almost_equal(-133.22, self.tobi(adapter.receptor_model, adapter.ligand_model))
 
-    def test_calculate_TOBI_1AY7(self):
+    def test_calculate_TOBIBAHAR_1AY7(self):
         atoms, _, chains = parse_complex_from_file(
             self.golden_data_path / "1AY7rec.pdb"
         )
@@ -80,14 +71,31 @@ class TestTOBI:
             self.golden_data_path / "1AY7lig.pdb"
         )
         ligand = Complex(chains, atoms)
-        adapter = TOBIAdapter(receptor, ligand)
-        assert 2.34 == pytest.approx(
-            self.tobi(
+        adapter = TOBIBAHARAdapter(receptor, ligand)
+        assert -65.94 == pytest.approx(
+            self.tobisc(
                 adapter.receptor_model,
                 adapter.receptor_model.coordinates[0],
                 adapter.ligand_model,
                 adapter.ligand_model.coordinates[0],
             )
         )
-        # Fixed to include vdw radii in search
-        # assert_almost_equal(-136.66, self.tobi(adapter.receptor_model, adapter.ligand_model))
+
+    def test_calculate_TOBIBAHAR_1CZY(self):
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1czy_protein.pdb"
+        )
+        receptor = Complex(chains, atoms)
+        atoms, _, chains = parse_complex_from_file(
+            self.golden_data_path / "1czy_peptide.pdb"
+        )
+        ligand = Complex(chains, atoms)
+        adapter = TOBIBAHARAdapter(receptor, ligand)
+        assert 14.70 == pytest.approx(
+            self.tobisc(
+                adapter.receptor_model,
+                adapter.receptor_model.coordinates[0],
+                adapter.ligand_model,
+                adapter.ligand_model.coordinates[0],
+            )
+        )
