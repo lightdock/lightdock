@@ -190,6 +190,11 @@ class Residue(object):
         """Get the Calpha atom"""
         return self.get_atom("CA")
 
+    def get_central_coordinate(self):
+        """Calculates center of coordiantes of residue"""
+        coordinates = np.array([[atom.x, atom.y, atom.z] for atom in self.atoms])
+        return coordinates.mean(axis=0)
+
     def get_central_atom(self):
         """Calculates center of coordiantes of residue and returns closest atom"""
         coordinates = np.array([[atom.x, atom.y, atom.z] for atom in self.atoms])
