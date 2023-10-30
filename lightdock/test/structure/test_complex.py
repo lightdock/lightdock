@@ -1,11 +1,9 @@
 """Tests for Complex class"""
 
+import pytest
 import filecmp
-import shutil
-import os
-from pathlib import Path
 import numpy as np
-from nose.tools import assert_almost_equals
+from pathlib import Path
 from lightdock.structure.complex import Complex
 from lightdock.structure.chain import Chain
 from lightdock.structure.residue import Residue
@@ -15,7 +13,7 @@ from lightdock.pdbutil.PDBIO import write_pdb_to_file
 
 
 class TestComplex:
-    def __init__(self):
+    def setup_class(self):
         self.atoms1 = [
             Atom(1, "CA", "", "A", "ALA", x=1.0, y=1.0, z=1.0),
             Atom(2, "N", "", "A", "ALA", x=2.0, y=2.0, z=2.0),
@@ -55,21 +53,7 @@ class TestComplex:
         self.chains2 = [Chain("A", self.residues2)]
 
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_complex"
         self.golden_data_path = self.path / "golden_data"
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_create_empty_complex(self):
         protein = Complex([])
@@ -112,30 +96,30 @@ class TestComplex:
     def test_center_of_mass_empty_complex(self):
         protein = Complex([])
         com = protein.center_of_mass()
-        assert_almost_equals(0.0, com[0])
-        assert_almost_equals(0.0, com[1])
-        assert_almost_equals(0.0, com[2])
+        assert 0.0 == pytest.approx(com[0])
+        assert 0.0 == pytest.approx(com[1])
+        assert 0.0 == pytest.approx(com[2])
 
     def test_center_of_mass(self):
         protein = Complex(chains=self.chains)
         com = protein.center_of_mass()
-        assert_almost_equals(1.8037228011238935, com[0])
-        assert_almost_equals(1.7998854581864723, com[1])
-        assert_almost_equals(1.7960481152490517, com[2])
+        assert 1.8037228011238935 == pytest.approx(com[0])
+        assert 1.7998854581864723 == pytest.approx(com[1])
+        assert 1.7960481152490517 == pytest.approx(com[2])
 
     def test_center_of_coordinates(self):
         protein = Complex(chains=self.chains)
         cc = protein.center_of_coordinates()
-        assert_almost_equals(1.75, cc[0])
-        assert_almost_equals(1.75, cc[1])
-        assert_almost_equals(1.75, cc[2])
+        assert 1.75 == pytest.approx(cc[0])
+        assert 1.75 == pytest.approx(cc[1])
+        assert 1.75 == pytest.approx(cc[2])
 
     def test_center_of_coordinates_zero_atoms(self):
         protein = Complex(chains=[])
         cc = protein.center_of_coordinates()
-        assert_almost_equals(0.0, cc[0])
-        assert_almost_equals(0.0, cc[1])
-        assert_almost_equals(0.0, cc[2])
+        assert 0.0 == pytest.approx(cc[0])
+        assert 0.0 == pytest.approx(cc[1])
+        assert 0.0 == pytest.approx(cc[2])
 
     def test_translate(self):
         atom1 = Atom(2, "C", "", "A", "ALA", x=2.0, y=2.0, z=2.0)
@@ -167,18 +151,18 @@ class TestComplex:
 
         assert (expected_coordinates == protein.atom_coordinates).all()
 
-    def test_null_rotation(self):
+    def test_null_rotation(self, tmp_path):
         protein = Complex(chains=self.chains2)
         q = Quaternion()
         protein.rotate(q)
         write_pdb_to_file(
-            protein, self.test_path / "rotated.pdb", protein.atom_coordinates[0]
+            protein, tmp_path / "rotated.pdb", protein.atom_coordinates[0]
         )
         assert filecmp.cmp(
-            self.golden_data_path / "two_residues.pdb", self.test_path / "rotated.pdb"
+            self.golden_data_path / "two_residues.pdb", tmp_path / "rotated.pdb"
         )
 
-    def test_rotation_180_degrees_y_axis_origin_is_0(self):
+    def test_rotation_180_degrees_y_axis_origin_is_0(self, tmp_path):
         """Expected file has been generated with Chimera fixing the rotation to the
         center of coordinates and modifying the column of atom name to have the
         same padding as the write_pdb_file function.
@@ -189,14 +173,14 @@ class TestComplex:
         protein.rotate(q)
 
         write_pdb_to_file(
-            protein, self.test_path / "rotated.pdb", protein.atom_coordinates[0]
+            protein, tmp_path / "rotated.pdb", protein.atom_coordinates[0]
         )
         assert filecmp.cmp(
             self.golden_data_path / "two_residues_y_180.pdb",
-            self.test_path / "rotated.pdb",
+            tmp_path / "rotated.pdb",
         )
 
-    def test_rotation_90_degrees_y_axis_90_degrees_x_axis_origin_is_0(self):
+    def test_rotation_90_degrees_y_axis_90_degrees_x_axis_origin_is_0(self, tmp_path):
         """Expected file has been generated with Chimera fixing the rotation to the
         center of coordinates and modifying the column of atom name to have the
         same padding as the write_pdb_file function.
@@ -211,9 +195,9 @@ class TestComplex:
         protein.rotate(q)
 
         write_pdb_to_file(
-            protein, self.test_path / "rotated.pdb", protein.atom_coordinates[0]
+            protein, tmp_path / "rotated.pdb", protein.atom_coordinates[0]
         )
         assert filecmp.cmp(
             self.golden_data_path / "two_residues_y_90_x_90.pdb",
-            self.test_path / "rotated.pdb",
+            tmp_path / "rotated.pdb",
         )

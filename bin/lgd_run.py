@@ -10,7 +10,7 @@ from lightdock.util.logger import LoggingManager
 from lightdock.util.parser import CommandLineParser
 
 
-log = LoggingManager.get_logger("lightdock")
+log = LoggingManager.get_logger("lgd_run")
 
 
 if __name__ == "__main__":
@@ -32,5 +32,5 @@ if __name__ == "__main__":
             multiprocessing_simulation(parser)
 
     except Exception:
-        log.error("Lightdock has failed, please check traceback:")
+        log.error("LightDock has failed, please check traceback:")
         traceback.print_exc()

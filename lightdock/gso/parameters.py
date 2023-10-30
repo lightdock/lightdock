@@ -13,9 +13,9 @@ class GSOParameters(object):
         self._config = ConfigParser()
         try:
             if file_name:
-                self._config.readfp(open(file_name))
+                self._config.read_file(open(file_name))
             else:
-                self._config.readfp(
+                self._config.read_file(
                     open(Path(os.environ["LIGHTDOCK_CONF_PATH"]) / "glowworm.conf")
                 )
         except Exception as e:

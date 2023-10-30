@@ -25,12 +25,12 @@ from lightdock.util.parser import (
 from lightdock.prep.simulation import get_setup_from_file
 
 
-log = LoggingManager.get_logger("lightdock_top")
+log = LoggingManager.get_logger("lgd_top")
 
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(prog="conformer_conformations")
+    parser = argparse.ArgumentParser(prog="lgd_top")
     # Receptor
     parser.add_argument(
         "receptor_structures",

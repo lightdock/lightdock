@@ -15,7 +15,7 @@ from lightdock.structure.complex import Complex
 from lightdock.util.logger import LoggingManager
 
 
-script_name = "reference_points"
+script_name = "lgd_calculate_reference_points"
 log = LoggingManager.get_logger(script_name)
 
 

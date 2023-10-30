@@ -1,5 +1,6 @@
 """Tests for parser module"""
-import shutil
+
+import pytest
 import os
 import argparse
 from pathlib import Path
@@ -10,27 +11,12 @@ from lightdock.util.parser import (
     valid_natural_number,
     valid_float_number,
 )
-from nose.tools import raises
 
 
 class TestParserUtils:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_parser_utils"
         self.golden_data_path = self.path / "golden_data"
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_get_lightdock_structures(self):
         os.chdir(self.golden_data_path)
@@ -56,28 +42,26 @@ class TestParserUtils:
 
         assert filename == "lightdock_1czy_protein.pdb"
 
-    @raises(argparse.ArgumentTypeError)
     def test_valid_file_ko(self):
-        os.chdir(self.golden_data_path)
+        with pytest.raises(argparse.ArgumentTypeError):
+            os.chdir(self.golden_data_path)
 
-        valid_file("1czy_protein.pdb")
-
-        assert False
+            valid_file("1czy_protein.pdb")
 
     def test_valid_integer_number_ok(self):
         assert valid_integer_number("1")
 
-    @raises(argparse.ArgumentTypeError)
     def test_valid_integer_number_ko(self):
-        assert valid_natural_number("aa") == 0
+        with pytest.raises(argparse.ArgumentTypeError):
+            assert valid_natural_number("aa") == 0
 
-    @raises(argparse.ArgumentTypeError)
     def test_valid_integer_number_ko_1(self):
-        assert not valid_integer_number("aa")
+        with pytest.raises(argparse.ArgumentTypeError):
+            assert not valid_integer_number("aa")
 
-    @raises(argparse.ArgumentTypeError)
     def test_valid_integer_number_ko_2(self):
-        assert valid_integer_number("0") == 0
+        with pytest.raises(argparse.ArgumentTypeError):
+            assert valid_integer_number("0") == 0
 
     def test_valid_natural_number_ok(self):
         assert valid_natural_number("1") == 1
@@ -85,17 +69,17 @@ class TestParserUtils:
     def test_valid_natural_number_ok_2(self):
         assert valid_natural_number("0") == 0
 
-    @raises(argparse.ArgumentTypeError)
     def test_valid_natural_number_ko(self):
-        assert valid_natural_number("-1") == 0
+        with pytest.raises(argparse.ArgumentTypeError):
+            assert valid_natural_number("-1") == 0
 
     def test_valid_float_number_ok(self):
         assert valid_float_number("1.0") == 1.0
 
-    @raises(argparse.ArgumentTypeError)
     def test_valid_float_number_ko_1(self):
-        assert valid_float_number("aa") == 0.0
+        with pytest.raises(argparse.ArgumentTypeError):
+            assert valid_float_number("aa") == 0.0
 
-    @raises(argparse.ArgumentTypeError)
     def test_valid_float_number_ko_2(self):
-        assert valid_float_number("-1.0") == -1.0
+        with pytest.raises(argparse.ArgumentTypeError):
+            assert valid_float_number("-1.0") == -1.0

@@ -1,6 +1,6 @@
 """Tests for GSOBuilder class using J1 function"""
 
-import os
+from os import linesep
 from pathlib import Path
 from lightdock.gso.parameters import GSOParameters
 from lightdock.gso.searchspace.benchmark_ofunctions import J1
@@ -10,7 +10,7 @@ from lightdock.mathutil.lrandom import MTGenerator
 
 
 class TestGSOBuilderInJ1:
-    def __init__(self):
+    def setup_class(self):
         self.golden_data_path = Path(__file__).absolute().parent / "golden_data"
         self.gso_parameters = GSOParameters()
         self.objective_function = J1()
@@ -28,7 +28,7 @@ class TestGSOBuilderInJ1:
             self.bounding_box,
             self.golden_data_path / "initial_positions.txt",
         )
-        population_lines = str(gso.swarm).split(os.linesep)
+        population_lines = str(gso.swarm).split(linesep)
         expected_lines = open(
             self.golden_data_path / "initial_population_from_file.txt"
         ).readlines()
@@ -46,7 +46,7 @@ class TestGSOBuilderInJ1:
             self.objective_function,
             self.bounding_box,
         )
-        population_lines = str(gso.swarm).split(os.linesep)
+        population_lines = str(gso.swarm).split(linesep)
         expected_lines = open(
             self.golden_data_path / "initial_population_random.txt"
         ).readlines()

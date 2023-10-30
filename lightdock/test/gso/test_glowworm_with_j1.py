@@ -1,7 +1,7 @@
 """Tests for Glowworm class using J1 function"""
 
+import pytest
 from math import sqrt
-from nose.tools import assert_almost_equals
 from lightdock.gso.parameters import GSOParameters
 from lightdock.gso.searchspace.benchmark_ofunctions import J1
 from lightdock.gso.searchspace.landscape import LandscapePosition
@@ -10,7 +10,7 @@ from lightdock.gso.glowworm import Glowworm
 
 
 class TestGlowwormWithJ1:
-    def __init__(self):
+    def setup_class(self):
         self.gso_parameters = GSOParameters()
         self.objective_function = J1()
         self.landscape_position1 = [
@@ -43,13 +43,11 @@ class TestGlowwormWithJ1:
 
     def test_create_glowworm(self):
         glowworm = Glowworm(self.landscape_position1, self.gso_parameters)
-        assert_almost_equals(0.4, glowworm.rho)
+        assert 0.4 == pytest.approx(glowworm.rho)
 
     def test_compute_luciferin(self):
         glowworm = Glowworm(self.landscape_position1, self.gso_parameters)
-        assert_almost_equals(
-            (1.0 - 0.4) * 5.0 + 0.6 * 0.9810118431238463, glowworm.compute_luciferin()
-        )
+        assert (1.0 - 0.4) * 5.0 + 0.6 * 0.9810118431238463 == pytest.approx(glowworm.compute_luciferin())
 
     def check_compare_glowworms(self):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
@@ -62,13 +60,13 @@ class TestGlowwormWithJ1:
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
         glowworm2 = Glowworm(self.landscape_position3, self.gso_parameters)
 
-        assert_almost_equals(sqrt(8.0), glowworm1.distance(glowworm2))
+        assert sqrt(8.0) == pytest.approx(glowworm1.distance(glowworm2))
 
     def test_distance2(self):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
         glowworm2 = Glowworm(self.landscape_position3, self.gso_parameters)
 
-        assert_almost_equals(8.0, glowworm1.distance2(glowworm2))
+        assert 8.0 == pytest.approx(glowworm1.distance2(glowworm2))
 
     def test_search_my_neighbors(self):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
@@ -134,9 +132,9 @@ class TestGlowwormWithJ1:
 
         glowworm1.compute_probability_moving_toward_neighbor()
 
-        assert_almost_equals(1.0 / 6.0, glowworm1.probabilities[0])
-        assert_almost_equals(2.0 / 6.0, glowworm1.probabilities[1])
-        assert_almost_equals(3.0 / 6.0, glowworm1.probabilities[2])
+        assert 1.0 / 6.0 == pytest.approx(glowworm1.probabilities[0])
+        assert 2.0 / 6.0 == pytest.approx(glowworm1.probabilities[1])
+        assert 3.0 / 6.0 == pytest.approx(glowworm1.probabilities[2])
 
     def test_select_a_glowworm_by_random_number(self):
         glowworm1 = Glowworm(self.landscape_position1, self.gso_parameters)
@@ -180,7 +178,7 @@ class TestGlowwormWithJ1:
 
         glowworm1.update_vision_range()
 
-        assert_almost_equals(1.0, glowworm1.vision_range)
+        assert 1.0 == pytest.approx(glowworm1.vision_range)
 
     def test_update_visio_range_when_number_neighbors_is_greater_than_maximum_neighbors(
         self,
@@ -201,7 +199,7 @@ class TestGlowwormWithJ1:
 
         glowworm1.update_vision_range()
 
-        assert_almost_equals(1.5600000000000001, glowworm1.vision_range)
+        assert 1.5600000000000001 == pytest.approx(glowworm1.vision_range)
 
     def test_move_different_coordinates(self):
         landscape_position1 = [

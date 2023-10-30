@@ -1,21 +1,7 @@
 import os
 import setuptools
 from distutils.core import Extension
-from setuptools.command.test import test as TestCommand
 from lightdock.version import CURRENT_VERSION
-
-
-# Inspired by the example at https://pytest.org/latest/goodpractises.html
-class NoseTestCommand(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import nose
-
-        nose.run_exit(argv=["nosetests"])
 
 
 with open("README.md", "r") as fh:
@@ -166,11 +152,11 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX",
         "Programming Language :: Python :: Implementation :: CPython",
@@ -178,8 +164,8 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Chemistry",
     ],
-    python_requires=">=3.6",
-    setup_requires=["numpy>=1.17.1", "nose"],
+    python_requires=">=3.8",
+    setup_requires=["numpy>=1.17.1", "pytest", "pytest-cov"],
     install_requires=[
         "numpy>=1.17.1",
         "scipy>=1.7.0",
@@ -207,11 +193,10 @@ setuptools.setup(
         "bin/lgd_move_anm.py",
         "bin/lgd_rank.py",
         "bin/lgd_rank_swarm.py",
+        "bin/lgd_run.py",
+        "bin/lgd_setup.py",
         "bin/lgd_top.py",
-        "bin/lightdock3.py",
-        "bin/lightdock3_setup.py",
     ],
-    cmdclass={"test": NoseTestCommand},
     ext_modules=exts,
     zip_safe=False,
 )

@@ -1,14 +1,14 @@
 """Tests for Atom class"""
 
+import pytest
 from lightdock.structure.atom import Atom, HetAtom
 from lightdock.error.lightdock_errors import AtomError
-from nose.tools import assert_almost_equals, raises
 
 
 class TestAtom:
     def test_create_empty_atom(self):
         atom = Atom()
-        assert_almost_equals(0.0, atom.x)
+        assert 0.0 == pytest.approx(atom.x)
 
     def test_assign_element_and_mass(self):
         atom = Atom(
@@ -28,7 +28,7 @@ class TestAtom:
             mass=None,
         )
         assert atom.element == "C"
-        assert_almost_equals(Atom.MASSES[atom.element], atom.mass)
+        assert Atom.MASSES[atom.element] == pytest.approx(atom.mass)
 
     def test_create_atom_not_given_element(self):
         atom = Atom(
@@ -48,48 +48,48 @@ class TestAtom:
             mass=None,
         )
         assert atom.element == "PB"
-        assert_almost_equals(Atom.MASSES[atom.element], atom.mass)
+        assert Atom.MASSES[atom.element] == pytest.approx(atom.mass)
 
-    @raises(AtomError)
     def test_assign_element_and_mass_of_not_recognized_element(self):
-        atom = Atom(
-            1,
-            "Ty",
-            "",
-            "A",
-            "BSG",
-            1,
-            "",
-            x=0.0,
-            y=0.0,
-            z=0.0,
-            occupancy=1.0,
-            b_factor=0.0,
-            element=None,
-            mass=None,
-        )
-        assert atom.name != "Ty"
+        with pytest.raises(AtomError):
+            atom = Atom(
+                1,
+                "Ty",
+                "",
+                "A",
+                "BSG",
+                1,
+                "",
+                x=0.0,
+                y=0.0,
+                z=0.0,
+                occupancy=1.0,
+                b_factor=0.0,
+                element=None,
+                mass=None,
+            )
+            assert atom.name != "Ty"
 
-    @raises(AtomError)
     def test_not_recognized_element(self):
         """Test if Tylium is recognized"""
-        atom = Atom(
-            1,
-            "Ty",
-            "",
-            "A",
-            "BSG",
-            1,
-            "",
-            x=0.0,
-            y=0.0,
-            z=0.0,
-            occupancy=1.0,
-            b_factor=0.0,
-            element="Ty",
-            mass=None,
-        )
-        assert atom.name != "Ty"
+        with pytest.raises(AtomError):
+            atom = Atom(
+                1,
+                "Ty",
+                "",
+                "A",
+                "BSG",
+                1,
+                "",
+                x=0.0,
+                y=0.0,
+                z=0.0,
+                occupancy=1.0,
+                b_factor=0.0,
+                element="Ty",
+                mass=None,
+            )
+            assert atom.name != "Ty"
 
     def test_is_hydrogen(self):
         atom1 = Atom(
@@ -152,8 +152,8 @@ class TestAtom:
         )
         atom2 = Atom()
 
-        assert_almost_equals(3.0, atom1.distance(atom2))
-        assert_almost_equals(3.0, atom2.distance(atom1))
+        assert 3.0 == pytest.approx(atom1.distance(atom2))
+        assert 3.0 == pytest.approx(atom2.distance(atom1))
 
     def test_clone(self):
         atom1 = Atom()

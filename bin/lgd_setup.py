@@ -33,7 +33,7 @@ from lightdock.error.lightdock_errors import LightDockError
 from lightdock.version import CURRENT_VERSION
 
 
-log = LoggingManager.get_logger("lightdock3_setup")
+log = LoggingManager.get_logger("lgd_setup")
 
 
 if __name__ == "__main__":

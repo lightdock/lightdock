@@ -1,10 +1,10 @@
 """Tests for GSO class"""
 
-import os
+import pytest
+import filecmp
 from pathlib import Path
 from math import pi
-import filecmp
-import shutil
+from os import linesep
 from lightdock.gso.parameters import GSOParameters
 from lightdock.gso.searchspace.benchmark_ofunctions import J1, J2, J3, J4, J5
 from lightdock.gso.algorithm import GSOBuilder
@@ -13,26 +13,12 @@ from lightdock.mathutil.lrandom import MTGenerator
 
 
 class TestGSOBuilderInJ1:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_gso"
         self.golden_data_path = self.path / "golden_data"
         self.gso_parameters = GSOParameters()
         self.gso_parameters.initial_vision_range = 3.0
         self.gso_parameters.max_vision_range = 3.0
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def found_peaks(
         self, peak_coordinates, dimension, glowworms, minimum_matches=3, tolerance=0.05
@@ -117,7 +103,7 @@ class TestGSOBuilderInJ1:
         # Check with auxiliar function the position of the glowworms
         assert self.found_peaks(peak_coordinates, 2, gso.swarm.glowworms, 3)
 
-    def test_GSO_with_J3(self):
+    def test_GSO_with_J3(self, tmp_path):
         objective_function = J3()
         self.gso_parameters.initial_vision_range = 2.0
         self.gso_parameters.max_vision_range = 2.0
@@ -136,13 +122,13 @@ class TestGSOBuilderInJ1:
         gso.run(50)
 
         # Save last step
-        gso.swarm.save(50, self.test_path, "gso_j3_50.out")
+        gso.swarm.save(50, tmp_path, "gso_j3_50.out")
 
         assert filecmp.cmp(
-            self.test_path / "gso_j3_50.out", self.golden_data_path / "gso_j3_50.out"
+            tmp_path / "gso_j3_50.out", self.golden_data_path / "gso_j3_50.out"
         )
 
-    def test_GSO_with_J4(self):
+    def test_GSO_with_J4(self, tmp_path):
         objective_function = J4()
         self.gso_parameters.initial_vision_range = 0.75
         self.gso_parameters.max_vision_range = 0.75
@@ -161,13 +147,13 @@ class TestGSOBuilderInJ1:
         gso.run(50)
 
         # Save last step
-        gso.swarm.save(50, self.test_path, "gso_j4_50.out")
+        gso.swarm.save(50, tmp_path, "gso_j4_50.out")
 
         assert filecmp.cmp(
-            self.test_path / "gso_j4_50.out", self.golden_data_path / "gso_j4_50.out"
+            tmp_path / "gso_j4_50.out", self.golden_data_path / "gso_j4_50.out"
         )
 
-    def test_GSO_with_J5(self):
+    def test_GSO_with_J5(self, tmp_path):
         objective_function = J5()
         self.gso_parameters.initial_vision_range = 3.0
         self.gso_parameters.max_vision_range = 3.0
@@ -188,13 +174,13 @@ class TestGSOBuilderInJ1:
         gso.run(70)
 
         # Save last step
-        gso.swarm.save(70, self.test_path, "gso_j5_70.out")
+        gso.swarm.save(70, tmp_path, "gso_j5_70.out")
 
         assert filecmp.cmp(
-            self.test_path / "gso_j5_70.out", self.golden_data_path / "gso_j5_70.out"
+            tmp_path / "gso_j5_70.out", self.golden_data_path / "gso_j5_70.out"
         )
 
-    def test_GSO_with_report_in_file_and_saving_intermediary_files(self):
+    def test_GSO_with_report_in_file_and_saving_intermediary_files(self, tmp_path):
         objective_function = J5()
         self.gso_parameters.initial_vision_range = 3.0
         self.gso_parameters.max_vision_range = 3.0
@@ -215,16 +201,16 @@ class TestGSOBuilderInJ1:
 
         gso.run(
             5,
-            saving_path=self.test_path,
+            saving_path=tmp_path,
             save_intermediary=True,
             save_all_intermediary=True,
         )
 
         for i in range(5):
-            assert (self.test_path / f"gso_{i+1}.out").exists()
+            assert (tmp_path / f"gso_{i+1}.out").exists()
 
-        gso.report(self.test_path / "report.out")
-        lines = open(self.test_path / "report.out").readlines()
+        gso.report(tmp_path / "report.out")
+        lines = open(tmp_path / "report.out").readlines()
         assert len(lines) == 14
 
     def test_GSO_with_report(self):
@@ -248,5 +234,5 @@ class TestGSOBuilderInJ1:
         gso.run(5)
 
         report = gso.report()
-        assert len(report.split(os.linesep)) == 14
+        assert len(report.split(linesep)) == 14
         assert str(gso) == report

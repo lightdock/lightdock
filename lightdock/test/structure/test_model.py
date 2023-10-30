@@ -9,7 +9,7 @@ from lightdock.mathutil.cython.quaternion import Quaternion
 
 
 class TestDockingModel:
-    def __init__(self):
+    def setup_class(self):
         self.atoms1 = [
             Atom(1, "CA", "", "A", "ALA", x=1.0, y=1.0, z=1.0),
             Atom(2, "N", "", "A", "ALA", x=2.0, y=2.0, z=2.0),

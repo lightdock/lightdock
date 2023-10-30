@@ -7,12 +7,12 @@ import os
 from lightdock.util.logger import LoggingManager
 
 
-log = LoggingManager.get_logger("lightdock2csv")
+log = LoggingManager.get_logger("lgd_gso_to_csv")
 DEFAULT_SEP = ","
 
 
 def parse_command_line():
-    parser = argparse.ArgumentParser(prog="lightdock2csv")
+    parser = argparse.ArgumentParser(prog="lgd_gso_to_csv")
     parser.add_argument("ranking_file", help="lightdock ranking file name")
     parser.add_argument("csv_file", help="csv format file name")
     parser.add_argument(

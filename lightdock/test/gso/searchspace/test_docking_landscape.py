@@ -1,41 +1,25 @@
 """Tests for DockingLandscapePosition class"""
 
-import os
-from pathlib import Path
-import shutil
-from nose.tools import assert_almost_equal
+import pytest
 import numpy as np
+from pathlib import Path
 from lightdock.gso.searchspace.landscape import DockingLandscapePosition
 from lightdock.gso.coordinates import Coordinates
 from lightdock.scoring.mj3h.driver import MJ3h, MJ3hAdapter
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
 from lightdock.mathutil.cython.quaternion import Quaternion
-from lightdock.scoring.tobi.driver import TOBIAdapter, TOBI
+from lightdock.scoring.tobisc.driver import TOBISC, TOBISCAdapter
 
 
 class TestDockingLandscapePosition:
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
-        self.test_path = self.path / "scratch_docking_landscape"
         self.golden_data_path = self.path / "golden_data"
         atoms, _, chains = parse_complex_from_file(
             self.golden_data_path / "1PPErec.pdb"
         )
         self.receptor = Complex(chains, atoms)
-
-    def setup(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
-        os.mkdir(self.test_path)
-
-    def teardown(self):
-        try:
-            shutil.rmtree(self.test_path)
-        except OSError:
-            pass
 
     def test_clone(self):
         atoms, _, chains = parse_complex_from_file(
@@ -59,8 +43,8 @@ class TestDockingLandscapePosition:
 
         landscape_position_2.translation[0] = 5.0
 
-        assert_almost_equal(5.0, landscape_position_2.translation[0])
-        assert_almost_equal(0.0, landscape_position_1.translation[0])
+        assert 5.0 == pytest.approx(landscape_position_2.translation[0])
+        assert 0.0 == pytest.approx(landscape_position_1.translation[0])
 
     def test_repr(self):
         atoms, _, chains = parse_complex_from_file(
@@ -91,7 +75,7 @@ class TestDockingLandscapePosition:
             scoring_function, coordinates, adapter.receptor_model, adapter.ligand_model
         )
 
-        assert_almost_equal(2.02, landscape_position.evaluate_objective_function())
+        assert 2.02 == pytest.approx(landscape_position.evaluate_objective_function())
 
     def test_evaluate_objective_function_rotation_y_axis_180(self):
         atoms, _, chains = parse_complex_from_file(
@@ -105,7 +89,7 @@ class TestDockingLandscapePosition:
             scoring_function, coordinates, adapter.receptor_model, adapter.ligand_model
         )
 
-        assert_almost_equal(-1.4, landscape_position.evaluate_objective_function())
+        assert -1.4 == pytest.approx(landscape_position.evaluate_objective_function())
 
     def test_evaluate_objective_function_rotation_y_axis_180_translation_10(self):
         atoms, _, chains = parse_complex_from_file(
@@ -119,7 +103,7 @@ class TestDockingLandscapePosition:
             scoring_function, coordinates, adapter.receptor_model, adapter.ligand_model
         )
 
-        assert_almost_equal(6.39, landscape_position.evaluate_objective_function())
+        assert 6.39 == pytest.approx(landscape_position.evaluate_objective_function())
 
     def test_distance2_same_landscape_position(self):
         atoms, _, chains = parse_complex_from_file(
@@ -135,7 +119,7 @@ class TestDockingLandscapePosition:
         landscape_position2 = DockingLandscapePosition(
             scoring_function, coordinates, adapter.receptor_model, adapter.ligand_model
         )
-        assert_almost_equal(0.0, landscape_position1.distance2(landscape_position2))
+        assert 0.0 == pytest.approx(landscape_position1.distance2(landscape_position2))
 
     def test_distance2_10A_translation_x(self):
         atoms, _, chains = parse_complex_from_file(
@@ -156,8 +140,8 @@ class TestDockingLandscapePosition:
             adapter2.receptor_model,
             adapter2.ligand_model,
         )
-        assert_almost_equal(100.0, landscape_position1.distance2(landscape_position2))
-        assert_almost_equal(10.0, landscape_position1.distance(landscape_position2))
+        assert 100.0 == pytest.approx(landscape_position1.distance2(landscape_position2))
+        assert 10.0 == pytest.approx(landscape_position1.distance(landscape_position2))
 
     def test_distance2_minus_10A_translation_y(self):
         atoms, _, chains = parse_complex_from_file(
@@ -178,16 +162,16 @@ class TestDockingLandscapePosition:
             adapter2.receptor_model,
             adapter2.ligand_model,
         )
-        assert_almost_equal(100.0, landscape_position1.distance2(landscape_position2))
-        assert_almost_equal(10.0, landscape_position1.distance(landscape_position2))
+        assert 100.0 == pytest.approx(landscape_position1.distance2(landscape_position2))
+        assert 10.0 == pytest.approx(landscape_position1.distance(landscape_position2))
 
     def test_move_step_rot_full_step_trans_half(self):
         atoms, _, chains = parse_complex_from_file(
             self.golden_data_path / "1PPElig.pdb"
         )
         ligand = Complex(chains, atoms)
-        adapter = TOBIAdapter(self.receptor, ligand)
-        scoring_function = TOBI()
+        adapter = TOBISCAdapter(self.receptor, ligand)
+        scoring_function = TOBISC()
         coordinates1 = Coordinates([0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
         landscape_position1 = DockingLandscapePosition(
             scoring_function,
@@ -196,7 +180,7 @@ class TestDockingLandscapePosition:
             adapter.ligand_model,
             step_translation=5.0,
         )
-        adapter2 = TOBIAdapter(self.receptor, ligand)
+        adapter2 = TOBISCAdapter(self.receptor, ligand)
         coordinates2 = Coordinates([10.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
         landscape_position2 = DockingLandscapePosition(
             scoring_function,

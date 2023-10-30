@@ -31,7 +31,7 @@ from scipy.spatial.transform import Rotation
 from lightdock.util.logger import LoggingManager
 
 
-log = LoggingManager.get_logger("lightdock3_setup")
+log = LoggingManager.get_logger("lgd_setup")
 
 
 def get_random_point_within_sphere(number_generator, radius):

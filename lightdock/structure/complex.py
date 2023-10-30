@@ -105,11 +105,11 @@ class Complex(object):
         """Selects atoms on structure depending on their nature"""
         atoms = []
         for residue in self.residues:
-            if residue.is_standard and protein:
+            if residue.is_protein() and protein:
                 atoms.extend(residue.atoms)
-            elif residue.is_nucleic and nucleic:
+            elif residue.is_nucleic() and nucleic:
                 atoms.extend(residue.atoms)
-            elif residue.is_dummy and dummy:
+            elif residue.is_dummy() and dummy:
                 atoms.extend(residue.atoms)
         return atoms
 

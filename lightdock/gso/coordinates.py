@@ -15,7 +15,7 @@ class Coordinates(object):
     dimensions of the solution space used in the objective function."""
 
     def __init__(self, values):
-        self._values = values
+        self._values = values.copy()
         self.dimension = len(self._values)
 
     def __getitem__(self, index):
@@ -42,7 +42,7 @@ class Coordinates(object):
 
     def clone(self):
         """Get a copy of the current coordinate"""
-        return Coordinates(self._values * 1)
+        return Coordinates(self._values)
 
     def __add__(self, other):
         """Adds two coordinates"""

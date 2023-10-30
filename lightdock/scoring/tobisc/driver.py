@@ -1,12 +1,11 @@
 """
-TOBI potentials scoring functions
+TOBI side chain-based docking potentials (SDPs), step 1 & 2 as described in:
 
-Bibliography:
-'Optimal design of protein docking potentials: Efficiency and limitations and
-Designing coarse grained-and atom based-potentials for protein-protein docking'
+Tobi, D. Designing coarse grained-and atom based-potentials for protein-protein docking.
+BMC Struct Biol 10, 40 (2010). https://doi.org/10.1186/1472-6807-10-40
 """
 
-import os
+from pathlib import Path
 import scipy.spatial
 
 from lightdock.error.lightdock_errors import PotentialsParsingError
@@ -16,10 +15,10 @@ from lightdock.scoring.functions import ModelAdapter, ScoringFunction
 from lightdock.constants import DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
 
-class TOBIPotential(object):
-    """Loads TOBI potentials information"""
+class TOBISCPotential(object):
+    """Loads TOBISC potentials information"""
 
-    # NB NH and OC are SPECIAL, the rest should be centroids
+    # NH and OC are SPECIAL, the rest should be centroids
     recognized_residues = [
         "ALA",
         "ARG",
@@ -45,7 +44,7 @@ class TOBIPotential(object):
         "OC",
     ]
 
-    # NB N, CA, C, O and GLYCA are special
+    # N, CA, C, O and GLYCA are special
     atom_types = [
         ["N"],
         ["CA"],
@@ -116,12 +115,12 @@ class TOBIPotential(object):
     ]
 
     def __init__(self):
-        data_path = os.path.dirname(os.path.realpath(__file__)) + "/data/"
-        self.tobi_sc_1 = self._read_potentials(data_path + "TOBI_SC_step1.dat")
-        self.tobi_sc_2 = self._read_potentials(data_path + "TOBI_SC_step2.dat")
+        data_path = Path(__file__).parent.resolve() / "data"
+        self.tobi_sc_1 = self._read_potentials(data_path / "TOBI_SC_step1.dat")
+        self.tobi_sc_2 = self._read_potentials(data_path / "TOBI_SC_step2.dat")
 
     def _read_potentials(self, data_file_name):
-        """Reads TOBI data potentials"""
+        """Reads TOBISC data potentials"""
         data_file = open(data_file_name)
         data = data_file.readlines()
         data_file.close()
@@ -133,15 +132,15 @@ class TOBIPotential(object):
 
         except Exception as e:
             raise PotentialsParsingError(
-                "Error parsing %s file. Details: %s" % (data_file_name, str(e))
+                f"Error parsing {data_file_name} file. Details: {e}"
             )
 
         return potentials
 
 
-class TOBIAdapter(ModelAdapter):
+class TOBISCAdapter(ModelAdapter):
     """Adapts a given Complex to a DockingModel object suitable for this
-    TOBI scoring function.
+    TOBISC scoring function.
     """
 
     def _get_docking_model(self, molecule, restraints):
@@ -154,7 +153,7 @@ class TOBIAdapter(ModelAdapter):
             coordinates = []
             for residue in residues:
                 try:
-                    residue_index = TOBIPotential.recognized_residues.index(
+                    residue_index = TOBISCPotential.recognized_residues.index(
                         residue.name
                     )
 
@@ -165,13 +164,13 @@ class TOBIAdapter(ModelAdapter):
                     chain_id = ""
                     for atom in residue.atoms:
                         if not atom.is_hydrogen():
-                            current_atom = "%s%s" % (residue.name, atom.name)
+                            current_atom = f"{residue.name}{atom.name}"
                             ax = molecule.atom_coordinates[structure][atom.index][0]
                             ay = molecule.atom_coordinates[structure][atom.index][1]
                             az = molecule.atom_coordinates[structure][atom.index][2]
 
-                            for atom_type in range(len(TOBIPotential.atom_types)):
-                                if current_atom in TOBIPotential.atom_types[atom_type]:
+                            for atom_type in range(len(TOBISCPotential.atom_types)):
+                                if current_atom in TOBISCPotential.atom_types[atom_type]:
                                     cx += ax
                                     cy += ay
                                     cz += az
@@ -205,13 +204,13 @@ class TOBIAdapter(ModelAdapter):
         return DockingModel(tobi_residues, list_of_coordinates, parsed_restraints)
 
 
-class TOBI(ScoringFunction):
-    """Implements TOBI potential"""
+class TOBISC(ScoringFunction):
+    """Implements TOBISC potential"""
 
     def __init__(self, weight=1.0):
-        super(TOBI, self).__init__(weight, anm_support=False)
+        super(TOBISC, self).__init__(weight, anm_support=False)
         self.function = self._default
-        self.potential = TOBIPotential()
+        self.potential = TOBISCPotential()
         self.cutoff = DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 
     def __call__(self, receptor, receptor_coordinates, ligand, ligand_coordinates):
@@ -276,5 +275,5 @@ class TOBI(ScoringFunction):
 
 
 # Needed to dynamically load the scoring functions from command line
-DefinedScoringFunction = TOBI
-DefinedModelAdapter = TOBIAdapter
+DefinedScoringFunction = TOBISC
+DefinedModelAdapter = TOBISCAdapter

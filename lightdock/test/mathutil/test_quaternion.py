@@ -1,24 +1,25 @@
 """Tests for Quaternion class"""
 
+import pytest
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.lrandom import MTGenerator
-from nose.tools import assert_almost_equals
+from lightdock.mathutil.constants import ERROR_TOLERANCE
 
 
 class TestQuaternion:
     def test_create_identity_quaternion(self):
         q = Quaternion()
-        assert_almost_equals(1.0, q.w)
-        assert_almost_equals(0.0, q.x)
-        assert_almost_equals(0.0, q.y)
-        assert_almost_equals(0.0, q.z)
+        assert 1.0 == pytest.approx(q.w)
+        assert 0.0 == pytest.approx(q.x)
+        assert 0.0 == pytest.approx(q.y)
+        assert 0.0 == pytest.approx(q.z)
 
     def test_create_quaternion(self):
         q = Quaternion(1.0, 1.2345, 6.7890, 2.3456)
-        assert_almost_equals(1.0, q.w)
-        assert_almost_equals(1.2345, q.x)
-        assert_almost_equals(6.7890, q.y)
-        assert_almost_equals(2.3456, q.z)
+        assert 1.0 == pytest.approx(q.w)
+        assert 1.2345 == pytest.approx(q.x)
+        assert 6.7890 == pytest.approx(q.y)
+        assert 2.3456 == pytest.approx(q.z)
 
     def test_equal_quaternions(self):
         q1 = Quaternion(1.0, 2.0, -1.0, 3.0)
@@ -106,8 +107,8 @@ class TestQuaternion:
         q1 = Quaternion(1, -3, 4, 3)
         q2 = Quaternion(3, -1, 4, 3)
 
-        assert_almost_equals(5.91607978, q1.norm())
-        assert_almost_equals((q1 * q2).norm(), q1.norm() * q2.norm())
+        assert 5.91607978 == pytest.approx(q1.norm())
+        assert pytest.approx((q1 * q2).norm()) == pytest.approx(q1.norm() * q2.norm())
 
     def test_inverse(self):
         q1 = Quaternion(1, 0, 0, 2)
@@ -123,14 +124,14 @@ class TestQuaternion:
 
         v2 = q.rotate(v)
 
-        assert_almost_equals(0.0, v2[0])
-        assert_almost_equals(0.0, v2[1])
-        assert_almost_equals(-1.0, v2[2])
+        assert 0.0 == pytest.approx(v2[0])
+        assert 0.0 == pytest.approx(v2[1])
+        assert -1.0 == pytest.approx(v2[2])
 
     def test_dot_product(self):
         q = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)
 
-        assert_almost_equals(1.0, q.dot(q))
+        assert 1.0 == pytest.approx(q.dot(q))
 
     def test_lerp_t_0(self):
         q1 = Quaternion(1, 0, 0, 2)
@@ -197,29 +198,29 @@ class TestQuaternion:
     def test_distance_is_zero(self):
         q = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)
 
-        assert_almost_equals(0.0, q.distance(q))
+        assert 0.0 == pytest.approx(q.distance(q), abs=ERROR_TOLERANCE)
 
     def test_distance_is_one(self):
         q1 = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)
         q2 = Quaternion(0.707106781, 0.0, -0.707106781, 0.0)
 
-        assert_almost_equals(1.0, q1.distance(q2))
+        assert 1.0 == pytest.approx(q1.distance(q2))
 
     def test_distance_is_half(self):
         q1 = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)
         q2 = Quaternion(0, 0, 1.0, 0)
 
-        assert_almost_equals(0.5, q1.distance(q2))
+        assert 0.5 == pytest.approx(q1.distance(q2))
 
     def test_distance_composite_rotation(self):
         q1 = Quaternion(1.0, 0, 0, 0)
         q2 = Quaternion(0.5, 0.5, 0.5, 0.5)
 
-        assert_almost_equals(0.75, q1.distance(q2))
+        assert 0.75 == pytest.approx(q1.distance(q2))
 
     def test_get_random(self):
         q1 = Quaternion.random()
-        assert_almost_equals(1.0, q1.norm())
+        assert 1.0 == pytest.approx(q1.norm())
 
         rng = MTGenerator(1379)
         q2 = Quaternion.random(rng)

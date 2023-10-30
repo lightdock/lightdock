@@ -1,7 +1,7 @@
 """Tests for PISA scoring function module"""
 
+import pytest
 from pathlib import Path
-from nose.tools import assert_almost_equal
 from lightdock.scoring.pisa.driver import PISAPotential, PISA, PISAAdapter
 from lightdock.pdbutil.PDBIO import parse_complex_from_file
 from lightdock.structure.complex import Complex
@@ -16,7 +16,7 @@ class TestPISAPotential:
 class TestPISA:
     """Original PISA scoring energy goes from negative to positive"""
 
-    def __init__(self):
+    def setup_class(self):
         self.path = Path(__file__).absolute().parent
         self.golden_data_path = self.path / "golden_data"
         self.pisa = PISA()
@@ -31,8 +31,7 @@ class TestPISA:
         )
         ligand = Complex(chains, atoms)
         adapter = PISAAdapter(receptor, ligand)
-        assert_almost_equal(
-            -0.4346,
+        assert -0.4346 == pytest.approx(
             round(
                 self.pisa(
                     adapter.receptor_model,
@@ -40,8 +39,8 @@ class TestPISA:
                     adapter.ligand_model,
                     adapter.ligand_model.coordinates[0],
                 ),
-                4,
-            ),
+                4
+            )
         )
 
     def test_calculate_PISA_1EAW(self):
@@ -54,8 +53,7 @@ class TestPISA:
         )
         ligand = Complex(chains, atoms)
         adapter = PISAAdapter(receptor, ligand)
-        assert_almost_equal(
-            -0.2097,
+        assert -0.2097 == pytest.approx(
             round(
                 self.pisa(
                     adapter.receptor_model,
@@ -63,8 +61,8 @@ class TestPISA:
                     adapter.ligand_model,
                     adapter.ligand_model.coordinates[0],
                 ),
-                4,
-            ),
+                4
+            )
         )
 
     def test_calculate_PISA_1AY7(self):
@@ -77,8 +75,7 @@ class TestPISA:
         )
         ligand = Complex(chains, atoms)
         adapter = PISAAdapter(receptor, ligand)
-        assert_almost_equal(
-            -0.2141,
+        assert -0.2141 == pytest.approx(
             round(
                 self.pisa(
                     adapter.receptor_model,
@@ -86,6 +83,6 @@ class TestPISA:
                     adapter.ligand_model,
                     adapter.ligand_model.coordinates[0],
                 ),
-                4,
-            ),
+                4
+            )
         )

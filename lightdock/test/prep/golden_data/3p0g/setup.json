@@ -27,7 +27,7 @@
         "passive": []
     },
     "restraints": "restraints.list",
-    "setup_version": "0.9.3",
+    "setup_version": "1.0.0",
     "starting_points_seed": 324324,
     "surface_density": 50.0,
     "swarm_radius": 10.0,

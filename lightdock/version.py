@@ -1,3 +1,3 @@
 """Framework version"""
 
-CURRENT_VERSION = "0.9.4"
+CURRENT_VERSION = "1.0.0-pre1"

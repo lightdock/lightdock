@@ -5,6 +5,7 @@ It uses the awesome Prody library
 
 import numpy as np
 from prody import parsePDB, ANM, extendModel, confProDy
+from prody.proteins import MMCIFParseError
 from lightdock.error.lightdock_errors import NormalModesCalculationError
 from lightdock.util.logger import LoggingManager
 from lightdock.constants import (
@@ -22,8 +23,11 @@ log = LoggingManager.get_logger("ANM")
 
 def calculate_nmodes(pdb_file_name, n_modes, rmsd, seed, molecule):
     """Calculates Normal modes for a given molecule"""
-    prody_molecule = parsePDB(str(pdb_file_name))
-    if not prody_molecule:
+    try:
+        prody_molecule = parsePDB(str(pdb_file_name))
+        if not prody_molecule:
+            raise NormalModesCalculationError
+    except (MMCIFParseError, NormalModesCalculationError):
         raise NormalModesCalculationError(f"ProDy is not capable of reading {pdb_file_name}. Please try renaming any input PDB file which extension is not .pdb")
 
     # Try first for proteins
@@ -56,7 +60,7 @@ def calculate_nmodes(pdb_file_name, n_modes, rmsd, seed, molecule):
     ):
         if lightdock_atom.name != prody_atom.getName():
             raise NormalModesCalculationError(
-                "Atoms differ: %s - %s" % (str(lightdock_atom), str(prody_atom))
+                f"Atoms differ (LightDock - ProDy): {lightdock_atom.chain_id}.{lightdock_atom.residue_name}.{lightdock_atom.residue_number} {lightdock_atom.name} - {prody_atom}"
             )
 
     molecule_anm_ext, molecule_all = extendModel(

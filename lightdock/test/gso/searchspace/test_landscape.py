@@ -1,14 +1,14 @@
 """Tests for LandscapePosition class"""
 
+import pytest
 from math import sqrt
 from lightdock.gso.coordinates import Coordinates
 from lightdock.gso.searchspace.landscape import LandscapePosition
 from lightdock.gso.searchspace.benchmark_ofunctions import J1
-from nose.tools import assert_almost_equals
 
 
 class TestLandscapePosition:
-    def __init__(self):
+    def setup_class(self):
         self.objective_function = J1()
         self.coordinates1 = Coordinates([0.0, 0.0])
         self.coordinates2 = Coordinates([1.0, 1.0])
@@ -19,9 +19,7 @@ class TestLandscapePosition:
     def test_LandscapePosition_with_J1(self):
         landscape_point = LandscapePosition(self.objective_function, self.coordinates1)
 
-        assert_almost_equals(
-            0.9810118431238463, landscape_point.evaluate_objective_function()
-        )
+        assert 0.9810118431238463 == pytest.approx(landscape_point.evaluate_objective_function())
 
     def test_LandscapePosition_with_J1_matrix(self):
         expected_values = [
@@ -66,9 +64,7 @@ class TestLandscapePosition:
             for j in range(5):
                 coord = Coordinates([-3.0 + i * 1.5, -3.0 + j * 1.5])
                 landscape_point = LandscapePosition(self.objective_function, coord)
-                assert_almost_equals(
-                    expected_values[j][i], landscape_point.evaluate_objective_function()
-                )
+                assert expected_values[j][i] == pytest.approx(landscape_point.evaluate_objective_function())
 
     def test_equals(self):
         landscape_point1 = LandscapePosition(self.objective_function, self.coordinates1)
@@ -150,18 +146,18 @@ class TestLandscapePosition:
         landscape_point1 = LandscapePosition(self.objective_function, self.coordinates2)
         landscape_point2 = LandscapePosition(self.objective_function, self.coordinates1)
 
-        assert_almost_equals(sqrt(2.0), landscape_point1.distance(landscape_point2))
+        assert sqrt(2.0) == pytest.approx(landscape_point1.distance(landscape_point2))
 
     def test_distance2_J1(self):
         landscape_point1 = LandscapePosition(self.objective_function, self.coordinates2)
         landscape_point2 = LandscapePosition(self.objective_function, self.coordinates1)
 
-        assert_almost_equals(2.0, landscape_point1.distance2(landscape_point2))
+        assert 2.0 == pytest.approx(landscape_point1.distance2(landscape_point2))
 
     def test_norm(self):
         landscape_point1 = LandscapePosition(self.objective_function, self.coordinates2)
 
-        assert_almost_equals(sqrt(2.0), landscape_point1.norm())
+        assert sqrt(2.0) == pytest.approx(landscape_point1.norm())
 
     def test_move_using_default_step(self):
         landscape_point1 = LandscapePosition(self.objective_function, self.coordinates1)

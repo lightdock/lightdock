@@ -25,7 +25,7 @@ from lightdock.util.parser import (
 )
 
 
-log = LoggingManager.get_logger("generate_conformations")
+log = LoggingManager.get_logger("lgd_generate_conformations")
 
 
 def parse_output_file(lightdock_output, num_anm_rec, num_anm_lig):

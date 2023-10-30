@@ -92,7 +92,7 @@ class SetupCommandLineParser(object):
     """Parses the command line of lightdock_setup"""
 
     def __init__(self, input_args=None):
-        parser = argparse.ArgumentParser(prog="lightdock3_setup")
+        parser = argparse.ArgumentParser(prog="lgd_setup")
 
         # Receptor
         parser.add_argument(
@@ -368,7 +368,7 @@ class CommandLineParser(object):
     """Parses the command line"""
 
     def __init__(self, input_args=None):
-        parser = argparse.ArgumentParser(prog="lightdock3")
+        parser = argparse.ArgumentParser(prog="lgd_run")
 
         # Receptor
         parser.add_argument(
