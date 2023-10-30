@@ -2910,6 +2910,7 @@ charges = {
     "RA5-O4'": -0.3548,
     "RCN-C5'": 0.0558,
     "DAN-H3'": 0.0985,
+    "CU-CU": 0.0,
 }
 
 nt_charges = {
@@ -5634,6 +5635,7 @@ amber_types = {
     "RA5-O4'": "OS",
     "RCN-C5'": "CT",
     "DAN-H3'": "H1",
+    "CU-CU": "CU",
 }
 
 bond_structure = {
