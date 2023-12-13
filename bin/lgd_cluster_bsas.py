@@ -23,6 +23,16 @@ def parse_command_line():
         "gso_output_file", help="LightDock output file", metavar="gso_output_file"
     )
 
+    parser.add_argument(
+        "--cutoff",
+        "-cutoff",
+        "-c",
+        help="RMSD cutoff",
+        dest="cutoff",
+        type=float,
+        default=4.0,
+    )
+
     return parser.parse_args()
 
 
@@ -48,7 +58,7 @@ def get_backbone_atoms(ids_list, swarm_path):
     return ca_atoms
 
 
-def clusterize(sorted_ids, swarm_path):
+def clusterize(sorted_ids, swarm_path, rmsd_cutoff=4.0):
     """Clusters the structures identified by the IDS inside sorted_ids list"""
 
     clusters_found = 0
@@ -67,7 +77,7 @@ def clusterize(sorted_ids, swarm_path):
                 4
             )
             log.info("RMSD between %d and %d is %5.3f" % (representative_id, j, rmsd))
-            if rmsd <= 4.0:
+            if rmsd <= rmsd_cutoff:
                 clusters[cluster_id].append(j)
                 log.info("Glowworm %d goes into cluster %d" % (j, cluster_id))
                 in_cluster = True
@@ -115,7 +125,7 @@ if __name__ == "__main__":
 
         # Calculate the different clusters
         swarm_path = Path(args.gso_output_file).absolute().parent
-        clusters = clusterize(sorted_ids, swarm_path)
+        clusters = clusterize(sorted_ids, swarm_path, rmsd_cutoff=args.cutoff)
 
         # Write clustering information
         write_cluster_info(clusters, gso_data, swarm_path)
