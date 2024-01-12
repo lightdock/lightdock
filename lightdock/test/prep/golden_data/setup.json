@@ -15,7 +15,7 @@
     "noxt": true,
     "receptor_pdb": "2UUY_rec.pdb",
     "restraints": null,
-    "setup_version": "1.0.0-pre1",
+    "setup_version": "1.0.0-pre2",
     "starting_points_seed": 324324,
     "surface_density": 50.0,
     "swarm_radius": 10.0,
