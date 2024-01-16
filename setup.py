@@ -1,11 +1,6 @@
 import os
 import setuptools
 from distutils.core import Extension
-from lightdock.version import CURRENT_VERSION
-
-
-with open("README.md", "r") as fh:
-    long_description = fh.read()
 
 
 # MDAnalysis NumPy delay on setup.py
@@ -136,43 +131,8 @@ exts = [
 ]
 
 setuptools.setup(
-    name="lightdock",
-    version=CURRENT_VERSION,
-    description="A macromolecular docking framework",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://lightdock.org/",
     packages=setuptools.find_namespace_packages(),
     include_package_data=True,
-    license="GPLv3 License",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Environment :: Console",
-        "Intended Audience :: Education",
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: POSIX",
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
-        "Topic :: Scientific/Engineering :: Bio-Informatics",
-        "Topic :: Scientific/Engineering :: Chemistry",
-    ],
-    python_requires=">=3.8",
-    setup_requires=["numpy>=1.17.1", "pytest", "pytest-cov"],
-    install_requires=[
-        "numpy>=1.17.1",
-        "scipy>=1.7.0",
-        "cython>=0.29.13",
-        "prody>=2.0.1",
-        "freesasa>=2.0.3",
-    ],
     scripts=[
         "bin/ant_thony.py",
         "bin/lgd_calculate_diameter.py",
