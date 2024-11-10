@@ -1,7 +1,10 @@
+from lightdock.gso.algorithm import GSO
+
+
 class GSOClusterTask(object):
     """A GSO execution in a given cluster"""
 
-    def __init__(self, id_cluster, gso, steps, dest_folder):
+    def __init__(self, id_cluster, gso: GSO, steps, dest_folder):
         self.id = id_cluster
         self.gso = gso
         self.steps = steps

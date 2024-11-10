@@ -188,7 +188,7 @@ class LightdockGSOBuilder(object):
         local_minimization,
         anm_rec,
         anm_lig,
-    ):
+    ) -> GSO:
         """Creates a new GSO instance of the algorithm reading the initial position of the glowworms
         agents from initial_population_file and using the scoring function adapter.
         """

@@ -2,6 +2,7 @@
 
 import os
 import importlib
+from typing import List
 
 from lightdock.util.logger import LoggingManager
 from lightdock.util.parser import CommandLineParser
@@ -122,7 +123,7 @@ def set_scoring_function(parser, receptor, ligand):
 
 def prepare_gso_tasks(parser, adapters, scoring_functions, starting_points_files):
     """Creates the parallel GSOTasks objects to be executed by the scheduler"""
-    tasks = []
+    tasks: List[GSOClusterTask] = []
     # Prepare tasks depending on swarms to simulate
     if parser.args.swarm_list:
         swarm_ids = parser.args.swarm_list

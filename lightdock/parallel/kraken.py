@@ -1,8 +1,11 @@
 """Module in charge of parallelizing the execution of the GSO algorithm in different clusters."""
 
+from typing import List
+
 from multiprocessing import Process, cpu_count
 import cProfile
 from lightdock.util.logger import LoggingManager
+from lightdock.parallel.util import GSOClusterTask
 
 
 class Tentacle(Process):
@@ -35,7 +38,7 @@ class Kraken(object):
     The Kraken 1830, Alfred Tennyson
     """
 
-    def __init__(self, tasks, num_cpus=0, profiling=False):
+    def __init__(self, tasks: List[GSOClusterTask], num_cpus=0, profiling=False):
         self.log = LoggingManager.get_logger("kraken")
         try:
             self.num_processes = int(num_cpus)
