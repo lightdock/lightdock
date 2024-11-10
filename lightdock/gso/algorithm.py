@@ -13,6 +13,7 @@ from lightdock.gso.initializer import (
     FromFileInitializer,
     LightdockFromFileInitializer,
 )
+from lightdock.gso.swarm import Swarm
 
 
 class GSO(object):
@@ -20,7 +21,7 @@ class GSO(object):
 
     def __init__(
         self,
-        swarm,
+        swarm: Swarm,
         gso_parameters,
         random_number_generator,
         initial_coordinates_file="",
