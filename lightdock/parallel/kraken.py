@@ -11,7 +11,7 @@ from lightdock.parallel.util import GSOClusterTask
 class Tentacle(Process):
     """A Kraken without tentacles would be a sea serpent, right?"""
 
-    def __init__(self, tasks, profiling=False):
+    def __init__(self, tasks: List[GSOClusterTask], profiling=False):
         super(Tentacle, self).__init__()
         self.tasks = tasks
         self.profiling = profiling
