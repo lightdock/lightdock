@@ -59,7 +59,7 @@ class Kraken(object):
 
         self.tasks = tasks
         self.num_tasks = len(tasks)
-        self.tentacles = []
+        self.tentacles: List[Tentacle] = []
         tentacle_tasks = [
             tasks[i :: self.num_processes] for i in range(self.num_processes)
         ]
