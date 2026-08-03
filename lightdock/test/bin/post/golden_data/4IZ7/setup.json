@@ -20,6 +20,7 @@
         ], 
         "passive": []
     }, 
+    "swarm_centers": null,
     "swarms": 4, 
     "starting_points_seed": 324324, 
     "receptor_pdb": "4IZ7_A_noh.pdb", 

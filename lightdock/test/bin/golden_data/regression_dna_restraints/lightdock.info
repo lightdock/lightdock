@@ -41,11 +41,12 @@
     "scoring_function": "dna",
     "setup_file": "setup.json",
     "setup_version": "0.9.3.post2",
-    "simulation_version": "0.9.3.post2",
-    "start_time": "2023-03-07 16:54:32",
+    "simulation_version": "1.0.0-pre2",
+    "start_time": "2025-09-16 15:15:48",
     "starting_points_seed": 324324,
     "steps": 30,
     "surface_density": 50.0,
+    "swarm_centers": null,
     "swarm_list": [
         0
     ],

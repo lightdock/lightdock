@@ -6,7 +6,7 @@ C-implementation of the SIPPER (https://dx.doi.org/10.1021/ci100353e) scoring fu
 
 import numpy as np
 import os
-from lightdock.constants import DEFAULT_LIGHTDOCK_PREFIX
+from lightdock.constants import DEFAULT_LIGHTDOCK_PREFIX, DEFAULT_CONTACT_RESTRAINTS_CUTOFF
 from lightdock.scoring.functions import ScoringFunction, ModelAdapter
 from lightdock.structure.model import DockingModel
 from lightdock.scoring.sipper.data.energy import sipper_energy, res_to_index

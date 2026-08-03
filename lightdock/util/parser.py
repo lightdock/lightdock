@@ -333,6 +333,18 @@ class SetupCommandLineParser(object):
             action="store_true",
             default=False,
         )
+        # Swarm centers
+        parser.add_argument(
+            "-sc",
+            "--sc",
+            "-swarm_centers",
+            "--swarm_centers",
+            help="Swarm centers coordinates file",
+            dest="swarm_centers",
+            type=valid_file,
+            metavar="swarm_centers",
+            default=None,
+        )
         # Version
         parser.add_argument(
             "-V",

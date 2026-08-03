@@ -27,11 +27,12 @@
     "scoring_function": "pisa",
     "setup_file": "setup.json",
     "setup_version": "0.9.3",
-    "simulation_version": "0.9.3",
-    "start_time": "2022-09-14 09:46:19",
+    "simulation_version": "1.0.0-pre2",
+    "start_time": "2025-09-16 15:25:21",
     "starting_points_seed": 324324,
     "steps": 30,
     "surface_density": 50.0,
+    "swarm_centers": null,
     "swarm_list": [
         0
     ],

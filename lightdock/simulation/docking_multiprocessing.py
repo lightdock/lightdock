@@ -156,7 +156,7 @@ def prepare_gso_tasks(parser, adapters, scoring_functions, starting_points_files
 def run_simulation(parser):
     """Main program"""
     try:
-        parser = CommandLineParser()
+        parser = CommandLineParser() if not parser else parser
         args = parser.args
 
         # Read setup and add it to the actual args object

@@ -32,6 +32,7 @@
     "setup_version": "0.9.3.post2",
     "starting_points_seed": 324324,
     "surface_density": 50.0,
+    "swarm_centers": null,
     "swarm_radius": 10.0,
     "swarms": 60,
     "swarms_per_restraint": 20,

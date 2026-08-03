@@ -154,14 +154,13 @@ class Quaternion:
         if q_dot > LINEAR_THRESHOLD:
             # Linear interpolation if quaternions are too close
             result = self + t*(other-self)
-            result.normalize()
-            return result
+            # FIX: result was not normalized. See issue #109
+            return result.normalize()
         else:
             q_dot = max(min(q_dot, 1.0), -1.0)
             omega = acos(q_dot)
             so = sin(omega)
             return (sin((1.0-t)*omega) / so) * self + (sin(t*omega)/so) * other
-
 
     def distance(self, other):
         """

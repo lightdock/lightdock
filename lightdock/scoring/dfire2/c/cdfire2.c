@@ -37,17 +37,17 @@ static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
 
         // Residue indexes
         res_array = PyArray_FROM_OTF(res_index, NPY_INT32, NPY_ARRAY_IN_ARRAY);
-        res_indexes = (int*)PyArray_DATA(res_array);
+        res_indexes = (int*)PyArray_DATA((PyArrayObject*)res_array);
 
         // Atom type indexes
         atom_array = PyArray_FROM_OTF(atom_index, NPY_INT32, NPY_ARRAY_IN_ARRAY);
-        atom_indexes = (int*)PyArray_DATA(atom_array);
+        atom_indexes = (int*)PyArray_DATA((PyArrayObject*)atom_array);
 
         // DFIRE2 potentials
         energy_array = PyArray_FROM_OTF(dfire2_energy, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
         //int N = (int)PyArray_DIM(energy_array, 0);
         //printf("%d", N);
-        energies = (double*)PyArray_DATA(energy_array);
+        energies = (double*)PyArray_DATA((PyArrayObject*)energy_array);
 
         interface_receptor = malloc(mol_length*sizeof(unsigned int));
         interface_ligand = malloc(mol_length*sizeof(unsigned int));

@@ -1,11 +1,13 @@
-from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
+from setuptools import setup, Extension
+from Cython.Build import cythonize
 
+# Define the extensions
+extensions = [
+    Extension("cutil", ["cutil.pyx"]),
+    Extension("quaternion", ["quaternion.pyx"]),
+]
+
+# Pass the extensions to cythonize() inside setup()
 setup(
-    cmdclass={"build_ext": build_ext},
-    ext_modules=[
-        Extension("cutil", ["cutil.pyx"]),
-        Extension("quaternion", ["quaternion.pyx"]),
-    ],
+    ext_modules=cythonize(extensions),
 )

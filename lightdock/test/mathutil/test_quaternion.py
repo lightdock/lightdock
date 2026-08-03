@@ -4,6 +4,7 @@ import pytest
 from lightdock.mathutil.cython.quaternion import Quaternion
 from lightdock.mathutil.lrandom import MTGenerator
 from lightdock.mathutil.constants import ERROR_TOLERANCE
+from lightdock.constants import DEFAULT_ROTATION_STEP
 
 
 class TestQuaternion:
@@ -194,6 +195,27 @@ class TestQuaternion:
         s = q1.slerp(q2, 0.1)
 
         assert s == q2
+
+    def test_slerp_linear_almost_normalized(self):
+        q1 = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)
+        q2 = Quaternion(0.707106581, 0.0, 0.707106781, 0.0)
+
+        s = q1.slerp(q2, DEFAULT_ROTATION_STEP)
+
+        expected = Quaternion(0.70710673, 0.00000000, 0.70710683, 0.00000000)
+
+        assert expected == s
+
+    def test_slerp_linear_no_normalized(self):
+        q1 = Quaternion(1.707106781, 0.0, 1.707106781, 0.0)
+        q2 = Quaternion(1.807106781, 0.0, 1.707106781, 0.0)
+
+        s = q1.slerp(q2, DEFAULT_ROTATION_STEP)
+        # Before fix: s = (0.71702032, 0.00000000, 0.69690713, 0.00000000)
+        # After fix: s = (0.71709287, 0.00000000, 0.69697763, 0.00000000)
+        expected = Quaternion(0.71709287, 0.00000000, 0.69697763, 0.00000000)
+
+        assert expected == s
 
     def test_distance_is_zero(self):
         q = Quaternion(0.707106781, 0.0, 0.707106781, 0.0)

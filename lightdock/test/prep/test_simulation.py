@@ -79,6 +79,18 @@ class TestParsingRestraintsFile:
 
         assert restraints == expected
 
+    def test_minor_case_restraints_file(self):
+        input_file = self.golden_data_path / "rst_5.lst"
+
+        restraints = parse_restraints_file(input_file)
+
+        expected = {
+            "receptor": {"active": ["a.ALA.1", " .LYS.3"], "passive": [], "blocked": ["A.LYS.2"]},
+            "ligand": {"active": [], "passive": ["B.TYR.1"], "blocked": ["B.TRP.2"]},
+        }
+
+        assert restraints == expected
+
 
 class TestRestraints:
     def setup_class(self):
@@ -151,6 +163,7 @@ class TestSimulation:
             "setup_version": CURRENT_VERSION,
             "starting_points_seed": 324324,
             "surface_density": 50.0,
+            "swarm_centers": None,
             "swarm_radius": 10.0,
             "swarms": 5,
             "swarms_per_restraint": 20,

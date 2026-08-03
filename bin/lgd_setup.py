@@ -20,6 +20,7 @@ from lightdock.prep.simulation import (
     calculate_anm,
     parse_restraints_file,
     get_restraints,
+    parse_swarm_centers_file,
 )
 from lightdock.constants import (
     DEFAULT_LIGHTDOCK_PREFIX,
@@ -138,6 +139,12 @@ if __name__ == "__main__":
         except (KeyError, TypeError):
             lig_restraints = None
 
+        # Parse swarm centers if provided
+        swarm_centers = None
+        if args.swarm_centers:
+            log.info(f"Swarm centers provided from {args.swarm_centers}")
+            swarm_centers = parse_swarm_centers_file(args.swarm_centers)
+
         # Calculate surface points (swarm centers) over receptor structure
         starting_points_files = calculate_starting_positions(
             receptor,
@@ -162,6 +169,7 @@ if __name__ == "__main__":
             args.fixed_distance,
             args.swarms_per_restraint,
             args.dense_sampling,
+            swarm_centers,
         )
         if len(starting_points_files) != args.swarms:
             args.swarms = len(starting_points_files)

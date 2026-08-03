@@ -175,7 +175,8 @@ def calculate_starting_positions(
     flip=False,
     swarms_at_fixed_distance=DEFAULT_SWARM_DISTANCE,
     swarms_per_restraint=DEFAULT_SWARMS_PER_RESTRAINT,
-    dense_sampling=False
+    dense_sampling=False,
+    swarm_centers=None,
 ):
     """Defines the starting positions of each glowworm in the simulation.
 
@@ -212,6 +213,7 @@ def calculate_starting_positions(
             swarms_at_fixed_distance,
             swarms_per_restraint,
             dense_sampling,
+            swarm_centers,
         )
         log.info(f"Generated {len(starting_points_files)} positions files")
     else:
@@ -267,7 +269,7 @@ def prepare_results_environment(swarms=10):
         saving_path = "%s%d" % (DEFAULT_SWARM_FOLDER, id_swarm)
         if Path(saving_path).is_dir():
             raise LightDockError(f"Simulation folder {saving_path} already exists")
-        os.mkdir(saving_path)
+        os.makedirs(saving_path)
     log.info("Done.")
 
 
@@ -325,6 +327,24 @@ def get_default_box(use_anm, anm_rec, anm_lig):
     return BoundingBox(boundaries)
 
 
+def parse_swarm_centers_file(swarm_centers_file_name):
+    """Parse a swarm center coordinates file, returns a list of x,y,z coordinates"""
+    swarm_centers = []
+    with open(swarm_centers_file_name) as input_swarm_centers:
+        for line in input_swarm_centers:
+            if line:
+                try:
+                    line = line.rstrip(os.linesep)
+                    try:
+                        coords = [float(coord) for coord in line.split()]
+                    except ValueError:
+                        coords = [float(coord) for coord in line.split(',')]
+                    swarm_centers.append(coords)
+                except ValueError:
+                    pass
+    return swarm_centers
+
+
 def parse_restraints_file(restraints_file_name):
     """Parse a restraints file, returns a dictionary for receptor and ligand"""
     with open(restraints_file_name) as input_restraints:
@@ -340,8 +360,13 @@ def parse_restraints_file(restraints_file_name):
                 try:
                     fields = restraint.split()
                     residue_identifier = fields[1].split(".")
-                    # Only consider first character if many
-                    chain_id = residue_identifier[0][0].upper()
+
+                    # Only consider first character if many, accept any character
+                    chain_id = residue_identifier[0]
+
+                    # Corner case for Chain ID in case it is a blank
+                    if chain_id == '':
+                        chain_id = ' '
                     # Only considering 3 chars if many
                     residue = residue_identifier[1][0:3].upper()
                     # Check for integer
@@ -355,6 +380,7 @@ def parse_restraints_file(restraints_file_name):
                     parsed_restraint = (
                         f"{chain_id}.{residue}.{residue_number}{residue_insertion}"
                     )
+
                     # Check type of restraint:
                     active = passive = blocked = False
                     try:

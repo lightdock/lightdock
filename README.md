@@ -28,6 +28,11 @@ Jorge Roel-Touris, Alexandre M.J.J. Bonvin, [Brian Jiménez-García](http://bjim
 Jorge Roel-Touris, [Brian Jiménez-García](https://bjimenezgarcia.com) & Alexandre M.J.J. Bonvin<br>
 *Nat Commun* **11**, 6210 (2020); doi: [https://doi.org/10.1038/s41467-020-20076-5](https://doi.org/10.1038/s41467-020-20076-5)
 
+**The LightDock Server: Artificial Intelligence-powered modeling of macromolecular interactions**<br>
+[Brian Jiménez-García](http://bjimenezgarcia.com), Jorge Roel-Touris, & Didier Barradas-Bautista<br>
+*Nucleic Acids Research*, 2023;, gkad327, doi: [https://doi.org/10.1093/nar/gkad327](https://doi.org/10.1093/nar/gkad327)
+
+
 ## 3. Installation
 
 Lightdock software is compatible and it has been tested with the followings OS:
@@ -61,22 +66,12 @@ pip install lightdock
 ## 4. Development
 For development and extension of the LightDock code, please follow these instructions:
 
-### 4.1. Clone
+### 4.1. Clone & install
 Clone this repository:
 
 ```bash
 git clone https://github.com/lightdock/lightdock.git
 ```
-
-### 4.2. Compile Python C and Cython extensions
-
-Please make sure dependencies are already installed (via pip, package manager, etc.):
-
-* numpy>=1.17.1
-* scipy>=1.3.1
-* cython>=0.29.13
-* prody>=1.10.11
-* freesasa>=2.0.3
 
 It is recommended to create a virtual environment and install it:
 
@@ -87,6 +82,17 @@ cd lightdock
 pip install -e .
 ```
 
+### 4.2. Testing
+
+You can run LightDock tests:
+
+```bash
+pip install pytest
+pytest
+```
+
+### (Optional) 4.3. Compile Python C and Cython extensions
+
 If not using pip or setuptools for development, there is as bash script to compile all the extensions:
 
 ```bash
@@ -94,7 +100,7 @@ cd lightdock
 ./setup.sh
 ```
 
-### 4.3. Add Lightdock to your path
+### (Optional) 4.4. Add Lightdock to your path
 
 Add the following lines to your `~/.bashrc` file, don't forget to change `/path/to/lightdock`:
 
@@ -109,15 +115,6 @@ Don't forget to apply the changes:
 
 ```bash
 source ~/.bashrc
-```
-
-### 4.4. Testing
-
-You can run LightDock tests:
-
-```bash
-cd lightdock
-nosetests
 ```
 
 ## 5. Documentation

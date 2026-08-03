@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 ## Compiles all the required Python extensions found in the LightDock project
 

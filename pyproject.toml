@@ -2,13 +2,14 @@
 name = "lightdock"
 dynamic = ["version"]
 description = "A macromolecular docking framework"
-license = {text = "GPLv3 License"}
+license = "GPL-3.0"
+license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 dependencies = [
-    "scipy>=1.7.0",
-    "prody>=2.0.1",
+    "scipy>=1.15.3",
+    "prody>=2.6.1",
     "freesasa>=2.0.3",
 ]
 
@@ -19,20 +20,19 @@ maintainers = [
     {name = "Brian Jimenez", email = "br.jimenezgarcia@gmail.com"},
 ]
 
-keywords = ["lightdock", "docking", "protein", "molecules", "DNA", "peptide"]
+keywords = ["lightdock", "docking", "protein", "molecules", "DNA", "RNA", "peptide"]
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Education",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: POSIX",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -49,10 +49,15 @@ Issues = "https://github.com/lightdock/lightdock/issues"
 
 [build-system]
 requires = [
-    "setuptools",
+    "setuptools>=82.0.1",
     "numpy>=1.17.1",
-    "cython>=0.29.13",
+    "cython>=3.2.8",
 ]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
 version = {attr = "lightdock.version.CURRENT_VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests", "tests.*", "venv*"]
