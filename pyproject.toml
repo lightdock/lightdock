@@ -86,4 +86,4 @@ version = {attr = "lightdock.version.CURRENT_VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["."]
-exclude = ["tests", "tests.*", "venv*"]
+include = ["lightdock", "lightdock.*"]
