@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Calculates the diameter of a given PDB structure"""
 
 import argparse
@@ -22,7 +20,7 @@ def parse_command_line():
     return parsed_args
 
 
-if __name__ == "__main__":
+def main():
     args = parse_command_line()
 
     atoms, residues, chains = parse_complex_from_file(args.pdb)
@@ -33,3 +31,7 @@ if __name__ == "__main__":
     ligand_max_diameter = np.max(distances_matrix)
 
     print(ligand_max_diameter)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Generates the top N structures in PDB format given a ranking file"""
 
 import argparse
@@ -28,8 +26,7 @@ from lightdock.prep.simulation import get_setup_from_file
 log = LoggingManager.get_logger("lgd_top")
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(prog="lgd_top")
     # Receptor
     parser.add_argument(
@@ -170,3 +167,7 @@ if __name__ == "__main__":
                 ligand_pose,
             )
     log.info("Generated %d conformations" % args.top)
+
+
+if __name__ == "__main__":
+    main()

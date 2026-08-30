@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Converts any HETATM molecule to dummy beads"""
 
 import os
@@ -27,8 +25,7 @@ def parse_command_line():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
-
+def main():
     # Parse command line
     args = parse_command_line()
 
@@ -56,3 +53,7 @@ if __name__ == "__main__":
     else:
         log.warning("No dummy atom candidates found, stopping")
         raise SystemExit
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import argparse
 from prody import parsePDB, confProDy
@@ -15,8 +13,7 @@ confProDy(verbosity="info")
 log = LoggingManager.get_logger("lgd_create_membrane")
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(prog="lgd_create_membrane")
     parser.add_argument(
         "input_pdb_file", help="Input PDB file", metavar="input_pdb_file"
@@ -147,3 +144,7 @@ if __name__ == "__main__":
     log.info(f"- Angular resolution: {args.angular_resolution} degrees")
     log.info(f"- Radius resolution: {args.radius_resolution} A")
     log.info(f"- Radius offset: {args.radius_offset} A")
+
+
+if __name__ == "__main__":
+    main()

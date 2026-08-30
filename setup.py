@@ -34,32 +34,7 @@ exts = [
 ]
 
 setuptools.setup(
-    packages=setuptools.find_namespace_packages(),
     include_package_data=True,
     ext_modules=exts,
     zip_safe=False,
-    scripts=[
-        "bin/ant_thony.py",
-        "bin/lgd_calculate_diameter.py",
-        "bin/lgd_calculate_reference_points.py",
-        "bin/lgd_calculate_scoring.py",
-        "bin/lgd_cluster_bsas.py",
-        "bin/lgd_copy_structures.py",
-        "bin/lgd_create_membrane.py",
-        "bin/lgd_dummify.py",
-        "bin/lgd_filter_membrane.py",
-        "bin/lgd_filter_restraints.py",
-        "bin/lgd_flatten.py",
-        "bin/lgd_generate_conformations.py",
-        "bin/lgd_generate_glowworm_positions.py",
-        "bin/lgd_generate_trajectory.py",
-        "bin/lgd_gso_to_csv.py",
-        "bin/lgd_map_contacts.py",
-        "bin/lgd_move_anm.py",
-        "bin/lgd_rank.py",
-        "bin/lgd_rank_swarm.py",
-        "bin/lgd_run.py",
-        "bin/lgd_setup.py",
-        "bin/lgd_top.py",
-    ],
 )

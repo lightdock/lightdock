@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """A tool for parallel execution of tasks"""
 
 import os
@@ -86,8 +84,7 @@ class Ant_Thony:
         logging.info("All \U0001F41C back to the nest")
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(prog="ant_thony")
     parser.add_argument(
         "tasks_file_name",
@@ -115,3 +112,7 @@ if __name__ == "__main__":
         anthony = Ant_Thony(all_tasks, args.cores)
         anthony.release()
         anthony.go_home()
+
+
+if __name__ == "__main__":
+    main()

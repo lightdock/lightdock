@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Translates a LightDock output file to CSV format"""
 
 import argparse
@@ -26,7 +24,7 @@ def parse_command_line():
     return args
 
 
-if __name__ == "__main__":
+def main():
     try:
         # Parse command line
         args = parse_command_line()
@@ -52,3 +50,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         log.info("Caught interrupt...")
         log.info("bye.")
+
+
+if __name__ == "__main__":
+    main()

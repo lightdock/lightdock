@@ -47,6 +47,32 @@ Documentation = "https://lightdock.org/tutorials"
 Repository = "https://github.com/lightdock/lightdock"
 Issues = "https://github.com/lightdock/lightdock/issues"
 
+# commands keep the ".py" suffix, so existing user scripts and
+# tutorials/guides around the web are unaffected
+[project.scripts]
+"ant_thony.py" = "lightdock.cli.ant_thony:main"
+"lgd_calculate_diameter.py" = "lightdock.cli.lgd_calculate_diameter:main"
+"lgd_calculate_reference_points.py" = "lightdock.cli.lgd_calculate_reference_points:main"
+"lgd_calculate_scoring.py" = "lightdock.cli.lgd_calculate_scoring:main"
+"lgd_cluster_bsas.py" = "lightdock.cli.lgd_cluster_bsas:main"
+"lgd_copy_structures.py" = "lightdock.cli.lgd_copy_structures:main"
+"lgd_create_membrane.py" = "lightdock.cli.lgd_create_membrane:main"
+"lgd_dummify.py" = "lightdock.cli.lgd_dummify:main"
+"lgd_filter_membrane.py" = "lightdock.cli.lgd_filter_membrane:main"
+"lgd_filter_restraints.py" = "lightdock.cli.lgd_filter_restraints:main"
+"lgd_flatten.py" = "lightdock.cli.lgd_flatten:main"
+"lgd_generate_conformations.py" = "lightdock.cli.lgd_generate_conformations:main"
+"lgd_generate_glowworm_positions.py" = "lightdock.cli.lgd_generate_glowworm_positions:main"
+"lgd_generate_trajectory.py" = "lightdock.cli.lgd_generate_trajectory:main"
+"lgd_gso_to_csv.py" = "lightdock.cli.lgd_gso_to_csv:main"
+"lgd_map_contacts.py" = "lightdock.cli.lgd_map_contacts:main"
+"lgd_move_anm.py" = "lightdock.cli.lgd_move_anm:main"
+"lgd_rank.py" = "lightdock.cli.lgd_rank:main"
+"lgd_rank_swarm.py" = "lightdock.cli.lgd_rank_swarm:main"
+"lgd_run.py" = "lightdock.cli.lgd_run:main"
+"lgd_setup.py" = "lightdock.cli.lgd_setup:main"
+"lgd_top.py" = "lightdock.cli.lgd_top:main"
+
 [build-system]
 requires = [
     "setuptools>=82.0.1",
