@@ -2,7 +2,7 @@
 name = "lightdock"
 dynamic = ["version"]
 description = "A macromolecular docking framework"
-license = "GPL-3.0"
+license = "GPL-3.0-only"
 license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -10,7 +10,7 @@ requires-python = ">=3.10"
 dependencies = [
     "scipy>=1.15.3",
     "prody>=2.6.1",
-    "freesasa>=2.0.3",
+    "freesasa>=2.2.1",
 ]
 
 authors = [
