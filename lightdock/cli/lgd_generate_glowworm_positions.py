@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Creates a PDB with atom points representing the position for each of the glowworms of a swarm"""
 
 import argparse
@@ -32,8 +30,7 @@ def parse_output_file(lightdock_output):
     return glowworm_translations
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(prog="generate_glowworm_positions")
     # Lightdock output file
     parser.add_argument(
@@ -53,3 +50,7 @@ if __name__ == "__main__":
 
     create_pdb_from_points(os.path.join(destination_path, pdb_file_name), translations, res_name="GLW")
     log.info("PDB %s file created." % os.path.join(destination_path, pdb_file_name))
+
+
+if __name__ == "__main__":
+    main()

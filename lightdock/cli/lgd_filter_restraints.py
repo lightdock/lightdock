@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Filter LightDock final swarm results depending on the percentage of restraints satisfied"""
 
 
@@ -136,8 +134,7 @@ def parse_command_line():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
-
+def main():
     # Parse command line
     args = parse_command_line()
 
@@ -268,3 +265,7 @@ if __name__ == "__main__":
                     )
                     + os.linesep
                 )
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Generates the simulated trajectory of a given glowworm in a swarm"""
 
 import argparse
@@ -80,7 +78,7 @@ def parse_output_file(lightdock_output, glowworm_id, num_anm_rec, num_anm_lig):
     return None
 
 
-if __name__ == "__main__":
+def main():
     # Parse arguments
     args = parse_command_line()
 
@@ -182,3 +180,7 @@ if __name__ == "__main__":
         except IOError:
             # Ignore not generated steps
             pass
+
+
+if __name__ == "__main__":
+    main()

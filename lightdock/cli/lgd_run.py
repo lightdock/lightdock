@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Execution controller
 
 Depending on the environment, executes a MPI or multiprocessing version.
@@ -13,8 +11,7 @@ from lightdock.util.parser import CommandLineParser
 log = LoggingManager.get_logger("lgd_run")
 
 
-if __name__ == "__main__":
-
+def main():
     try:
         parser = CommandLineParser()
         mpi_support = parser.args.mpi
@@ -34,3 +31,7 @@ if __name__ == "__main__":
     except Exception:
         log.error("LightDock has failed, please check traceback:")
         traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()

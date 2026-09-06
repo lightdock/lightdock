@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Calculates the ranking file by scoring intra-swarm"""
 
 import os
@@ -25,7 +23,7 @@ def parse_command_line():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     try:
         current_path = os.getcwd()
         args = parse_command_line()
@@ -42,3 +40,7 @@ if __name__ == "__main__":
     except IOError:
         log.warning("Either num_clusters or steps not found. Exiting...")
         raise SystemExit()
+
+
+if __name__ == "__main__":
+    main()

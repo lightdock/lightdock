@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Generates the PDB structures given a LightDock swarm results file"""
 
 import argparse
@@ -103,8 +101,7 @@ def parse_initial_file(lightdock_output, num_anm_rec, num_anm_lig):
     return translations, rotations, receptor_ids, ligand_ids, rec_extents, lig_extents
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(prog="conformer_conformations")
     # Receptor
     parser.add_argument(
@@ -291,3 +288,7 @@ if __name__ == "__main__":
             ligand, os.path.join(destination_path, "lightdock_%s.pdb" % i), ligand_pose
         )
     log.info("Generated %d conformations" % num_conformations)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Maps the contacts during simulation on the receptor surface"""
 
 import argparse
@@ -100,8 +98,7 @@ def calculate_contacts(rec_atoms_per_residue, rec_pose, lig_pose):
     return list(set(new_contacts))
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(prog="lgd_map_contacts")
     # Receptor PDB
     parser.add_argument(
@@ -238,3 +235,7 @@ if __name__ == "__main__":
         atom.b_factor = residue_freqs_norm[residue_id]
 
     write_pdb_to_file(receptor, args.output_pdb_file)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Calculates the reference points of the simulation"""
 
 import os
@@ -49,7 +47,7 @@ def get_point_respresentation(point):
     return "%8.5f %8.5f %8.5f" % (point[0], point[1], point[2])
 
 
-if __name__ == "__main__":
+def main():
     try:
         # Parse command line
         args = parse_command_line()
@@ -108,3 +106,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         log.info("Caught interrupt...")
         log.info("bye.")
+
+
+if __name__ == "__main__":
+    main()
