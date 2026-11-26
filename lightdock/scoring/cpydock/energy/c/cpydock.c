@@ -3,6 +3,7 @@
 #include <Python.h>
 #include "structmember.h"
 #include "numpy/arrayobject.h"
+#include "../../../interface_array.h"
 
 
 #define EPSILON 4.0
@@ -171,17 +172,13 @@ static PyObject * cpydock_calculate_energy(PyObject *self, PyObject *args) {
         free(min_lig_distance);
     }
 
-    interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
-    interface_ligand = realloc(interface_ligand, interface_len*sizeof(unsigned int));
-    dims[0] = interface_len;
-
     // Return a tuple with the following values for calculated energies:
     PyTuple_SetItem(result, 0, PyFloat_FromDouble(total_elec));
     PyTuple_SetItem(result, 1, PyFloat_FromDouble(total_vdw));
     PyTuple_SetItem(result, 2, PyFloat_FromDouble(total_solvation_rec));
     PyTuple_SetItem(result, 3, PyFloat_FromDouble(total_solvation_lig));
-    PyTuple_SetItem(result, 4, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_receptor));
-    PyTuple_SetItem(result, 5, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_ligand));
+    PyTuple_SetItem(result, 4, interface_to_array(interface_receptor, interface_len));
+    PyTuple_SetItem(result, 5, interface_to_array(interface_ligand, interface_len));
     return result;
 }
 

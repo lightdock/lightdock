@@ -3,6 +3,7 @@
 #include <Python.h>
 #include "structmember.h"
 #include "numpy/arrayobject.h"
+#include "../../interface_array.h"
 
 
 /**
@@ -159,15 +160,10 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
 
     }
 
-    dims[0] = interface_len;
-
-    interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
-    interface_ligand = realloc(interface_ligand, interface_len*sizeof(unsigned int));
-
     result = PyTuple_New(3);
     PyTuple_SET_ITEM(result, 0, PyFloat_FromDouble((energy*0.0157 - 4.7)*-1));
-    PyTuple_SET_ITEM(result, 1, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_receptor));
-    PyTuple_SET_ITEM(result, 2, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_ligand));
+    PyTuple_SET_ITEM(result, 1, interface_to_array(interface_receptor, interface_len));
+    PyTuple_SET_ITEM(result, 2, interface_to_array(interface_ligand, interface_len));
 
     return result;
 }
