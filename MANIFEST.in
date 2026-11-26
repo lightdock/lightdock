@@ -4,7 +4,14 @@ prune env
 include LICENSE
 include lightdock/scoring/interface_array.h
 include lightdock/etc/glowworm.conf
-include lightdock/scoring/tobi/data/*.dat
+include lightdock/scoring/ddna/data/fort.21_xscore_noH_Met
+include lightdock/scoring/tobia1/data/TOBI_A1_step*
+include lightdock/scoring/tobia2/data/TOBI_A2_step*
+include lightdock/scoring/tobibahar/data/*.dat
+include lightdock/scoring/tobisc/data/*.dat
+recursive-include lightdock *.pyx
+include lightdock/test/etc/glowworm.conf
+recursive-include lightdock/test/post/golden_data *
 include lightdock/scoring/dfire/data/DCparams
 include lightdock/scoring/fastdfire/data/DCparams
 include lightdock/scoring/pisa/data/pisa.params
