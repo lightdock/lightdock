@@ -2,6 +2,7 @@ prune venv*
 prune .venv
 prune env
 include LICENSE
+include lightdock/scoring/interface_array.h
 include lightdock/etc/glowworm.conf
 include lightdock/scoring/tobi/data/*.dat
 include lightdock/scoring/dfire/data/DCparams

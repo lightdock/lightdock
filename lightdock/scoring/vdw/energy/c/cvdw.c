@@ -3,6 +3,7 @@
 #include <Python.h>
 #include "structmember.h"
 #include "numpy/arrayobject.h"
+#include "../../../interface_array.h"
 
 
 #define VDW_CUTOFF 1.0
@@ -104,14 +105,9 @@ static PyObject * calculate_vdw(PyObject *self, PyObject *args) {
     }
 
     // Return a tuple with the following values for calculated energies:
-    interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
-    interface_ligand = realloc(interface_ligand, interface_len*sizeof(unsigned int));
-    dims[0] = interface_len;
-
-    // Return a tuple with the following values for calculated energies:
     PyTuple_SetItem(result, 0, PyFloat_FromDouble(total_vdw));
-    PyTuple_SetItem(result, 1, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_receptor));
-    PyTuple_SetItem(result, 2, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_ligand));
+    PyTuple_SetItem(result, 1, interface_to_array(interface_receptor, interface_len));
+    PyTuple_SetItem(result, 2, interface_to_array(interface_ligand, interface_len));
     return result;
 }
 

@@ -3,6 +3,7 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include "structmember.h"
+#include "../../interface_array.h"
 
 #define DISTANCE2_CUTOFF 25.0
 
@@ -112,18 +113,16 @@ static PyObject * calculate_sipper(PyObject *self, PyObject *args) {
         // Free structures
         PyArray_Free(tmp0, rec_array);
         PyArray_Free(tmp1, lig_array);
+        Py_DECREF(tmp0);
+        Py_DECREF(tmp1);
     }
     //printf("sipper=%5.3f oda=%5.3f\n", total_sipper, total_oda);
     total_energy = -1.0*(total_sipper - 0.019 * total_oda);
 
-    interface_receptor = realloc(interface_receptor, interface_len*sizeof(unsigned int));
-    interface_ligand = realloc(interface_ligand, interface_len*sizeof(unsigned int));
-    dims[0] = interface_len;
-
     // Return a tuple with the following values for calculated energies:
     PyTuple_SetItem(result, 0, PyFloat_FromDouble(total_energy));
-    PyTuple_SetItem(result, 1, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_receptor));
-    PyTuple_SetItem(result, 2, PyArray_SimpleNewFromData(1, dims, NPY_UINT, interface_ligand));
+    PyTuple_SetItem(result, 1, interface_to_array(interface_receptor, interface_len));
+    PyTuple_SetItem(result, 2, interface_to_array(interface_ligand, interface_len));
     return result;
 }
 
