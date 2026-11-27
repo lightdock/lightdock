@@ -76,3 +76,72 @@ class TestDFIRE:
                 adapter.ligand_model.coordinates[0],
             )
         )
+
+    @pytest.mark.parametrize(
+        "dist,expected_contact",
+        [
+            (0.25, True),
+            (2.4, True),
+            (2.5, True),
+            (3.0, True),
+            (3.89, True),
+            (3.9, True),
+            (3.91, False),
+        ],
+    )
+    def test_interface_cutoff_uses_distance_in_angstroms(self, dist, expected_contact):
+        from lightdock.structure.atom import Atom
+        from lightdock.structure.residue import Residue
+        from lightdock.structure.chain import Chain
+        from lightdock.scoring.dfire.cython.cdfire import calculate_dfire
+
+        a1 = Atom(
+            atom_number=1,
+            atom_name="CA",
+            chain_id="A",
+            residue_name="ALA",
+            residue_number=1,
+            x=0.0,
+            y=0.0,
+            z=0.0,
+        )
+        a2 = Atom(
+            atom_number=1,
+            atom_name="CA",
+            chain_id="B",
+            residue_name="ALA",
+            residue_number=1,
+            x=dist,
+            y=0.0,
+            z=0.0,
+        )
+        receptor = Complex([Chain("A", [Residue("ALA", 1, atoms=[a1])])], [a1])
+        ligand = Complex([Chain("B", [Residue("ALA", 1, atoms=[a2])])], [a2])
+        adapter = DFIREAdapter(
+            receptor,
+            ligand,
+            receptor_restraints=["A.ALA.1"],
+            ligand_restraints=["B.ALA.1"],
+        )
+
+        energy, intf_rec, intf_lig = calculate_dfire(
+            adapter.receptor_model,
+            adapter.receptor_model.coordinates[0],
+            adapter.ligand_model,
+            adapter.ligand_model.coordinates[0],
+            self.dfire.potential.dfire_dist_to_bins,
+            self.dfire.potential.dfire_energy,
+            interface_cutoff=3.9,
+        )
+        expected = {0} if expected_contact else set()
+        assert intf_rec == expected
+        assert intf_lig == expected
+
+        score = self.dfire(
+            adapter.receptor_model,
+            adapter.receptor_model.coordinates[0],
+            adapter.ligand_model,
+            adapter.ligand_model.coordinates[0],
+        )
+        expected_score = energy * 3.0 if expected_contact else energy
+        assert score == pytest.approx(expected_score)
