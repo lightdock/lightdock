@@ -38,14 +38,19 @@ int compare(const void *a, const void *b) {
  *
  **/
 void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates,
-                    unsigned int **indexes, unsigned int *indexes_len) {
+                    double interface_cutoff,
+                    unsigned int **indexes, unsigned int *indexes_len,
+                    unsigned int **interface_receptor, unsigned int **interface_ligand,
+                    unsigned int *interface_len) {
     PyObject *tmp0, *tmp1;
-    unsigned int rec_len, lig_len, i, j, n;
-    double dist, **rec_array, **lig_array;
+    unsigned int rec_len, lig_len, i, j, n, intf_cap;
+    double dist, d_val, interface_cutoff2, **rec_array, **lig_array;
     npy_intp dims[2];
 
     *indexes_len = 0;
+    *interface_len = 0;
     n = 0;
+    interface_cutoff2 = interface_cutoff * interface_cutoff;
 
     tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
     tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
@@ -61,6 +66,9 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
     PyArray_AsCArray((PyObject **)&tmp1, (void **)&lig_array, dims, 2, PyArray_DescrFromType(NPY_DOUBLE));
 
     *indexes = malloc(3*rec_len*lig_len*sizeof(unsigned int));
+    intf_cap = rec_len > 0 ? rec_len : 1;
+    *interface_receptor = malloc(intf_cap*sizeof(unsigned int));
+    *interface_ligand = malloc(intf_cap*sizeof(unsigned int));
 
     for (i = 0; i < rec_len; i++) {
         for (j = 0; j < lig_len; j++) {
@@ -70,8 +78,18 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
             if (dist <= 225.) {
                 (*indexes)[n++] = i;
                 (*indexes)[n++] = j;
-                (*indexes)[n++] = (sqrt(dist)*2.0 - 1.0);
+                d_val = sqrt(dist)*2.0 - 1.0;
+                (*indexes)[n++] = d_val < 0.0 ? 0 : (unsigned int)d_val;
                 (*indexes_len)++;
+                if (dist <= interface_cutoff2) {
+                    if (*interface_len == intf_cap) {
+                        intf_cap *= 2;
+                        *interface_receptor = realloc(*interface_receptor, intf_cap*sizeof(unsigned int));
+                        *interface_ligand = realloc(*interface_ligand, intf_cap*sizeof(unsigned int));
+                    }
+                    (*interface_receptor)[*interface_len] = i;
+                    (*interface_ligand)[(*interface_len)++] = j;
+                }
             }
         }
     }
@@ -90,9 +108,9 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
  **/
 static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     PyObject *receptor, *ligand, *dfire_energy, *receptor_coordinates, *ligand_coordinates;
-    PyObject *take, *intf_rec_array_object, *intf_lig_array_object, *array_object, *tmp0, *tmp1, **rec_objects, **lig_objects, *result = NULL;
+    PyObject *take, *array_object, *tmp0, *tmp1, **rec_objects, **lig_objects, *result = NULL;
     PyArrayObject *df_en_array;
-    unsigned int n, m, i, j, d, dfire_bin, atoma, atomb, indexes_len, interface_len, *array, *interface_receptor, *interface_ligand, *indexes;
+    unsigned int n, m, i, j, d, dfire_bin, atoma, atomb, indexes_len, interface_len, *array, *interface_receptor = NULL, *interface_ligand = NULL, *indexes;
     double interface_cutoff, energy, *dfire_en_array;
     npy_intp dims[1];
 
@@ -101,11 +119,10 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     interface_len = 0;
 
     if (PyArg_ParseTuple(args, "OOOOO|d", &receptor, &ligand, &dfire_energy, &receptor_coordinates, &ligand_coordinates, &interface_cutoff)) {
-        euclidean_dist(receptor_coordinates, ligand_coordinates, &indexes, &indexes_len);
+        euclidean_dist(receptor_coordinates, ligand_coordinates, interface_cutoff,
+                       &indexes, &indexes_len, &interface_receptor, &interface_ligand, &interface_len);
 
         array = malloc(indexes_len*sizeof(unsigned int));
-        interface_receptor = malloc(indexes_len*sizeof(unsigned int));
-        interface_ligand = malloc(indexes_len*sizeof(unsigned int));
 
         // Do not need to free rec_objects and lig_objects
         tmp0 = PyObject_GetAttrString(receptor, "objects");
@@ -125,11 +142,6 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
             i = indexes[m++];
             j = indexes[m++];
             d = indexes[m++];
-
-            if (d <= interface_cutoff) {
-                interface_receptor[interface_len] = i;
-                interface_ligand[interface_len++] = j;
-            }
 
             atoma = PyInt_AsUnsignedLongMask(rec_objects[i]);
             atomb = PyInt_AsUnsignedLongMask(lig_objects[j]);
