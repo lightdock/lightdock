@@ -12,20 +12,16 @@ cpdef calculate_ddna(receptor, receptor_coordinates, ligand, ligand_coordinates,
     dist_matrix = scipy.spatial.distance.cdist(receptor_coordinates, ligand_coordinates)
     # Keep only atom indexes below 12A
     atom_indexes = np.where(dist_matrix <= 12.)
+    # Interface is calculated using real distances, not the truncated ones
+    interface_receptor, interface_ligand = np.where(dist_matrix <= interface_cutoff)
 
     energy = 0.
     U = 0.
     cdef unsigned int d
-    interface_receptor = []
-    interface_ligand = []
     
     for i,j in zip(atom_indexes[0], atom_indexes[1]):
         # convert numpy.float64 to int
         d = dist_matrix[i][j]
-        # Calculate interface
-        if d <= interface_cutoff:
-            interface_receptor.append(i)
-            interface_ligand.append(j)
 
         rec_atom = receptor.objects[i]
         lig_atom = ligand.objects[j]

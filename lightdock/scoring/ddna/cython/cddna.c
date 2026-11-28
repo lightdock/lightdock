@@ -1745,6 +1745,18 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_FastCallDict(PyObject *func, PyObj
 static PyObject *__Pyx_PyObject_FastCallMethod(PyObject *name, PyObject *const *args, size_t nargsf);
 #endif
 
+/* RaiseTooManyValuesToUnpack.proto */
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
+
+/* RaiseNeedMoreValuesToUnpack.proto */
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
+
+/* IterFinish.proto */
+static CYTHON_INLINE int __Pyx_IterFinish(void);
+
+/* UnpackItemEndCheck.proto */
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
+
 /* GetItemInt.proto */
 #define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck, has_gil, unsafe_shared)\
     (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
@@ -1767,18 +1779,6 @@ static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
 static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
                                                      int is_list, int wraparound, int boundscheck, int unsafe_shared);
 
-/* RaiseTooManyValuesToUnpack.proto */
-static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
-
-/* RaiseNeedMoreValuesToUnpack.proto */
-static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
-
-/* IterFinish.proto */
-static CYTHON_INLINE int __Pyx_IterFinish(void);
-
-/* UnpackItemEndCheck.proto */
-static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
-
 /* PyObjectCallOneArg.proto (used by ObjectGetItem) */
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
 
@@ -1787,27 +1787,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
 static CYTHON_INLINE PyObject *__Pyx_PyObject_GetItem(PyObject *obj, PyObject *key);
 #else
 #define __Pyx_PyObject_GetItem(obj, key)  PyObject_GetItem(obj, key)
-#endif
-
-/* ListAppend.proto */
-#if CYTHON_USE_PYLIST_INTERNALS && CYTHON_ASSUME_SAFE_MACROS
-static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
-    PyListObject* L = (PyListObject*) list;
-    Py_ssize_t len = Py_SIZE(list);
-    if (likely(L->allocated > len) & likely(len > (L->allocated >> 1))) {
-        Py_INCREF(x);
-        #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030d0000
-        L->ob_item[len] = x;
-        #else
-        PyList_SET_ITEM(list, len, x);
-        #endif
-        __Pyx_SET_SIZE(list, len + 1);
-        return 0;
-    }
-    return PyList_Append(list, x);
-}
-#else
-#define __Pyx_PyList_Append(L,x) PyList_Append(L,x)
 #endif
 
 /* PyLongBinop.proto */
@@ -2220,9 +2199,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyLong_From_long(long value);
 /* CIntFromPy.proto */
 static CYTHON_INLINE unsigned int __Pyx_PyLong_As_unsigned_int(PyObject *);
 
-/* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyLong_From_unsigned_int(unsigned int value);
-
 /* FormatTypeName.proto */
 #if CYTHON_COMPILING_IN_LIMITED_API
 typedef PyObject *__Pyx_TypeName;
@@ -2452,7 +2428,7 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_values __pyx_string_tab[35]
 #define __pyx_n_u_where __pyx_string_tab[36]
 #define __pyx_n_u_zip __pyx_string_tab[37]
-#define __pyx_kp_b_iso88591_AB_xy_a_EQ_2V1L_1_Q_q_s_q_L_Kq __pyx_string_tab[38]
+#define __pyx_kp_b_iso88591_AB_xy_a_EQ_2V1L_1_2V1L_1_Q_s_q __pyx_string_tab[38]
 #define __pyx_float_0_ __pyx_number_tab[0]
 #define __pyx_float_neg_1_ __pyx_number_tab[1]
 #define __pyx_float_0_0 __pyx_number_tab[2]
@@ -2539,11 +2515,11 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
   PyObject *__pyx_v_interface_cutoff = ((PyObject *)__pyx_mstate_global->__pyx_float_3_9);
   PyObject *__pyx_v_dist_matrix = NULL;
   PyObject *__pyx_v_atom_indexes = NULL;
+  PyObject *__pyx_v_interface_receptor = NULL;
+  PyObject *__pyx_v_interface_ligand = NULL;
   PyObject *__pyx_v_energy = NULL;
   PyObject *__pyx_v_U = NULL;
   unsigned int __pyx_v_d;
-  PyObject *__pyx_v_interface_receptor = NULL;
-  PyObject *__pyx_v_interface_ligand = NULL;
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_v_j = NULL;
   PyObject *__pyx_v_rec_atom = NULL;
@@ -2556,14 +2532,13 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   size_t __pyx_t_5;
-  Py_ssize_t __pyx_t_6;
-  PyObject *(*__pyx_t_7)(PyObject *);
-  PyObject *__pyx_t_8 = NULL;
-  PyObject *(*__pyx_t_9)(PyObject *);
+  PyObject *(*__pyx_t_6)(PyObject *);
+  Py_ssize_t __pyx_t_7;
+  PyObject *(*__pyx_t_8)(PyObject *);
+  PyObject *__pyx_t_9 = NULL;
   unsigned int __pyx_t_10;
   int __pyx_t_11;
   int __pyx_t_12;
-  int __pyx_t_13;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2607,8 +2582,8 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
  *     dist_matrix = scipy.spatial.distance.cdist(receptor_coordinates, ligand_coordinates)
  *     # Keep only atom indexes below 12A
  *     atom_indexes = np.where(dist_matrix <= 12.)             # <<<<<<<<<<<<<<
- * 
- *     energy = 0.
+ *     # Interface is calculated using real distances, not the truncated ones
+ *     interface_receptor, interface_ligand = np.where(dist_matrix <= interface_cutoff)
 */
   __pyx_t_3 = NULL;
   __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
@@ -2643,6 +2618,96 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
 
   /* "cddna.pyx":16
  *     atom_indexes = np.where(dist_matrix <= 12.)
+ *     # Interface is calculated using real distances, not the truncated ones
+ *     interface_receptor, interface_ligand = np.where(dist_matrix <= interface_cutoff)             # <<<<<<<<<<<<<<
+ * 
+ *     energy = 0.
+*/
+  __pyx_t_4 = NULL;
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_where); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = PyObject_RichCompare(__pyx_v_dist_matrix, __pyx_v_interface_cutoff, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_5 = 1;
+  #if CYTHON_UNPACK_METHODS
+  if (unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+    assert(__pyx_t_4);
+    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_3);
+    __Pyx_INCREF(__pyx_t_4);
+    __Pyx_INCREF(__pyx__function);
+    __Pyx_DECREF_SET(__pyx_t_3, __pyx__function);
+    __pyx_t_5 = 0;
+  }
+  #endif
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_t_2};
+    __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  }
+  if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
+    PyObject* sequence = __pyx_t_1;
+    Py_ssize_t size = __Pyx_PySequence_SIZE(sequence);
+    if (unlikely(size != 2)) {
+      if (size > 2) __Pyx_RaiseTooManyValuesError(2);
+      else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
+      __PYX_ERR(0, 16, __pyx_L1_error)
+    }
+    #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    if (likely(PyTuple_CheckExact(sequence))) {
+      __pyx_t_3 = PyTuple_GET_ITEM(sequence, 0);
+      __Pyx_INCREF(__pyx_t_3);
+      __pyx_t_2 = PyTuple_GET_ITEM(sequence, 1);
+      __Pyx_INCREF(__pyx_t_2);
+    } else {
+      __pyx_t_3 = __Pyx_PyList_GetItemRefFast(sequence, 0, __Pyx_ReferenceSharing_SharedReference);
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 16, __pyx_L1_error)
+      __Pyx_XGOTREF(__pyx_t_3);
+      __pyx_t_2 = __Pyx_PyList_GetItemRefFast(sequence, 1, __Pyx_ReferenceSharing_SharedReference);
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+      __Pyx_XGOTREF(__pyx_t_2);
+    }
+    #else
+    __pyx_t_3 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 16, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_2 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    #endif
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  } else {
+    Py_ssize_t index = -1;
+    __pyx_t_4 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 16, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_6 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_4);
+    index = 0; __pyx_t_3 = __pyx_t_6(__pyx_t_4); if (unlikely(!__pyx_t_3)) goto __pyx_L3_unpacking_failed;
+    __Pyx_GOTREF(__pyx_t_3);
+    index = 1; __pyx_t_2 = __pyx_t_6(__pyx_t_4); if (unlikely(!__pyx_t_2)) goto __pyx_L3_unpacking_failed;
+    __Pyx_GOTREF(__pyx_t_2);
+    if (__Pyx_IternextUnpackEndCheck(__pyx_t_6(__pyx_t_4), 2) < (0)) __PYX_ERR(0, 16, __pyx_L1_error)
+    __pyx_t_6 = NULL;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    goto __pyx_L4_unpacking_done;
+    __pyx_L3_unpacking_failed:;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_6 = NULL;
+    if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
+    __PYX_ERR(0, 16, __pyx_L1_error)
+    __pyx_L4_unpacking_done:;
+  }
+  __pyx_v_interface_receptor = __pyx_t_3;
+  __pyx_t_3 = 0;
+  __pyx_v_interface_ligand = __pyx_t_2;
+  __pyx_t_2 = 0;
+
+  /* "cddna.pyx":18
+ *     interface_receptor, interface_ligand = np.where(dist_matrix <= interface_cutoff)
  * 
  *     energy = 0.             # <<<<<<<<<<<<<<
  *     U = 0.
@@ -2651,102 +2716,78 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_);
   __pyx_v_energy = __pyx_mstate_global->__pyx_float_0_;
 
-  /* "cddna.pyx":17
+  /* "cddna.pyx":19
  * 
  *     energy = 0.
  *     U = 0.             # <<<<<<<<<<<<<<
  *     cdef unsigned int d
- *     interface_receptor = []
+ * 
 */
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_);
   __pyx_v_U = __pyx_mstate_global->__pyx_float_0_;
 
-  /* "cddna.pyx":19
- *     U = 0.
- *     cdef unsigned int d
- *     interface_receptor = []             # <<<<<<<<<<<<<<
- *     interface_ligand = []
- * 
-*/
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_interface_receptor = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "cddna.pyx":20
- *     cdef unsigned int d
- *     interface_receptor = []
- *     interface_ligand = []             # <<<<<<<<<<<<<<
- * 
- *     for i,j in zip(atom_indexes[0], atom_indexes[1]):
-*/
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_interface_ligand = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
   /* "cddna.pyx":22
- *     interface_ligand = []
+ *     cdef unsigned int d
  * 
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):             # <<<<<<<<<<<<<<
  *         # convert numpy.float64 to int
  *         d = dist_matrix[i][j]
 */
-  __pyx_t_4 = NULL;
-  __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_2 = NULL;
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_atom_indexes, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = 1;
   {
-    PyObject *__pyx_callargs[3] = {__pyx_t_4, __pyx_t_2, __pyx_t_3};
+    PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_t_3, __pyx_t_4};
     __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_builtin_zip, __pyx_callargs+__pyx_t_5, (3-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
-    __pyx_t_3 = __pyx_t_1; __Pyx_INCREF(__pyx_t_3);
-    __pyx_t_6 = 0;
-    __pyx_t_7 = NULL;
+    __pyx_t_4 = __pyx_t_1; __Pyx_INCREF(__pyx_t_4);
+    __pyx_t_7 = 0;
+    __pyx_t_8 = NULL;
   } else {
-    __pyx_t_6 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_7 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_8 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_4); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 22, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
-    if (likely(!__pyx_t_7)) {
-      if (likely(PyList_CheckExact(__pyx_t_3))) {
+    if (likely(!__pyx_t_8)) {
+      if (likely(PyList_CheckExact(__pyx_t_4))) {
         {
-          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_3);
+          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_4);
           #if !CYTHON_ASSUME_SAFE_SIZE
           if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 22, __pyx_L1_error)
           #endif
-          if (__pyx_t_6 >= __pyx_temp) break;
+          if (__pyx_t_7 >= __pyx_temp) break;
         }
-        __pyx_t_1 = __Pyx_PyList_GetItemRefFast(__pyx_t_3, __pyx_t_6, __Pyx_ReferenceSharing_OwnStrongReference);
-        ++__pyx_t_6;
+        __pyx_t_1 = __Pyx_PyList_GetItemRefFast(__pyx_t_4, __pyx_t_7, __Pyx_ReferenceSharing_OwnStrongReference);
+        ++__pyx_t_7;
       } else {
         {
-          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_3);
+          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_4);
           #if !CYTHON_ASSUME_SAFE_SIZE
           if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 22, __pyx_L1_error)
           #endif
-          if (__pyx_t_6 >= __pyx_temp) break;
+          if (__pyx_t_7 >= __pyx_temp) break;
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = __Pyx_NewRef(PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_6));
+        __pyx_t_1 = __Pyx_NewRef(PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_7));
         #else
-        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_3, __pyx_t_6);
+        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_4, __pyx_t_7);
         #endif
-        ++__pyx_t_6;
+        ++__pyx_t_7;
       }
       if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
     } else {
-      __pyx_t_1 = __pyx_t_7(__pyx_t_3);
+      __pyx_t_1 = __pyx_t_8(__pyx_t_4);
       if (unlikely(!__pyx_t_1)) {
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
@@ -2767,216 +2808,174 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
       }
       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
       if (likely(PyTuple_CheckExact(sequence))) {
-        __pyx_t_2 = PyTuple_GET_ITEM(sequence, 0);
+        __pyx_t_3 = PyTuple_GET_ITEM(sequence, 0);
+        __Pyx_INCREF(__pyx_t_3);
+        __pyx_t_2 = PyTuple_GET_ITEM(sequence, 1);
         __Pyx_INCREF(__pyx_t_2);
-        __pyx_t_4 = PyTuple_GET_ITEM(sequence, 1);
-        __Pyx_INCREF(__pyx_t_4);
       } else {
-        __pyx_t_2 = __Pyx_PyList_GetItemRefFast(sequence, 0, __Pyx_ReferenceSharing_SharedReference);
+        __pyx_t_3 = __Pyx_PyList_GetItemRefFast(sequence, 0, __Pyx_ReferenceSharing_SharedReference);
+        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
+        __Pyx_XGOTREF(__pyx_t_3);
+        __pyx_t_2 = __Pyx_PyList_GetItemRefFast(sequence, 1, __Pyx_ReferenceSharing_SharedReference);
         if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_2);
-        __pyx_t_4 = __Pyx_PyList_GetItemRefFast(sequence, 1, __Pyx_ReferenceSharing_SharedReference);
-        if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 22, __pyx_L1_error)
-        __Pyx_XGOTREF(__pyx_t_4);
       }
       #else
-      __pyx_t_2 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_2 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_4 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 22, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
       #endif
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_8 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 22, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_8);
+      __pyx_t_9 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 22, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_9 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_8);
-      index = 0; __pyx_t_2 = __pyx_t_9(__pyx_t_8); if (unlikely(!__pyx_t_2)) goto __pyx_L5_unpacking_failed;
+      __pyx_t_6 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_9);
+      index = 0; __pyx_t_3 = __pyx_t_6(__pyx_t_9); if (unlikely(!__pyx_t_3)) goto __pyx_L7_unpacking_failed;
+      __Pyx_GOTREF(__pyx_t_3);
+      index = 1; __pyx_t_2 = __pyx_t_6(__pyx_t_9); if (unlikely(!__pyx_t_2)) goto __pyx_L7_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_2);
-      index = 1; __pyx_t_4 = __pyx_t_9(__pyx_t_8); if (unlikely(!__pyx_t_4)) goto __pyx_L5_unpacking_failed;
-      __Pyx_GOTREF(__pyx_t_4);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_9(__pyx_t_8), 2) < (0)) __PYX_ERR(0, 22, __pyx_L1_error)
-      __pyx_t_9 = NULL;
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      goto __pyx_L6_unpacking_done;
-      __pyx_L5_unpacking_failed:;
-      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_9 = NULL;
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_6(__pyx_t_9), 2) < (0)) __PYX_ERR(0, 22, __pyx_L1_error)
+      __pyx_t_6 = NULL;
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      goto __pyx_L8_unpacking_done;
+      __pyx_L7_unpacking_failed:;
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __pyx_t_6 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
       __PYX_ERR(0, 22, __pyx_L1_error)
-      __pyx_L6_unpacking_done:;
+      __pyx_L8_unpacking_done:;
     }
-    __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_2);
+    __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_3);
+    __pyx_t_3 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_j, __pyx_t_2);
     __pyx_t_2 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_j, __pyx_t_4);
-    __pyx_t_4 = 0;
 
     /* "cddna.pyx":24
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):
  *         # convert numpy.float64 to int
  *         d = dist_matrix[i][j]             # <<<<<<<<<<<<<<
- *         # Calculate interface
- *         if d <= interface_cutoff:
+ * 
+ *         rec_atom = receptor.objects[i]
 */
     __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_dist_matrix, __pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_j); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 24, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_10 = __Pyx_PyLong_As_unsigned_int(__pyx_t_4); if (unlikely((__pyx_t_10 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 24, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_10 = __Pyx_PyLong_As_unsigned_int(__pyx_t_2); if (unlikely((__pyx_t_10 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 24, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_d = __pyx_t_10;
 
     /* "cddna.pyx":26
  *         d = dist_matrix[i][j]
- *         # Calculate interface
- *         if d <= interface_cutoff:             # <<<<<<<<<<<<<<
- *             interface_receptor.append(i)
- *             interface_ligand.append(j)
-*/
-    __pyx_t_4 = __Pyx_PyLong_From_unsigned_int(__pyx_v_d); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 26, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_v_interface_cutoff, Py_LE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_11 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_11 < 0))) __PYX_ERR(0, 26, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__pyx_t_11) {
-
-      /* "cddna.pyx":27
- *         # Calculate interface
- *         if d <= interface_cutoff:
- *             interface_receptor.append(i)             # <<<<<<<<<<<<<<
- *             interface_ligand.append(j)
- * 
-*/
-      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_interface_receptor, __pyx_v_i); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 27, __pyx_L1_error)
-
-      /* "cddna.pyx":28
- *         if d <= interface_cutoff:
- *             interface_receptor.append(i)
- *             interface_ligand.append(j)             # <<<<<<<<<<<<<<
- * 
- *         rec_atom = receptor.objects[i]
-*/
-      __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_interface_ligand, __pyx_v_j); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 28, __pyx_L1_error)
-
-      /* "cddna.pyx":26
- *         d = dist_matrix[i][j]
- *         # Calculate interface
- *         if d <= interface_cutoff:             # <<<<<<<<<<<<<<
- *             interface_receptor.append(i)
- *             interface_ligand.append(j)
-*/
-    }
-
-    /* "cddna.pyx":30
- *             interface_ligand.append(j)
  * 
  *         rec_atom = receptor.objects[i]             # <<<<<<<<<<<<<<
  *         lig_atom = ligand.objects[j]
  * 
 */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_receptor, __pyx_mstate_global->__pyx_n_u_objects); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_receptor, __pyx_mstate_global->__pyx_n_u_objects); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_t_2, __pyx_v_i); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_i); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 30, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_rec_atom, __pyx_t_4);
-    __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_rec_atom, __pyx_t_1);
+    __pyx_t_1 = 0;
 
-    /* "cddna.pyx":31
+    /* "cddna.pyx":27
  * 
  *         rec_atom = receptor.objects[i]
  *         lig_atom = ligand.objects[j]             # <<<<<<<<<<<<<<
  * 
  *         jj = ddna_map[int(d * 2.0)]
 */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_ligand, __pyx_mstate_global->__pyx_n_u_objects); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 31, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_t_4, __pyx_v_j); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 31, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ligand, __pyx_mstate_global->__pyx_n_u_objects); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_lig_atom, __pyx_t_1);
-    __pyx_t_1 = 0;
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_j); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 27, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_lig_atom, __pyx_t_2);
+    __pyx_t_2 = 0;
 
-    /* "cddna.pyx":33
+    /* "cddna.pyx":29
  *         lig_atom = ligand.objects[j]
  * 
  *         jj = ddna_map[int(d * 2.0)]             # <<<<<<<<<<<<<<
  *         if jj > 0 and jj <= 20:
  *             U = ddna_potentials[jj * 20*20 + rec_atom * 20 + lig_atom];
 */
-    __pyx_t_1 = PyLong_FromDouble((__pyx_v_d * 2.0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
+    __pyx_t_2 = PyLong_FromDouble((__pyx_v_d * 2.0)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 29, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_ddna_map, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 29, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_v_ddna_map, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 33, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_jj, __pyx_t_4);
-    __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_jj, __pyx_t_1);
+    __pyx_t_1 = 0;
 
-    /* "cddna.pyx":34
+    /* "cddna.pyx":30
  * 
  *         jj = ddna_map[int(d * 2.0)]
  *         if jj > 0 and jj <= 20:             # <<<<<<<<<<<<<<
  *             U = ddna_potentials[jj * 20*20 + rec_atom * 20 + lig_atom];
  *             if U < -5.0:
 */
-    __pyx_t_4 = PyObject_RichCompare(__pyx_v_jj, __pyx_mstate_global->__pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 34, __pyx_L1_error)
-    __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 34, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (__pyx_t_13) {
+    __pyx_t_1 = PyObject_RichCompare(__pyx_v_jj, __pyx_mstate_global->__pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_12 < 0))) __PYX_ERR(0, 30, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    if (__pyx_t_12) {
     } else {
-      __pyx_t_11 = __pyx_t_13;
-      goto __pyx_L9_bool_binop_done;
+      __pyx_t_11 = __pyx_t_12;
+      goto __pyx_L10_bool_binop_done;
     }
-    __pyx_t_4 = PyObject_RichCompare(__pyx_v_jj, __pyx_mstate_global->__pyx_int_20, Py_LE); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 34, __pyx_L1_error)
-    __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 34, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_11 = __pyx_t_13;
-    __pyx_L9_bool_binop_done:;
+    __pyx_t_1 = PyObject_RichCompare(__pyx_v_jj, __pyx_mstate_global->__pyx_int_20, Py_LE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_12 < 0))) __PYX_ERR(0, 30, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_11 = __pyx_t_12;
+    __pyx_L10_bool_binop_done:;
     if (__pyx_t_11) {
 
-      /* "cddna.pyx":35
+      /* "cddna.pyx":31
  *         jj = ddna_map[int(d * 2.0)]
  *         if jj > 0 and jj <= 20:
  *             U = ddna_potentials[jj * 20*20 + rec_atom * 20 + lig_atom];             # <<<<<<<<<<<<<<
  *             if U < -5.0:
  *                 U = 0.0
 */
-      __pyx_t_4 = __Pyx_PyLong_MultiplyObjC(__pyx_v_jj, __pyx_mstate_global->__pyx_int_20, 20, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 35, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_1 = __Pyx_PyLong_MultiplyObjC(__pyx_t_4, __pyx_mstate_global->__pyx_int_20, 20, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyLong_MultiplyObjC(__pyx_v_jj, __pyx_mstate_global->__pyx_int_20, 20, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 31, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_4 = __Pyx_PyLong_MultiplyObjC(__pyx_v_rec_atom, __pyx_mstate_global->__pyx_int_20, 20, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 35, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_2 = PyNumber_Add(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyLong_MultiplyObjC(__pyx_t_1, __pyx_mstate_global->__pyx_int_20, 20, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 31, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_4 = PyNumber_Add(__pyx_t_2, __pyx_v_lig_atom); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 35, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_1 = __Pyx_PyLong_MultiplyObjC(__pyx_v_rec_atom, __pyx_mstate_global->__pyx_int_20, 20, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 31, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_3 = PyNumber_Add(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 31, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_v_ddna_potentials, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __Pyx_DECREF_SET(__pyx_v_U, __pyx_t_2);
-      __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = PyNumber_Add(__pyx_t_3, __pyx_v_lig_atom); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 31, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_3 = __Pyx_PyObject_GetItem(__pyx_v_ddna_potentials, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 31, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF_SET(__pyx_v_U, __pyx_t_3);
+      __pyx_t_3 = 0;
 
-      /* "cddna.pyx":36
+      /* "cddna.pyx":32
  *         if jj > 0 and jj <= 20:
  *             U = ddna_potentials[jj * 20*20 + rec_atom * 20 + lig_atom];
  *             if U < -5.0:             # <<<<<<<<<<<<<<
  *                 U = 0.0
  *             energy += U
 */
-      __pyx_t_2 = PyObject_RichCompare(__pyx_v_U, __pyx_mstate_global->__pyx_float_neg_5_0, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
-      __pyx_t_11 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_11 < 0))) __PYX_ERR(0, 36, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_3 = PyObject_RichCompare(__pyx_v_U, __pyx_mstate_global->__pyx_float_neg_5_0, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 32, __pyx_L1_error)
+      __pyx_t_11 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_11 < 0))) __PYX_ERR(0, 32, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       if (__pyx_t_11) {
 
-        /* "cddna.pyx":37
+        /* "cddna.pyx":33
  *             U = ddna_potentials[jj * 20*20 + rec_atom * 20 + lig_atom];
  *             if U < -5.0:
  *                 U = 0.0             # <<<<<<<<<<<<<<
@@ -2986,7 +2985,7 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
         __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
         __Pyx_DECREF_SET(__pyx_v_U, __pyx_mstate_global->__pyx_float_0_0);
 
-        /* "cddna.pyx":36
+        /* "cddna.pyx":32
  *         if jj > 0 and jj <= 20:
  *             U = ddna_potentials[jj * 20*20 + rec_atom * 20 + lig_atom];
  *             if U < -5.0:             # <<<<<<<<<<<<<<
@@ -2995,19 +2994,19 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
 */
       }
 
-      /* "cddna.pyx":38
+      /* "cddna.pyx":34
  *             if U < -5.0:
  *                 U = 0.0
  *             energy += U             # <<<<<<<<<<<<<<
  * 
  *     # Convert and change energy sign
 */
-      __pyx_t_2 = PyNumber_InPlaceAdd(__pyx_v_energy, __pyx_v_U); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF_SET(__pyx_v_energy, __pyx_t_2);
-      __pyx_t_2 = 0;
+      __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_v_energy, __pyx_v_U); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 34, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF_SET(__pyx_v_energy, __pyx_t_3);
+      __pyx_t_3 = 0;
 
-      /* "cddna.pyx":34
+      /* "cddna.pyx":30
  * 
  *         jj = ddna_map[int(d * 2.0)]
  *         if jj > 0 and jj <= 20:             # <<<<<<<<<<<<<<
@@ -3017,46 +3016,46 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
     }
 
     /* "cddna.pyx":22
- *     interface_ligand = []
+ *     cdef unsigned int d
  * 
  *     for i,j in zip(atom_indexes[0], atom_indexes[1]):             # <<<<<<<<<<<<<<
  *         # convert numpy.float64 to int
  *         d = dist_matrix[i][j]
 */
   }
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "cddna.pyx":41
+  /* "cddna.pyx":37
  * 
  *     # Convert and change energy sign
  *     return (energy * 0.0021297 - 5.4738) * -1., set(interface_receptor), set(interface_ligand)             # <<<<<<<<<<<<<<
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = PyNumber_Multiply(__pyx_v_energy, __pyx_mstate_global->__pyx_float_0_0021297); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyFloat_SubtractObjC(__pyx_t_3, __pyx_mstate_global->__pyx_float_5_4738, 5.4738, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyNumber_Multiply(__pyx_t_2, __pyx_mstate_global->__pyx_float_neg_1_); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 41, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PySet_New(__pyx_v_interface_receptor); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PySet_New(__pyx_v_interface_ligand); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_Multiply(__pyx_v_energy, __pyx_mstate_global->__pyx_float_0_0021297); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyFloat_SubtractObjC(__pyx_t_4, __pyx_mstate_global->__pyx_float_5_4738, 5.4738, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = PyNumber_Multiply(__pyx_t_3, __pyx_mstate_global->__pyx_float_neg_1_); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = PySet_New(__pyx_v_interface_receptor); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_1 = PySet_New(__pyx_v_interface_ligand); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_3);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3) != (0)) __PYX_ERR(0, 41, __pyx_L1_error);
-  __Pyx_GIVEREF(__pyx_t_2);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_2) != (0)) __PYX_ERR(0, 41, __pyx_L1_error);
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_4);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_t_4) != (0)) __PYX_ERR(0, 41, __pyx_L1_error);
-  __pyx_t_3 = 0;
-  __pyx_t_2 = 0;
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4) != (0)) __PYX_ERR(0, 37, __pyx_L1_error);
+  __Pyx_GIVEREF(__pyx_t_3);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_3) != (0)) __PYX_ERR(0, 37, __pyx_L1_error);
+  __Pyx_GIVEREF(__pyx_t_1);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_t_1) != (0)) __PYX_ERR(0, 37, __pyx_L1_error);
   __pyx_t_4 = 0;
-  __pyx_r = __pyx_t_1;
+  __pyx_t_3 = 0;
   __pyx_t_1 = 0;
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
   /* "cddna.pyx":8
@@ -3073,16 +3072,16 @@ static PyObject *__pyx_f_5cddna_calculate_ddna(PyObject *__pyx_v_receptor, PyObj
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_9);
   __Pyx_AddTraceback("cddna.calculate_ddna", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_dist_matrix);
   __Pyx_XDECREF(__pyx_v_atom_indexes);
-  __Pyx_XDECREF(__pyx_v_energy);
-  __Pyx_XDECREF(__pyx_v_U);
   __Pyx_XDECREF(__pyx_v_interface_receptor);
   __Pyx_XDECREF(__pyx_v_interface_ligand);
+  __Pyx_XDECREF(__pyx_v_energy);
+  __Pyx_XDECREF(__pyx_v_U);
   __Pyx_XDECREF(__pyx_v_i);
   __Pyx_XDECREF(__pyx_v_j);
   __Pyx_XDECREF(__pyx_v_rec_atom);
@@ -3762,25 +3761,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 9; } index[] = {{1},{9},{20},{12},{18},{14},{5},{5},{17},{18},{8},{15},{8},{8},{16},{13},{5},{6},{18},{8},{10},{8},{2},{5},{7},{3},{12},{8},{20},{5},{13},{12},{10},{7},{8},{6},{5},{3},{261}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (551 bytes) */
-const char* const cstring = "BZh91AY&SY8x\277l\000\0003\377\377\377N\375\3456\001\277D\266\255yp\277\377\377\360@@@@@@@@@@@@@\000@\000@\001\274\000\221T\364M\000\311\246@\006 \000\000\000\006\203@2\001\247\240C\203 \321\240\014\232b\032h2\014C\010\032\003F&#@\000\007\006A\243@\0314\3044\320d\030\206\0204\006\214LF\200\000\006\246L\2024\021\221\251<$= \000\032\000\000\000\r4\332b4\3128y\006\234\374Y\301\361\350\322\035\253\233c\010\226Chz)\002+\302\300\326\013\r\245\202\205:'*\026h\306!\3339\323*Lm\021D#\254\270~Z\366\253\236*\205H\255\n\226\243\332\241\305\356\277\\UL\374\262\356\316\233\346n\304\310\305\253N\336DE*\216\001v\033\010\206\217\347\001.\203\340\345=E\250\211\321\003\213\225\356\010fs\026W\231\223\004\210\230\021\371\350\322)\326|\320d\372\204\360\254\320\324^\024[\212\3546onoMw\337p4\203\301\240ml\037\014\016\274\222\020\273]\212\333q\003\241\370\330/\316\367\\\3027\034\006\2768\253\230\341\254\303He\220\311\307=\231L\353\275\200\026M\222g\016\001\211\326\006\250m\214\332j\022Y\235\000V\031:\304@\204\350\003g\211\022\241\006\004\223\3209\375\202\raaV\307\031\273\035T\005;CA\3050\005\254INR\022\234\267I7n\031\216zHP\351\203Y\232\r\214\216\361\331\001M2\025\302$Ds\364\354\234)Rn\017\r\276\321\"\007hqZ\026\251\266\231\335\030\344\234,(\260Q\206\216E0e\205O\302=\033\376\241\373?baQ\025\026\237\236q\204\244\220U\010\024\344\301`\350\217\225\2232\224\316\341\371\003\273\005\252g\337\210\tS\304\326\003\000$\013(\341\022\017[O;{$\335)\340'\272\023\225\327p\325a\234\262\321\377\264\3026(\355\307\010\006|@M\030\206\233\263=\375\017\370\273\222)\302\204\201\303\305\373`";
-    PyObject *data = __Pyx_DecompressString(cstring, 551, 2);
+    const struct { const unsigned int length: 8; } index[] = {{1},{9},{20},{12},{18},{14},{5},{5},{17},{18},{8},{15},{8},{8},{16},{13},{5},{6},{18},{8},{10},{8},{2},{5},{7},{3},{12},{8},{20},{5},{13},{12},{10},{7},{8},{6},{5},{3},{244}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (533 bytes) */
+const char* const cstring = "BZh91AY&SY\353\203\302\030\000\0001\377\377\377n\375@6\t\277D\266\255qp\277\377\377\360@@@@@@@@@@@@@\000@\0000\001\211\201\202&Q\245?&\251\355\024hz#\324\032\000\003\020d2\r\006\203M=G\251\3413T*z)\372&P4\0010\t\202`F&\000\020\300\214\232i\265=\t\350\032\231\001'\221OLB`\206\206\200\000\000\000\000\000\320z\201\303t\004\261\376\007\354\237\322\203\223OMFq\3430\3109\300G>\266\203f\"haY\311jY\335JRD7\035]\2349B\214`+\360\361\343\241\264\235\013\260D\302|& \230\220\320\271\204\207\014\360_\244D/;\260\346\320\n\036\310YJ;\3269\256,\034\n\271\005\262\254\000Fwo\001d\273\372\025\240h\000\351\003\327\355\254\n3:\205u\246d\201\002$\0057\332?\201%'\370\344?\344=\322\232\215b\250\216\213u\246\310\261r*\375\226\002H4\032\202p\2209hd\252\200uzfZg\262\0166\332@\231\355et\021\260\334)\301\022\330\206\nL$\205\310\013x\037=\3039j\326\005\372\364zP,\256`\225\204\314\217\343XS\3571\300\2462d\312PQ1\300\321\264\245H\034\200\2505A\215\316 \224\025e\246+F\313XQ\205\234\341 \342U\001r\210,\341\001\007\225\322U\333\302\373\344!\033*\004\243\035\251\212\007T\347p\222H\t]\021\021\033\357\316\360\262\220\330\032\0232D\010\035\001\205@\035\367XE\nS\022\200\350z\260=\013\324\034\200\207H\345\323\335\203\253\277\031x\206O,{x6\263\225\213\020\312!\363\361La\365\207\356\2107\254\204\217\307J\345\202H\247\323\235\227\037\014\221/6eGc\rN\362\251\024\r\224\004\350\313\226\306b\331\276\322PU2)\240\355V\3516B\r,Z\032\373\004\333\232\377\342\356H\247\n\022\035pxC\000";
+    PyObject *data = __Pyx_DecompressString(cstring, 533, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (493 bytes) */
-const char* const cstring = "x\332MP1o\0231\024&\311QE\342\2526\r\202\"!\244 \272\006]\240U\007$\224\nT!*\324+\022\002\026\313\361\371R\303\305\276\234}\220cb\364\350\321\243\307\0333fd\314\330\361\306\373\t\374\004\3365P\341\341\275\357\371{\357\373\236\375\222D\021\307\303\264X t\016\341\274x\305\210B\357\350B]\320\030!\314\271PXQ@\262\340\204\211!\021\231\310\025\343T\022\234\220<i\310F\203l\002\223\n!\222`)\321\224*\246\350\254)\241\0351\216T\206\t\235`\362\265\351E3\234^\347T(\312\025\303\211l\2461'\340\026\347\234 \030Q4\213a\006\221\\\2118FL\242\033\377F[&l\212y\264\211@\211,b\0346\222\010\324\301\020\316LDyB\033\304\361\0142Oy>K\0131\371B\211\222\251H\021\232\3478\331\220\031%4U\"\373\227\377\227\224\204\245\305u\030\312\0247\373\"$\251\372+\013(\2421\316\023uC\302\014\374\3057\234\344T~\277\244\031\375\301\322\237\255j|\362{\353\326\355\27690\013[\224[%\276z\372\372WX{}32\037l`\317\312N\031\324\336\266\016+\257\253[\265\367\300\366*\357\276\231\327P\266\365\201\226f`^\330\271\363\334\331\262\265\354\325]_\2775s\333\266\003\033\324\335;z\244\337\233V\345?\262S\027:\\\371\017\355\251\013\334\270\356\366\315\261=n`\005\360\310\356\273\236\033\324\335m\375\321\204\206\330\236}lO,\256@\341\231\236\230\266y\002\227};\256\374]\263\003v\0357r\027n\016\333\215\312O\313\311\252\263\032\255\302\312\337\321\231\3313A\265{\327@\353=\203\233\327\371:\320\247\360\236\3176s\373\345^y\270\354,\203\253\347o\326\375\365x\035\376\001`\236\372\347";
-    PyObject *data = __Pyx_DecompressString(cstring, 493, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (480 bytes) */
+const char* const cstring = "x\332MP\277o\0231\030%?\250\202H\325\246\251P\326 :!\005]\370\241\016H(\025\010!\"\324\353P\001\213\345\370|\305\364b;g_\31111z\364\350\361\306\033o\314\2301c\306\033\357O\340O\340\273\006*<|\337\263\337\367\336\367\3447$\0108\036\311t\211\3209\224\363\364-#\032}\242K}AC\2040\347BcM\001\251\224\023&FD\304\"\321\214SEpD\222\250&k\017\262+Li\204H\204\225BWT3M\347\365\025\306\021\343H\307\230\320\031&\327\365,\232cy\333\245\320\224k\206#U\2531'\260-L8A \3214\016A\203H\242E\030\"\246\320\335\376\332[E\354\n\363`W\201\022q\3008$R\010\334a!\234\271\010\222\210\326\210\3439t.y2\227\251\230}\247D+)$B\213\004G;2\246\204J-\342\177\375\177KE\230Lo\313HI\\\347EHQ\375\327\026P@C\234D\372\216\004\r\374\305\r\216\022\252~|\2431\375\311\344\257F99\373\275w\357~\337\236\330\245K\363\275\034o\237\275[\373U\273o\307\366\322yn\232\267r\257j\017\266\203\247\3718\277,\274b\272n\255\341e\337\370e\273c\032\265\374\201i\232\023\243\354\320\276v\213\254\235M\213F\321\253:]\363\321.\\\323\r\235Wu\372\366\324\235f^6)\001\276r\203\254\227\r\253\316\276\371l}K\\\317=vg\016\227\235\207\346\271\231\331\246}\002\217}7)\273\207\366\000<[\3318\273\310\026\020f\234\177)f\253\326j\274\362\313\356\201\211\355\221\365\312\303c\013\243\217,\256\323t\215g\336C\374\257.\316\006\371Q\376\262h\025\336\366\305\207M\1773\331\370\177\000\021\205\364@";
+    PyObject *data = __Pyx_DecompressString(cstring, 480, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (629 bytes) */
-const char* const bytes = "?cddna.pyx__Pyx_PyDict_NextRef__annotate__asyncio.coroutinescalculate_ddnacddnacdist__class_getitem__cline_in_tracebackddna_mapddna_potentialsdistance__func__interface_cutoff_is_coroutineitemsligandligand_coordinates__main____module____name__npnumpyobjectspop__qualname__receptorreceptor_coordinatesscipyscipy.spatial__set_name__setdefaultspatial__test__valueswherezip\200\001\330AB\360\006\000\005\023\220%\220x\230y\250\006\250a\320/E\300Q\340\004\023\2202\220V\2301\230L\250\003\2501\340\004\r\210Q\330\004\010\210\001\340\004\031\230\021\330\004\027\220q\340\004\010\210\002\210%\210s\220!\220<\230q\240\004\240L\260\001\260\021\340\010\014\210K\220q\230\002\230!\2301\340\010\013\2102\210S\220\001\330\014\036\230g\240Q\240a\330\014\034\230G\2401\240A\340\010\023\2208\2308\2401\240A\330\010\023\2206\230\030\240\021\240!\340\010\r\210X\220Q\220c\230\021\230\"\230B\230a\330\010\013\2103\210b\220\002\220$\220c\230\023\230A\330\014\020\220\017\230q\240\003\2402\240R\240q\250\003\2502\250Y\260b\270\003\2702\270Q\330\014\017\210r\220\022\2201\330\020\024\220A\330\014\026\220a\360\006\000\005\014\2101\210G\2202\220Z\230r\240\030\250\022\2505\260\003\2601\3204I\310\023\310A\310Q";
+    #else /* compression: none (612 bytes) */
+const char* const bytes = "?cddna.pyx__Pyx_PyDict_NextRef__annotate__asyncio.coroutinescalculate_ddnacddnacdist__class_getitem__cline_in_tracebackddna_mapddna_potentialsdistance__func__interface_cutoff_is_coroutineitemsligandligand_coordinates__main____module____name__npnumpyobjectspop__qualname__receptorreceptor_coordinatesscipyscipy.spatial__set_name__setdefaultspatial__test__valueswherezip\200\001\330AB\360\006\000\005\023\220%\220x\230y\250\006\250a\320/E\300Q\340\004\023\2202\220V\2301\230L\250\003\2501\340\004\030\320\030+\2502\250V\2601\260L\300\003\3001\340\004\r\210Q\330\004\010\210\001\360\006\000\005\t\210\002\210%\210s\220!\220<\230q\240\004\240L\260\001\260\021\340\010\014\210K\220q\230\002\230!\2301\340\010\023\2208\2308\2401\240A\330\010\023\2206\230\030\240\021\240!\340\010\r\210X\220Q\220c\230\021\230\"\230B\230a\330\010\013\2103\210b\220\002\220$\220c\230\023\230A\330\014\020\220\017\230q\240\003\2402\240R\240q\250\003\2502\250Y\260b\270\003\2702\270Q\330\014\017\210r\220\022\2201\330\020\024\220A\330\014\026\220a\360\006\000\005\014\2101\210G\2202\220Z\230r\240\030\250\022\2505\260\003\2601\3204I\310\023\310A\310Q";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -3906,7 +3905,7 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 8};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_receptor, __pyx_mstate->__pyx_n_u_receptor_coordinates, __pyx_mstate->__pyx_n_u_ligand, __pyx_mstate->__pyx_n_u_ligand_coordinates, __pyx_mstate->__pyx_n_u_ddna_potentials, __pyx_mstate->__pyx_n_u_ddna_map, __pyx_mstate->__pyx_n_u_interface_cutoff};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_cddna_pyx, __pyx_mstate->__pyx_n_u_calculate_ddna, __pyx_mstate->__pyx_kp_b_iso88591_AB_xy_a_EQ_2V1L_1_Q_q_s_q_L_Kq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_cddna_pyx, __pyx_mstate->__pyx_n_u_calculate_ddna, __pyx_mstate->__pyx_kp_b_iso88591_AB_xy_a_EQ_2V1L_1_2V1L_1_Q_s_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;
@@ -4326,6 +4325,44 @@ static PyObject *__Pyx_PyObject_FastCallMethod(PyObject *name, PyObject *const *
 }
 #endif
 
+/* RaiseTooManyValuesToUnpack */
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
+    PyErr_Format(PyExc_ValueError,
+                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
+}
+
+/* RaiseNeedMoreValuesToUnpack */
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
+    PyErr_Format(PyExc_ValueError,
+                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
+                 index, (index == 1) ? "" : "s");
+}
+
+/* IterFinish */
+static CYTHON_INLINE int __Pyx_IterFinish(void) {
+    PyObject* exc_type;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    exc_type = __Pyx_PyErr_CurrentExceptionType();
+    if (unlikely(exc_type)) {
+        if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration)))
+            return -1;
+        __Pyx_PyErr_Clear();
+        return 0;
+    }
+    return 0;
+}
+
+/* UnpackItemEndCheck */
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
+    if (unlikely(retval)) {
+        Py_DECREF(retval);
+        __Pyx_RaiseTooManyValuesError(expected);
+        return -1;
+    }
+    return __Pyx_IterFinish();
+}
+
 /* GetItemInt */
 static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
     PyObject *r;
@@ -4427,44 +4464,6 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, 
     (void)wraparound;
     (void)boundscheck;
     return __Pyx_GetItemInt_Generic(o, PyLong_FromSsize_t(i));
-}
-
-/* RaiseTooManyValuesToUnpack */
-static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
-    PyErr_Format(PyExc_ValueError,
-                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
-}
-
-/* RaiseNeedMoreValuesToUnpack */
-static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
-    PyErr_Format(PyExc_ValueError,
-                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
-                 index, (index == 1) ? "" : "s");
-}
-
-/* IterFinish */
-static CYTHON_INLINE int __Pyx_IterFinish(void) {
-    PyObject* exc_type;
-    __Pyx_PyThreadState_declare
-    __Pyx_PyThreadState_assign
-    exc_type = __Pyx_PyErr_CurrentExceptionType();
-    if (unlikely(exc_type)) {
-        if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration)))
-            return -1;
-        __Pyx_PyErr_Clear();
-        return 0;
-    }
-    return 0;
-}
-
-/* UnpackItemEndCheck */
-static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
-    if (unlikely(retval)) {
-        Py_DECREF(retval);
-        __Pyx_RaiseTooManyValuesError(expected);
-        return -1;
-    }
-    return __Pyx_IterFinish();
 }
 
 /* PyObjectCallOneArg (used by ObjectGetItem) */
@@ -8058,75 +8057,6 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to unsigned int");
     return (unsigned int) -1;
-}
-
-/* CIntToPy */
-static CYTHON_INLINE PyObject* __Pyx_PyLong_From_unsigned_int(unsigned int value) {
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-    const unsigned int neg_one = (unsigned int) -1, const_zero = (unsigned int) 0;
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic pop
-#endif
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(unsigned int) < sizeof(long)) {
-            return PyLong_FromLong((long) value);
-        } else if (sizeof(unsigned int) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-#if !CYTHON_COMPILING_IN_PYPY
-        } else if (sizeof(unsigned int) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-#endif
-        }
-    } else {
-        if (sizeof(unsigned int) <= sizeof(long)) {
-            return PyLong_FromLong((long) value);
-        } else if (sizeof(unsigned int) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-        }
-    }
-    {
-        unsigned char *bytes = (unsigned char *)&value;
-#if !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX >= 0x030d00A4
-        if (is_unsigned) {
-            return PyLong_FromUnsignedNativeBytes(bytes, sizeof(value), -1);
-        } else {
-            return PyLong_FromNativeBytes(bytes, sizeof(value), -1);
-        }
-#elif !CYTHON_COMPILING_IN_LIMITED_API && PY_VERSION_HEX < 0x030d0000
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        return _PyLong_FromByteArray(bytes, sizeof(unsigned int),
-                                     little, !is_unsigned);
-#else
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        PyObject *from_bytes, *result = NULL, *kwds = NULL;
-        PyObject *py_bytes = NULL, *order_str = NULL;
-        from_bytes = PyObject_GetAttrString((PyObject*)&PyLong_Type, "from_bytes");
-        if (!from_bytes) return NULL;
-        py_bytes = PyBytes_FromStringAndSize((char*)bytes, sizeof(unsigned int));
-        if (!py_bytes) goto limited_bad;
-        order_str = PyUnicode_FromString(little ? "little" : "big");
-        if (!order_str) goto limited_bad;
-        {
-            PyObject *args[3+(CYTHON_VECTORCALL ? 1 : 0)] = { NULL, py_bytes, order_str };
-            if (!is_unsigned) {
-                kwds = __Pyx_MakeVectorcallBuilderKwds(1);
-                if (!kwds) goto limited_bad;
-                if (__Pyx_VectorcallBuilder_AddArgStr("signed", __Pyx_NewRef(Py_True), kwds, args+3, 0) < 0) goto limited_bad;
-            }
-            result = __Pyx_Object_Vectorcall_CallFromBuilder(from_bytes, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET, kwds);
-        }
-        limited_bad:
-        Py_XDECREF(kwds);
-        Py_XDECREF(order_str);
-        Py_XDECREF(py_bytes);
-        Py_XDECREF(from_bytes);
-        return result;
-#endif
-    }
 }
 
 /* FormatTypeName */

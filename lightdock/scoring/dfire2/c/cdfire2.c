@@ -13,7 +13,8 @@
  **/
 static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
     PyObject *res_index, *atom_index, *coordinates, *dfire2_energy, *result = NULL;
-    unsigned int mol_length, i, j, b, atom1, atom2, index, interface_len, *interface_receptor = NULL, *interface_ligand = NULL;
+    unsigned int mol_length, rec_length, i, j, b, atom1, atom2, index, interface_len, interface_size, *interface_receptor = NULL, *interface_ligand = NULL;
+    int is_intermolecular, is_scored;
     double energy, dist, **mol_array, *energies, interface_cutoff;
     int *atom_indexes, *res_indexes;
 
@@ -27,7 +28,8 @@ static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
     energy = 0.;
     interface_len = 0;
 
-    if (PyArg_ParseTuple(args, "OOOOi|d", &res_index, &atom_index, &coordinates, &dfire2_energy, &mol_length, &interface_cutoff)) {
+    if (PyArg_ParseTuple(args, "OOOOii|d", &res_index, &atom_index, &coordinates, &dfire2_energy, &mol_length, &rec_length,
+                         &interface_cutoff)) {
         PyArray_Descr *descr;
 
         // Coordinates to C Array
@@ -50,23 +52,36 @@ static PyObject * cdfire2_calculate_dfire2(PyObject *self, PyObject *args) {
         //printf("%d", N);
         energies = (double*)PyArray_DATA((PyArrayObject*)energy_array);
 
-        interface_receptor = malloc(mol_length*sizeof(unsigned int));
-        interface_ligand = malloc(mol_length*sizeof(unsigned int));
+        // Initial size of the interface buffers, they grow if required
+        interface_size = mol_length + 1;
+        interface_receptor = malloc(interface_size*sizeof(unsigned int));
+        interface_ligand = malloc(interface_size*sizeof(unsigned int));
 
-        // Calculate euclidean distance
+        // Calculate euclidean distance. Receptor atoms come first, followed by ligand atoms
         for (i = 0; i < mol_length; i++) {
             for (j = i+1; j < mol_length; j++) {
-                if (res_indexes[i] != res_indexes[j]) {
-                    // Euclidean distance * 2
-                    dist = sqrt(pow((mol_array[i][0] - mol_array[j][0]), 2.0) +
-                                pow((mol_array[i][1] - mol_array[j][1]), 2.0) +
-                                pow((mol_array[i][2] - mol_array[j][2]), 2.0))*2;
-                    if (dist <= interface_cutoff) {
-                        interface_receptor[interface_len] = i;
-                        interface_ligand[interface_len++] = j;
+                is_intermolecular = (i < rec_length && j >= rec_length);
+                is_scored = (res_indexes[i] != res_indexes[j]);
+                if (!is_intermolecular && !is_scored) continue;
+
+                dist = sqrt(pow((mol_array[i][0] - mol_array[j][0]), 2.0) +
+                            pow((mol_array[i][1] - mol_array[j][1]), 2.0) +
+                            pow((mol_array[i][2] - mol_array[j][2]), 2.0));
+
+                // Interface: receptor-ligand contacts, using each molecule own indexes
+                if (is_intermolecular && dist <= interface_cutoff) {
+                    if (interface_len == interface_size) {
+                        interface_size *= 2;
+                        interface_receptor = realloc(interface_receptor, interface_size*sizeof(unsigned int));
+                        interface_ligand = realloc(interface_ligand, interface_size*sizeof(unsigned int));
                     }
-                    // Distance to bin
-                    b = (int)dist;
+                    interface_receptor[interface_len] = i;
+                    interface_ligand[interface_len++] = j - rec_length;
+                }
+
+                if (is_scored) {
+                    // Distance to bin, which is Euclidean distance * 2
+                    b = (int)(dist*2);
                     if (b < 30) {
                         atom1 = atom_indexes[i];
                         atom2 = atom_indexes[j];
