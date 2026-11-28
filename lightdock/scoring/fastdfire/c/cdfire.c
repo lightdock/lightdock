@@ -38,14 +38,15 @@ int compare(const void *a, const void *b) {
  *
  **/
 void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates,
-                    unsigned int **indexes, unsigned int *indexes_len) {
+                    double interface_cutoff, unsigned int **indexes, unsigned int *indexes_len) {
     PyObject *tmp0, *tmp1;
     unsigned int rec_len, lig_len, i, j, n;
-    double dist, **rec_array, **lig_array;
+    double dist, interface_cutoff2, **rec_array, **lig_array;
     npy_intp dims[2];
 
     *indexes_len = 0;
     n = 0;
+    interface_cutoff2 = interface_cutoff*interface_cutoff;
 
     tmp0 = PyObject_GetAttrString(receptor_coordinates, "coordinates");
     tmp1 = PyObject_GetAttrString(ligand_coordinates, "coordinates");
@@ -60,7 +61,7 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
     dims[0] = lig_len;
     PyArray_AsCArray((PyObject **)&tmp1, (void **)&lig_array, dims, 2, PyArray_DescrFromType(NPY_DOUBLE));
 
-    *indexes = malloc(3*rec_len*lig_len*sizeof(unsigned int));
+    *indexes = malloc(4*rec_len*lig_len*sizeof(unsigned int));
 
     for (i = 0; i < rec_len; i++) {
         for (j = 0; j < lig_len; j++) {
@@ -71,6 +72,7 @@ void euclidean_dist(PyObject *receptor_coordinates, PyObject *ligand_coordinates
                 (*indexes)[n++] = i;
                 (*indexes)[n++] = j;
                 (*indexes)[n++] = (sqrt(dist)*2.0 - 1.0);
+                (*indexes)[n++] = (dist <= interface_cutoff2);
                 (*indexes_len)++;
             }
         }
@@ -92,7 +94,7 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     PyObject *receptor, *ligand, *dfire_energy, *receptor_coordinates, *ligand_coordinates;
     PyObject *take, *intf_rec_array_object, *intf_lig_array_object, *array_object, *tmp0, *tmp1, **rec_objects, **lig_objects, *result = NULL;
     PyArrayObject *df_en_array;
-    unsigned int n, m, i, j, d, dfire_bin, atoma, atomb, indexes_len, interface_len, *array, *interface_receptor, *interface_ligand, *indexes;
+    unsigned int n, m, i, j, d, in_contact, dfire_bin, atoma, atomb, indexes_len, interface_len, *array, *interface_receptor, *interface_ligand, *indexes;
     double interface_cutoff, energy, *dfire_en_array;
     npy_intp dims[1];
 
@@ -101,7 +103,8 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
     interface_len = 0;
 
     if (PyArg_ParseTuple(args, "OOOOO|d", &receptor, &ligand, &dfire_energy, &receptor_coordinates, &ligand_coordinates, &interface_cutoff)) {
-        euclidean_dist(receptor_coordinates, ligand_coordinates, &indexes, &indexes_len);
+        euclidean_dist(receptor_coordinates, ligand_coordinates, interface_cutoff,
+                       &indexes, &indexes_len);
 
         array = malloc(indexes_len*sizeof(unsigned int));
         interface_receptor = malloc(indexes_len*sizeof(unsigned int));
@@ -125,8 +128,9 @@ static PyObject * cdfire_calculate_dfire(PyObject *self, PyObject *args) {
             i = indexes[m++];
             j = indexes[m++];
             d = indexes[m++];
+            in_contact = indexes[m++];
 
-            if (d <= interface_cutoff) {
+            if (in_contact) {
                 interface_receptor[interface_len] = i;
                 interface_ligand[interface_len++] = j;
             }

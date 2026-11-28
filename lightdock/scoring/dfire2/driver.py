@@ -279,6 +279,7 @@ class DFIRE2(ScoringFunction):
             coordinates,
             self.potential.energy,
             self.molecule_length,
+            len(receptor.objects),
             DEFAULT_CONTACT_RESTRAINTS_CUTOFF,
         )
 
